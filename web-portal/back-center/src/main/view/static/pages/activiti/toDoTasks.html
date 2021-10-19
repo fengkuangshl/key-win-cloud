@@ -1,0 +1,178 @@
+<!-- 关闭Tab时顶部标题 -->
+<div class="layui-body-header">
+    <span class="layui-body-header-title">待办任务</span>
+    <span class="layui-breadcrumb pull-right">
+        <a href="#/console/console1">首页</a>
+        <a><cite>待办任务</cite></a>
+    </span>
+</div>
+
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm12 layui-col-md12 layui-col-lg12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <!--表格-->
+                    <table class="layui-table" id="process-task-table" lay-filter="process-task-table"></table>
+                    <script type="text/html" id="processTaskTableBar">
+                        {{#  if(d.status !== 'SUSPENDED'){ }}
+                        <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="handle">办理</a>
+                        {{#  }else{ }}
+                        <a class="layui-btn layui-btn-xs layui-btn-disabled data-count-delete" disabled="true" href="javascript:void(0)">办理</a>
+                        {{#  } }}
+                    </script>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- js部分 -->
+<script>
+    layui.use(['layer', 'form', 'table', 'util', 'config', 'dtree', 'admin', 'tableQuery'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var dtree = layui.dtree;
+        var admin = layui.admin;
+        var config = layui.config;
+        var tbq = layui.tableQuery;
+
+        var tableRander = function () {
+            tbq.post('#process-task-table', 'api-activiti/processTaskCtrl/getTasks', [[
+                    {field: 'id', width: '13%', title: 'ID', sort: true, align: "center"},
+                    {field: 'instanceName', width: '22%', title: '流程名称',  align: "center"},
+                    {field: 'name', width: '15%', title: '任务节点名称', sort: true, align: "center"},
+                    {
+                        field: 'status', width: '12%', title: '任务状态', align: "center",templet: function (d) {
+                            /**
+                             * CREATED,
+                             RUNNING,
+                             SUSPENDED,
+                             CANCELLED,
+                             COMPLETED,
+                             DELETED;
+                             */
+                            if (d.status && d.status == 'ASSIGNED') {
+                                return '执行中';
+                            } else if (d.status && d.status == 'CREATED') {
+                                return '创建';
+                            } else if (d.status && d.status == 'SUSPENDED') {
+                                return '挂起';
+                            } else if (d.status && d.status == 'COMPLETED') {
+                                return '完成';
+                            } else if (d.status && d.status == 'CANCELLED') {
+                                return '取消';
+                            } else if (d.status && d.status == 'DELETED') {
+                                return '删除';
+                            }else if (d.status && d.status == 'RUNNING') {
+                                return '运行';
+                            } else {
+                                return d.status
+                            }
+                        }
+                    },
+                    {
+                        field: 'assignee', width: '8%', title: '办理人', align: "center", sort: true, templet: function (d) {
+                            if (d.assignee) {
+                                return d.assignee;
+                            } else {
+                                return '待拾取任务';
+                            }
+                        }
+                    },
+                    {
+                        field: 'createTime', title: '创建时间', width: '15%', align: "center", sort: true,
+                        templet: function (d) {
+                            if (d.createTime) {
+                                return util.toDateString(d.createTime, 'yyyy-MM-dd HH:mm:ss');
+                            }
+                            return '';
+                        }
+                    },
+                    {align: 'center', title: '操作', toolbar: '#processTaskTableBar', align: "center"}
+                ]]
+            );
+        };
+        tableRander();
+        table.on('sort(process-task-table)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            table.reload('process-task-table', {
+                initSort: obj,
+                where: {
+                    sortName: obj.field, //排序字段
+                    order: obj.type //排序方式:desc（降序）、asc（升序）、null（空对象，默认排序）
+                }
+            });
+        });
+        // 工具条点击事件
+        table.on('tool(process-task-table)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'handle') {  // 监听挂起操作
+                creatFormTable(obj);
+            }
+        });
+
+        //动态生成表单
+        function creatFormTable(obj) {
+            var loadIndex = layer.load(2);
+            admin.get('api-activiti/processTaskCtrl/formDataShow', {
+                taskID: obj.data ? obj.data.id : '',
+            }, function (res) {
+                layer.close(loadIndex);
+                if (res.obj != '无表单' && res.code == 0) {
+                    var index = layer.open({
+                        title: '办理任务',
+                        type: 2,
+                        shade: 0.2,
+                        maxmin: true,
+                        shadeClose: true,
+                        area: ['100%', '100%'],
+                        content: './formDataShow.html',
+                        success: function (layero, index) {
+                            var iframe = window['layui-layer-iframe' + index];
+                            iframe.child(JSON.stringify(res.obj), obj.data.id)
+                            localStorage.setItem("id", obj.data.id);
+                        },
+                        end: function () {
+                            table.reload('process-task-table');
+                        }
+                    });
+                    $(window).on("resize", function () {
+                        layer.full(index);
+                    });
+                } else if (res.code == 1) {
+                    parent.layer.msg(res.obj, {
+                        icon: 0,
+                        time: 2000
+                    });
+                } else {
+                    doHandle(obj);
+                }
+            });
+
+        }
+
+        /*任务完成 */
+        function doHandle(obj) {
+            console.log(obj, "单条数据");
+            layer.confirm('确定要办理该任务吗？', {
+                skin: 'layui-layer-admin',
+                shade: .1
+            }, function (i) {
+                layer.close(i);
+                var loadIndex = layer.load(2);
+                admin.getAlert('api-activiti/processTaskCtrl/completeTask', {
+                    taskId: obj.data ? obj.data.id : '',
+                }, function (res) {
+                    layer.close(loadIndex);
+                    table.reload('process-task-table');
+
+                });
+            });
+        };
+        //# sourceURL=process-task.js
+    });
+</script>

@@ -1,0 +1,193 @@
+<!-- 关闭Tab时顶部标题 -->
+<div class="layui-body-header">
+    <span class="layui-body-header-title">Mybaties-Rpc</span>
+    <span class="layui-breadcrumb pull-right">
+        <a href="#/console/console1">首页</a>
+        <a><cite>Mybaties-Rpc</cite></a>
+    </span>
+</div>
+
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm12 layui-col-md12 layui-col-lg12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-form toolbar text">
+                        名称：
+                        <input id="name" class="layui-input search-input" type="text" placeholder="数据名称"/>&emsp;
+                        <button id="mybaties-template-btn-search" class="layui-btn icon-btn"><i
+                                class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                        <button id="mybaties-template-btn-add" class="layui-btn icon-btn"><i
+                                class="layui-icon">&#xe654;</i>新增
+                        </button>
+                    </div>
+                    <!--表格-->
+                    <table class="layui-table" id="mybaties-template-table"
+                           lay-filter="mybaties-template-table"></table>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- 表单弹窗 -->
+<script type="text/html" id="mybaties-template-model">
+    <form id="mybaties-template-form" lay-filter="mybaties-template-form" class="layui-form model-form">
+        <input name="id" id="id" type="hidden"/>
+        <input name="version" id="version" type="hidden"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label">数据名称</label>
+            <div class="layui-input-block" style="width: 300px;">
+                <input type="text" id="name" class="layui-input" name="name" title="名称">
+
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">code</label>
+            <div class="layui-input-block" style="width: 300px;">
+                <input type="text" class="layui-input" lay-verify="required" name="code" title="code">
+            </div>
+        </div>
+        <div class="layui-form-item model-form-footer">
+            <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">取消</button>
+            <button class="layui-btn" id="mybaties-template-form-submit" lay-filter="mybaties-template-form-submit"
+                    lay-submit>保存
+            </button>
+        </div>
+    </form>
+</script>
+
+<!-- js部分 -->
+<script>
+    layui.use(['layer', 'form', 'table', 'util', 'config', 'dtree', 'admin', 'tableQuery'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var dtree = layui.dtree;
+        var admin = layui.admin;
+        var config = layui.config;
+        var tbq = layui.tableQuery;
+
+
+        var tableRander = function () {
+            tbq.post('#mybaties-template-table', 'api-rpc-mybaties/mybatiesRpcTemplateCtrl/getMybatiesRpcTemplateByPaged', [[
+                    {type: 'numbers', width: 80, sort: false, title: '序号'},
+                    {field: 'name', sort: true, title: '名称'},
+                    {field: 'code', sort: true, title: 'code'},
+                    {
+                        align: 'center', title: '操作', templet: function (d) {
+                            var operation = '';
+                            operation += '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="view">查看</a>';
+                            operation += '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">编辑</a>';
+                            operation += '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="delete">删除</a>';
+                            return operation
+                        }
+                    }
+                ]]
+            );
+        };
+        tableRander();
+        table.on('sort(mybaties-template-table)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            table.reload('mybaties-template-table', {
+                initSort: obj,
+                where: {
+                    field: obj.field, //排序字段
+                    order: obj.type //排序方式:desc（降序）、asc（升序）、null（空对象，默认排序）
+                }
+            });
+        });
+        // 工具条点击事件
+        table.on('tool(mybaties-template-table)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') { //修改
+                admin.putTempData('dm_edi', data);
+                showMybatiesTemplateEditModel(data, 'edi');
+            } else if (obj.event === 'delete') { //删除
+                doDelete(data);
+            } else if (obj.event === 'view') { //查看
+                showMybatiesTemplateEditModel(data, "view");
+            }
+        });
+
+
+        // 删除
+        var doDelete = function (obj) {
+            layer.confirm('确定要删除吗？', function (i) {
+                layer.close(i);
+                layer.load(2);
+                admin.delete('api-rpc-mybaties/mybatiesRpcTemplateCtrl/delete/' + obj.id, {}, function (data) {
+                    layer.closeAll('loading');
+                    if (data.code == 0) {
+                        layer.msg(data.msg, {icon: 1, time: 3000});
+                        table.reload('mybaties-template-table');
+                    } else {
+                        layer.msg(data.msg, {icon: 2, time: 3000});
+                    }
+                });
+            });
+        };
+        // 搜索按钮点击事件
+        $('#mybaties-template-btn-search').click(function () {
+            var dataNameVal = $('#name').val();
+            table.reload('mybaties-template-table', {where: {t: {name: dataNameVal}}});
+        });
+
+        $('#mybaties-template-btn-add').click(function () {
+            showMybatiesTemplateEditModel({}, '');
+        });
+
+        // 显示编辑弹窗
+        var showMybatiesTemplateEditModel = function (data, title) {
+            var mTitle = '新增参数';
+            if (title == 'view') {
+                mTitle = "查看参数";
+            }
+            if (title == 'edi') {
+                mTitle = "编辑参数";
+            }
+            layer.open({
+                type: 1,
+                title: mTitle,
+                area: ['900px', '500px'],
+                offset: '10px',
+                content: $('#mybaties-template-model').html(),
+                success: function () {
+                    form.val('mybaties-template-form', data);
+                    form.render();
+                    //设置查看页面
+                    if (title == "view") {
+                        $("#mybaties-template-form-submit").remove();
+                        $("#mybaties-template-form").find("div:visible").each(function () {
+                            var that = $(this);
+                            that.find("input,textarea").each(function () {
+                                var thats = $(this);
+                                thats.removeAttr("lay-verify");
+                                thats.attr("disabled", "disabled");
+                            })
+                        })
+                    }
+                }
+            });
+        };
+        // 表单提交事件
+        form.on('submit(mybaties-template-form-submit)', function (data) {
+            layer.load(2);
+            admin.post('api-rpc-mybaties/mybatiesRpcTemplateCtrl/saveOrUpdateMybatiesRpcTemplate', data.field, function (data) {
+                layer.closeAll();
+                if (data.code == 0) {
+                    layer.msg(data.msg, {icon: 1, time: 3000});
+                    table.reload('mybaties-template-table');
+                } else {
+                    layer.msg(data.msg, {icon: 2, time: 3000});
+                }
+            }, $('#mybaties-template-form').attr('method'));
+            return false;
+        });
+        //# sourceURL=api-rpc-mybaties.js
+    });
+</script>

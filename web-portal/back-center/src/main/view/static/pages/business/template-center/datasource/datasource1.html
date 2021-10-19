@@ -1,0 +1,208 @@
+<!-- 关闭Tab时顶部标题 -->
+<div class="layui-body-header">
+    <span class="layui-body-header-title">DataSource本地数据库模板页面</span>
+    <span class="layui-breadcrumb pull-right">
+        <a href="#/console/console1">首页</a>
+        <a><cite>DataSource本地数据库模板页面</cite></a>
+    </span>
+</div>
+
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm12 layui-col-md12 layui-col-lg12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-form toolbar text">
+                        用户名：
+                        <input id="name" class="layui-input search-input" type="text" placeholder="用户名"/>&emsp;
+                        <button id="datasource-template-btn-search" class="layui-btn icon-btn"><i
+                                class="layui-icon">&#xe615;</i>搜索
+                        </button>
+                        <!--<button id="datasource-template-btn-add" class="layui-btn icon-btn"><i
+                                class="layui-icon">&#xe654;</i>新增
+                        </button>-->
+                    </div>
+                    <!--表格-->
+                    <table class="layui-table" id="datasource-template-table"
+                           lay-filter="datasource-template-table"></table>
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- 表单弹窗 -->
+<script type="text/html" id="datasource-template-model">
+    <form id="datasource-template-form" lay-filter="datasource-template-form" class="layui-form model-form">
+        <input name="id" id="id" type="hidden"/>
+        <input name="version" id="version" type="hidden"/>
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block" style="width: 300px;">
+                <input type="text" id="username" class="layui-input" name="name" title="用户名">
+
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-block" style="width: 300px;">
+                <input type="text" class="layui-input" lay-verify="required" name="password" title="密码">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">地址</label>
+            <div class="layui-input-block" style="width: 300px;">
+                <input type="text" class="layui-input" lay-verify="required" name="url" title="地址">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">驱动</label>
+            <div class="layui-input-block" style="width: 300px;">
+                <input type="text" class="layui-input" lay-verify="required" name="driverClassName" title="驱动">
+            </div>
+        </div>
+        <div class="layui-form-item model-form-footer">
+            <button class="layui-btn layui-btn-primary" ew-event="closeDialog" type="button">取消</button>
+            <button class="layui-btn" id="datasource-template-form-submit" lay-filter="datasource-template-form-submit"
+                    lay-submit>保存
+            </button>
+        </div>
+    </form>
+</script>
+
+<!-- js部分 -->
+<script>
+    layui.use(['layer', 'form', 'table', 'util', 'config', 'dtree', 'admin', 'tableQuery'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var dtree = layui.dtree;
+        var admin = layui.admin;
+        var config = layui.config;
+        var tbq = layui.tableQuery;
+
+
+        var tableRander = function () {
+            tbq.post('#datasource-template-table', 'api-datasource/dataSourceTest/getDataSourceTemplateByPagelocal', [[
+                    {type: 'numbers', width: 80, sort: false, title: '序号'},
+                    {field: 'name', sort: true, title: '用户名'},
+                    {field: 'password', sort: true, title: '密码'},
+                    {field: 'url', sort: true, title: '地址'},
+                    {field: 'driverClassName', sort: true, title: '驱动'},
+                    {
+                        align: 'center', title: '操作', templet: function (d) {
+                            var operation = '';
+                            operation += '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="view">查看</a>';
+                            operation += '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">编辑</a>';
+                            operation += '<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="delete">删除</a>';
+                            return operation
+                        }
+                    }
+                ]]
+            );
+        };
+        tableRander();
+        table.on('sort(datasource-template-table)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            table.reload('datasource-template-table', {
+                initSort: obj,
+                where: {
+                    field: obj.field, //排序字段
+                    order: obj.type //排序方式:desc（降序）、asc（升序）、null（空对象，默认排序）
+                }
+            });
+        });
+        // 工具条点击事件
+        /*table.on('tool(datasource-template-table)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'edit') { //修改
+                admin.putTempData('dm_edi', data);
+                showMybatiesTemplateEditModel(data, 'edi');
+            } else if (obj.event === 'delete') { //删除
+                doDelete(data);
+            } else if (obj.event === 'view') { //查看
+                showMybatiesTemplateEditModel(data, "view");
+            }
+        });*/
+
+
+        /*// 删除
+        var doDelete = function (obj) {
+            layer.confirm('确定要删除吗？', function (i) {
+                layer.close(i);
+                layer.load(2);
+                admin.delete('api-datasource/dataSourceTest/delete/' + obj.id, {}, function (data) {
+                    layer.closeAll('loading');
+                    if (data.code == 0) {
+                        layer.msg(data.msg, {icon: 1, time: 3000});
+                        table.reload('datasource-template-table');
+                    } else {
+                        layer.msg(data.msg, {icon: 2, time: 3000});
+                    }
+                });
+            });
+        };*/
+        // 搜索按钮点击事件
+       /* $('#datasource-template-btn-search').click(function () {
+            var dataNameVal = $('#name').val();
+            table.reload('datasource-template-table', {where: {t: {name: dataNameVal}}});
+        });
+*/
+       /* $('#datasource-template-btn-add').click(function () {
+            showMybatiesTemplateEditModel({}, '');
+        });*/
+
+        // 显示编辑弹窗
+        /*var showMybatiesTemplateEditModel = function (data, title) {
+            var mTitle = '新增参数';
+            if (title == 'view') {
+                mTitle = "查看参数";
+            }
+            if (title == 'edi') {
+                mTitle = "编辑参数";
+            }
+            layer.open({
+                type: 1,
+                title: mTitle,
+                area: ['900px', '500px'],
+                offset: '10px',
+                content: $('#datasource-template-model').html(),
+                success: function () {
+                    form.val('datasource-template-form', data);
+                    form.render();
+                    //设置查看页面
+                    if (title == "view") {
+                        $("#datasource-template-form-submit").remove();
+                        $("#datasource-template-form").find("div:visible").each(function () {
+                            var that = $(this);
+                            that.find("input,textarea").each(function () {
+                                var thats = $(this);
+                                thats.removeAttr("lay-verify");
+                                thats.attr("disabled", "disabled");
+                            })
+                        })
+                    }
+                }
+            });
+        };*/
+        /*// 表单提交事件
+        form.on('submit(datasource-template-form-submit)', function (data) {
+            layer.load(2);
+            admin.post('api-datasource/dataSourceTest/saveOrUpdateDataSourceTemplate', data.field, function (data) {
+                layer.closeAll();
+                if (data.code == 0) {
+                    layer.msg(data.msg, {icon: 1, time: 3000});
+                    table.reload('datasource-template-table');
+                } else {
+                    layer.msg(data.msg, {icon: 2, time: 3000});
+                }
+            }, $('#datasource-template-form').attr('method'));
+            return false;
+        });*/
+        //# sourceURL=mybaties-template.js
+    });
+</script>

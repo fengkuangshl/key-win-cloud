@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.key.win</groupId>
+        <artifactId>key-win-cloud</artifactId>
+        <version>2.0.1</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>template-center</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>mybaties-template-center</module>
+        <module>jpa-template-center</module>
+        <module>feign-template-center</module>
+        <module>rpc-template-center</module>
+        <module>datasource-template-center</module>
+        <module>dynamic-refresh-scope</module>
+        <module>dynamic-data-source-center</module>
+    </modules>
+
+
+</project>

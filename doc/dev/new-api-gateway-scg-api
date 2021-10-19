@@ -1,0 +1,35 @@
+[
+    {
+        "apiName": "api_auth_api",
+        "app": "new-api-gateway",
+        "id": 1,
+        "predicateItems": [
+            {
+                "matchStrategy": 1,
+                "pattern": "/api-auth/oauth/**"
+            },
+            {
+                "pattern": "/api-auth/user/login"
+            }
+        ]
+    },
+    {
+        "apiName": "test",
+        "app": "new-api-gateway",
+        "gmtCreate": 1628820505343,
+        "gmtModified": 1628823618795,
+        "id": 7,
+        "ip": "192.168.1.163",
+        "port": 8720,
+        "predicateItems": [
+            {
+                "matchStrategy": 0,
+                "pattern": "/abc/**"
+            },
+            {
+                "matchStrategy": 0,
+                "pattern": "/159/**"
+            }
+        ]
+    }
+]

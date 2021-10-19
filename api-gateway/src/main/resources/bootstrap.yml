@@ -1,0 +1,17 @@
+spring:
+  cloud:
+    nacos:
+      config:
+        server-addr: @spring.cloud.nacos.config.server-addr@   ### nacos server地址127.0.0.1:8848
+        file-extension:  @spring.cloud.nacos.config.file-extension@  ### dataId扩展名yaml
+        namespace: @spring.cloud.nacos.config.namespace@  ###命名空间 代指某个环境#key-win-dev
+        shared-configs[0]:
+          data-id: @spring.cloud.nacos.config.shared-configs.data-id@ ###common-dev.yaml
+          group: ${spring.cloud.nacos.config.group}
+          refresh: @spring.cloud.nacos.config.shared-configs.refresh@ ###true
+        group: @spring.cloud.nacos.config.group@ ###DEV_GROUP
+        name: ${spring.application.name}
+  application:
+    name: api-gateway
+  main:
+    allow-bean-definition-overriding: true

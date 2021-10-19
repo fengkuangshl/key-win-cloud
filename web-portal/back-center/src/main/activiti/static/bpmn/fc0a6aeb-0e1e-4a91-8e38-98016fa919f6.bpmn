@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/processdef">
+  <process id="GuideModelApprover" name="指引模板审批" isExecutable="true">
+    <startEvent id="startApply" name="启动申请" activiti:initiator="ApplyUserId"></startEvent>
+    <userTask id="DiaoduzhangAudit" name="调度长审批" activiti:candidateGroups="Diaoduzhang">
+      <extensionElements>
+        <activiti:taskListener event="complete" class="com.sg.ism.activiti.CommonEndTaskListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <exclusiveGateway id="sid-947C309C-86CA-4299-9D0E-966BF9D7C276"></exclusiveGateway>
+    <userTask id="ModifyAudit" name="修改内容" activiti:assignee="${ApplyUserId}"></userTask>
+    <exclusiveGateway id="sid-3A1DD960-8E2C-4781-98CF-8815C47D764F"></exclusiveGateway>
+    <sequenceFlow id="flow1" name="flow1" sourceRef="startApply" targetRef="DiaoduzhangAudit"></sequenceFlow>
+    <sequenceFlow id="flow2" name="flow2" sourceRef="DiaoduzhangAudit" targetRef="sid-947C309C-86CA-4299-9D0E-966BF9D7C276"></sequenceFlow>
+    <sequenceFlow id="DiaoduzhangPass" name="同意" sourceRef="sid-947C309C-86CA-4299-9D0E-966BF9D7C276" targetRef="end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isPass}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="DiaoduzhangNopass" name="不同意" sourceRef="sid-947C309C-86CA-4299-9D0E-966BF9D7C276" targetRef="ModifyAudit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!isPass}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow3" name="flow3" sourceRef="ModifyAudit" targetRef="sid-3A1DD960-8E2C-4781-98CF-8815C47D764F"></sequenceFlow>
+    <sequenceFlow id="Modify" name="修改" sourceRef="sid-3A1DD960-8E2C-4781-98CF-8815C47D764F" targetRef="DiaoduzhangAudit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${isPass}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="Giveup" name="放弃" sourceRef="sid-3A1DD960-8E2C-4781-98CF-8815C47D764F" targetRef="end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${!isPass}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="end" name="结束"></endEvent>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_GuideModelApprover">
+    <bpmndi:BPMNPlane bpmnElement="GuideModelApprover" id="BPMNPlane_GuideModelApprover">
+      <bpmndi:BPMNShape bpmnElement="startApply" id="BPMNShape_startApply">
+        <omgdc:Bounds height="30.0" width="30.0" x="233.0" y="107.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="DiaoduzhangAudit" id="BPMNShape_DiaoduzhangAudit">
+        <omgdc:Bounds height="80.0" width="100.0" x="357.0" y="82.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-947C309C-86CA-4299-9D0E-966BF9D7C276" id="BPMNShape_sid-947C309C-86CA-4299-9D0E-966BF9D7C276">
+        <omgdc:Bounds height="40.0" width="40.0" x="502.0" y="102.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ModifyAudit" id="BPMNShape_ModifyAudit">
+        <omgdc:Bounds height="80.0" width="100.0" x="472.0" y="195.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-3A1DD960-8E2C-4781-98CF-8815C47D764F" id="BPMNShape_sid-3A1DD960-8E2C-4781-98CF-8815C47D764F">
+        <omgdc:Bounds height="40.0" width="40.0" x="502.0" y="300.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="end" id="BPMNShape_end">
+        <omgdc:Bounds height="28.0" width="28.0" x="585.0" y="108.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="522.0" y="275.0"></omgdi:waypoint>
+        <omgdi:waypoint x="522.0" y="300.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Giveup" id="BPMNEdge_Giveup">
+        <omgdi:waypoint x="542.0" y="320.0"></omgdi:waypoint>
+        <omgdi:waypoint x="602.0" y="320.0"></omgdi:waypoint>
+        <omgdi:waypoint x="599.2120968681478" y="135.99839329775108"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="457.0" y="122.0"></omgdi:waypoint>
+        <omgdi:waypoint x="502.0" y="122.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="263.0" y="122.0"></omgdi:waypoint>
+        <omgdi:waypoint x="357.0" y="122.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="DiaoduzhangNopass" id="BPMNEdge_DiaoduzhangNopass">
+        <omgdi:waypoint x="522.0" y="142.0"></omgdi:waypoint>
+        <omgdi:waypoint x="522.0" y="195.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="DiaoduzhangPass" id="BPMNEdge_DiaoduzhangPass">
+        <omgdi:waypoint x="542.0" y="122.0"></omgdi:waypoint>
+        <omgdi:waypoint x="585.0" y="122.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Modify" id="BPMNEdge_Modify">
+        <omgdi:waypoint x="502.0" y="320.0"></omgdi:waypoint>
+        <omgdi:waypoint x="407.0" y="320.0"></omgdi:waypoint>
+        <omgdi:waypoint x="407.0" y="162.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

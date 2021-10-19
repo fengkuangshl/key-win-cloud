@@ -1,0 +1,15 @@
+[
+    {
+        "app": "new-api-gateway",
+        "avgRt": -1,
+        "gmtCreate": 1628823938478,
+        "gmtModified": 1628824049335,
+        "highestCpuUsage": -1,
+        "highestSystemLoad": 500,
+        "id": 1,
+        "ip": "192.168.1.163",
+        "maxThread": -1,
+        "port": 8720,
+        "qps": -1
+    }
+]

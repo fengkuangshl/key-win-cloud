@@ -1,0 +1,1 @@
+package com.key.win.rabbitmq;

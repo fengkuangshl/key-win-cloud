@@ -1,0 +1,312 @@
+<style>
+    .float-right {
+        float: right;
+        margin-left: 10px;
+    }
+
+    .dialog-input {
+        width: 50%;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .dialog-btn {
+        width: 48%;
+        display: inline-block;
+        vertical-align: middle;
+        padding: 0px 0px;
+    }
+
+    .layui-upload-file {
+        display: block !important;
+        position: absolute;
+        left: 52%;
+        top: 0;
+        width: 103px;
+        height: 38px;
+        z-index: 99;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+</style>
+<!-- 关闭Tab时顶部标题 -->
+<div class="layui-body-header">
+    <span class="layui-body-header-title">流程部署</span>
+    <span class="layui-breadcrumb pull-right">
+        <a href="#/console/console1">首页</a>
+        <a><cite>流程部署</cite></a>
+    </span>
+</div>
+
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm12 layui-col-md12 layui-col-lg12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-form toolbar text">
+
+                        <button id="activiti-upload" class="layui-btn icon-btn float-right"><i class="layui-icon">&#xe67c;</i>上传流程文件
+                        </button>
+                        <button id="activiti-draw" class="layui-btn icon-btn float-right"><i
+                                class="layui-icon">&#xe66a;</i>在线绘制流程文件
+                        </button>
+                    </div>
+                    <!--表格-->
+                    <table class="layui-table" id="process-deployment-table"
+                           lay-filter="process-deployment-table"></table>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- 表单添加bpmn弹窗 -->
+<script type="text/html" id="processDepEditDialog">
+    <form id="processDepForm" lay-filter="processDepForm" class="layui-form model-form" enctype="multipart/form-data">
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">上传文件:</label>
+            <div class="layui-input-block">
+                <input id="fileName" placeholder="" class="layui-input dialog-input"
+                       lay-verType="tips" disabled/>
+                <button type="button" class="layui-btn dialog-btn" id="uploadBpmn"><i class="layui-icon"></i>上传BPMN
+                </button>
+                <input class="layui-upload-file" type="file" accept="" name="processFile" id="uploadFile">
+            </div>
+        </div>
+        <!--        <div class="layui-form-item">-->
+        <!--            <label class="layui-form-label layui-form-required">流程名称:</label>-->
+        <!--            <div class="layui-input-block">-->
+        <!--                <input name="deploymentName" id="deploymentName" placeholder="请输入流程名称" class="layui-input"-->
+        <!--                       lay-verType="tips" lay-verify="required" required/>-->
+        <!--            </div>-->
+        <!--        </div>-->
+        <div class="layui-form-item text-center">
+            <button class="layui-btn" lay-filter="processDepEditSubmit" lay-submit id="submit">提交</button>
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">返回</button>
+        </div>
+    </form>
+</script>
+
+<!--启动实例弹窗-->
+<script type="text/html" id="stratProcessDepEditDialog">
+    <form id="strarProcessDepForm" lay-filter="strarProcessDepForm" class="layui-form model-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">实例名称:</label>
+            <div class="layui-input-block">
+                <input name="deploymentName" id="instanceName" placeholder="请输入实例名称" class="layui-input"
+                       lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label layui-form-required">实例描述:</label>
+            <div class="layui-input-block">
+                <input name="deploymentName" id="instanceVariable" placeholder="请输入实例描述" class="layui-input"
+                       lay-verType="tips" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item text-center">
+            <button class="layui-btn" lay-filter="startProcessDepEditSubmit" lay-submit id="submit2">提交</button>
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">返回</button>
+        </div>
+    </form>
+</script>
+
+<!-- js部分 -->
+<script>
+    layui.use(['layer', 'form', 'table', 'util', 'config', 'dtree', 'admin', 'tableQuery'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var dtree = layui.dtree;
+        var admin = layui.admin;
+        var config = layui.config;
+        var tbq = layui.tableQuery;
+        var bpmnHost = window.location.protocol + '//' + window.location.host + '/';
+
+
+        var tableRander = function () {
+            tbq.post('#process-deployment-table', 'api-activiti/processDefinitionCtrl/getDefinitions', [[
+                    {type: "checkbox", width: '5%', align: "center"},
+                    {field: 'id', width: '12%', title: '流程定义ID', sort: true, align: "center"},
+                    {field: 'deploymentId', width: '10%', title: '部署ID', sort: true, align: "center"},
+                    {field: 'name', width: '15%', title: '流程定义名称', align: "center"},
+                    {field: 'resourceName', width: '15%', title: '流程文件名称', align: "center"},
+                    {field: 'key', width: '14%', title: 'KEY', align: "center"},
+                    {field: 'version', width: '9%', title: '部署版本', align: "center"},
+                    {
+                        align: 'center', title: '操作', templet: function (d) {
+                            var operation = '';
+                            operation += '<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="view">查看</a>';
+                            operation += '<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="start">启动实例</a>';
+                            operation += '<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete">删除</a>';
+                            return operation
+                        }
+                    }
+                ]]
+            );
+        };
+        tableRander();
+        table.on('sort(process-deployment-table)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            table.reload('process-deployment-table', {
+                initSort: obj,
+                where: {
+                    sortName: obj.field, //排序字段
+                    order: obj.type //排序方式:desc（降序）、asc（升序）、null（空对象，默认排序）
+                }
+            });
+        });
+        // 工具条点击事件
+        table.on('tool(process-deployment-table)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'start') { //启动
+                stratProcessDepEditDialog(data);
+            } else if (obj.event === 'delete') { //删除
+                doDelete(data);
+            } else if (obj.event === 'view') { //查看
+                window.open(bpmnHost + 'bpmnjs/dist/index.html?type=lookBpmn&deploymentFileUUID=' + data.deploymentId + '&deploymentName=' + encodeURI(data.resourceName) + '');
+            }
+        });
+
+        function stratProcessDepEditDialog(obj) {
+            admin.open({
+                type: 1,
+                title: '启动流程部署信息',
+                content: $('#stratProcessDepEditDialog').html(),
+                success: function (layero, dIndex) {
+                    form.on('submit(strarProcessDepForm)', function (data) {
+                        var loadIndex = layer.load(2);
+                        var param = {
+                            processDefinitionKey: obj.key,
+                            instanceName: $("#instanceName").val(),
+                            instanceVariable: $("#instanceVariable").val()
+                        };
+                        admin.get('api-activiti/processInstanceCtrl/startProcess', param, function (res) {
+                            layer.close(loadIndex);
+                            if (res.code === 0) {
+                                layer.close(dIndex);
+                                layer.msg(res.msg, {icon: 1});
+                                table.reload('process-deployment-table');
+                            } else {
+                                layer.close(dIndex);
+                                layer.alert(res.msg, {icon: 2});
+                            }
+                        });
+                        layer.close(loadIndex);
+                        return false;
+                    })
+                }
+            })
+        }
+
+        // 删除
+        var doDelete = function (obj) {
+            layer.confirm('确定要删除吗？', function (i) {
+                layer.close(i);
+                layer.load(2);
+                var param = {
+                    depId: obj.deploymentId,
+                    pdId: obj.id
+                }
+                admin.get('api-activiti/processDefinitionCtrl/delDefinition', param, function (data) {
+                    layer.closeAll('loading');
+                    if (data.code == 0) {
+                        layer.msg(data.msg, {icon: 1, time: 3000});
+                        table.reload('process-deployment-table');
+                    } else {
+                        layer.msg(data.msg, {icon: 2, time: 3000});
+                    }
+                });
+            });
+        };
+        // 搜索按钮点击事件
+        $('#activiti-draw').click(function () {
+            window.open(bpmnHost + 'bpmnjs/dist/index.html?type=addBpmn');
+        });
+
+        $('#activiti-upload').click(function () {
+            showUploadProcessEditModel({}, '');
+        });
+
+        // 显示编辑弹窗
+        var showUploadProcessEditModel = function (data, title) {
+            var mTitle = '编辑流程信息';
+            layer.open({
+                type: 1,
+                title: mTitle,
+                content: $('#processDepEditDialog').html(),
+                success: function (layero, dIndex) {
+                    //上传BPMN-输入框赋值
+                    var $fileName = $("#fileName");
+                    $fileName.val("");
+                    $("#uploadFile").on("change", function (e) {
+                        var e = e || window.event;
+                        var files = e.target.files;
+                        if (files.length > 0) {
+                            // 获取文件名 并显示文件名
+                            var fileName = files[0].name;
+                            $fileName.val(fileName);
+                        } else {
+                            //清空文件名
+                            $fileName.val("");
+                        }
+                    });
+                    // 表单提交事件
+                    form.on('submit(processDepEditSubmit)', function (data) {
+                        layer.close(dIndex);
+                        var fileObj = document.getElementById("uploadFile").files[0];
+                        if (typeof (fileObj) == "undefined" || fileObj.size <= 0) {
+                            layer.msg('请选择文件');
+                            return;
+                        }
+                        ;
+                        var formFile = new FormData();
+                        formFile.append('processFile', fileObj);
+                        // formFile.append('deploymentName',$('input[name="deploymentName"]').val());
+                        // var data = formFile;
+                        var loadIndex = layer.load(2);
+                        $.ajax({
+                            cache: true,
+                            type: "post",
+                            url: config.base_server + 'api-activiti/processDefinitionCtrl/uploadStreamAndDeployment',
+                            async: false,
+                            data: formFile,
+                            contentType: false,
+                            processData: false,
+                            beforeSend: function (xhr) {
+                                var token = config.getToken();
+                                if (token) {
+                                    xhr.setRequestHeader('Authorization', 'Bearer ' + token.access_token);
+                                }
+                            },
+                            success: function (res) {
+                                layer.close(loadIndex);
+                                layer.msg(res.msg, {icon: 1});
+                                table.reload('process-deployment-table');
+                            },
+                            error: function (res) {
+                                layer.close(dIndex);
+                                layer.alert(res.msg + '<br>' + res.obj, {
+                                    icon: 2,
+                                    title: "提示"
+                                });
+                            }
+                        });
+                        return false;
+                    });
+                    // 禁止弹窗出现滚动条
+                    $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                }
+            });
+        };
+
+
+        //# sourceURL=process-definition.js
+    });
+</script>

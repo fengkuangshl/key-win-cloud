@@ -1,0 +1,18 @@
+[
+    {
+        "app": "new-api-gateway",
+        "count": 3000,
+        "gmtCreate": 1628823876607,
+        "gmtModified": 1628823909756,
+        "grade": 0,
+        "id": 1,
+        "ip": "192.168.1.163",
+        "limitApp": "default",
+        "minRequestAmount": 5,
+        "port": 8720,
+        "resource": "/test",
+        "slowRatioThreshold": 0.5,
+        "statIntervalMs": 1000,
+        "timeWindow": 10
+    }
+]

@@ -1,0 +1,8 @@
+${AnsiColor.BRIGHT_BLUE}:: key-win-cloud 🤓 :: Running Spring Boot ${spring-boot.version} ::
+
+  ${AnsiColor.GREEN}  __  ___  ___________    ____  ${AnsiColor.GREEN} ____    __    ____  __  .__   __.
+  ${AnsiColor.GREEN} |  |/  / |   ____\   \  /   /  ${AnsiColor.GREEN} \   \  /  \  /   / |  | |  \ |  |
+  ${AnsiColor.GREEN} |  '  /  |  |__   \   \/   /   ${AnsiColor.GREEN}  \   \/    \/   /  |  | |   \|  |
+  ${AnsiColor.GREEN} |    <   |   __|   \_    _/    ${AnsiColor.GREEN}   \            /   |  | |  . `  |
+  ${AnsiColor.GREEN} |  .  \  |  |____    |  |      ${AnsiColor.GREEN}    \    /\    /    |  | |  |\   |
+  ${AnsiColor.GREEN} |__|\__\ |_______|   |__|      ${AnsiColor.GREEN}     \__/  \__/     |__| |__| \__|

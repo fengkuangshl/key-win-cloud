@@ -1,0 +1,8 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.key.win.uaa.client.authorize.provider.AuthAuthorizeConfigProvider,\
+com.key.win.uaa.client.authorize.OpenAuthorizeConfigManager,\
+com.key.win.uaa.client.config.ExceptionHandlerAdvice,\
+com.key.win.common.feign.FeignInterceptorConfig,\
+com.key.win.uaa.client.config.SecurityHandlerConfig,\
+com.key.win.uaa.client.config.TokenStoreConfig,\
+com.key.win.uaa.client.UAAClientAutoConfig

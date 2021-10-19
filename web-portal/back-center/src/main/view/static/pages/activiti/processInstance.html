@@ -1,0 +1,159 @@
+<!-- 关闭Tab时顶部标题 -->
+<div class="layui-body-header">
+    <span class="layui-body-header-title">流程实例</span>
+    <span class="layui-breadcrumb pull-right">
+        <a href="#/console/console1">首页</a>
+        <a><cite>流程实例</cite></a>
+    </span>
+</div>
+
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm12 layui-col-md12 layui-col-lg12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <!--表格-->
+                    <table class="layui-table" id="process-instance-table" lay-filter="process-instance-table"></table>
+                    <script type="text/html" id="processInstanceTableBar">
+                        {{#  if(d.status == 'active'){ }}
+                        <a class="layui-btn layui-btn-normal layui-btn-xs data-count-hangUp" lay-event="hangUp">挂起</a>
+                        {{#  }else{ }}
+                        <a class="layui-btn layui-btn-success layui-btn-xs data-count-active" lay-event="active">激活</a>
+                        {{#  } }}
+                        <a class="layui-btn layui-btn-xs layui-btn-info data-count-look" lay-event="look">历史</a>
+                        <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+                    </script>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- js部分 -->
+<script>
+    layui.use(['layer', 'form', 'table', 'util', 'config', 'dtree', 'admin', 'tableQuery'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var dtree = layui.dtree;
+        var admin = layui.admin;
+        var config = layui.config;
+        var tbq = layui.tableQuery;
+        var bpmnHost = window.location.protocol + '//' + window.location.host + '/';
+
+        var tableRander = function () {
+            tbq.post('#process-instance-table', 'api-activiti/processInstanceCtrl/getInstances', [[
+                    {type: "checkbox", width: '5%', align: "center"},
+                    {field: 'id', width: '10%', title: 'ID', align: "center", sort: true},
+                    {field: 'name', width: '15%', title: '实例名称', align: "center", sort: true},
+                    {
+                        field: 'startTime',
+                        title: '实例创建时间',
+                        width: '15%',
+                        align: "center",
+                        sort: true,
+                        templet: function (d) {
+                            if (d.startTime) {
+                                return util.toDateString(d.startTime, 'yyyy-MM-dd HH:mm:ss');
+                            }
+                            return '';
+                        }
+                    },
+                    {field: 'processDefinitionId', title: '流程定义编号', width: '15%', align: "center", sort: true},
+                    {field: 'processDefinitionKey', width: '12%', title: '流程定义KEY', align: "center", sort: true},
+                    {field: 'processDefinitionVersion', width: '8%', title: '版本', align: "center", sort: true},
+                    {
+                        field: 'status', width: '5%', title: '状态', align: "center", sort: true, templet: function (d) {
+                            if (d.status && d.status == 'active') {
+                                return '激活';
+                            } else {
+                                return '挂起';
+                            }
+                        }
+                    },
+                    {align: 'center', title: '操作', toolbar: '#processInstanceTableBar', align: "center"}
+                ]]
+            );
+        };
+        tableRander();
+        table.on('sort(process-instance-table)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            table.reload('process-instance-table', {
+                initSort: obj,
+                where: {
+                    sortName: obj.field, //排序字段
+                    order: obj.type //排序方式:desc（降序）、asc（升序）、null（空对象，默认排序）
+                }
+            });
+        });
+        // 工具条点击事件
+        table.on('tool(process-instance-table)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'hangUp') {  // 监听挂起操作
+                doHangUp(obj);
+            } else if (obj.event === 'active') {// 监听激活操作
+                doActive(obj);
+            } else if (obj.event === 'delete') {  // 监听删除操作
+                doDel(obj);
+            } else if (obj.event === 'look') {
+                window.open(bpmnHost + 'bpmnjs/dist/index.html?type=lookBpmn&instanceId=' + data.id + '&deploymentFileUUID=' + data.deploymentId + '&deploymentName=' + encodeURI(data.resourceName) + '');
+            }
+        });
+
+        /* 挂起流程定义 */
+        function doHangUp(obj) {
+            console.log(obj, "单条数据");
+            layer.confirm('确定要挂起该流程吗？', {
+                skin: 'layui-layer-admin',
+                shade: .1
+            }, function (i) {
+                layer.close(i);
+                var loadIndex = layer.load(2);
+                admin.getAlert('api-activiti/processInstanceCtrl/suspendInstance', {
+                    instanceId: obj.data ? obj.data.id : '',
+                }, function (res) {
+                    layer.close(loadIndex);
+                    table.reload('process-instance-table');
+                });
+            });
+        };
+
+        /* 激活流程定义 */
+        function doActive(obj) {
+            layer.confirm('确定要激活该流程吗？', {
+                skin: 'layui-layer-admin',
+                shade: .1
+            }, function (i) {
+                layer.close(i);
+                var loadIndex = layer.load(2);
+                admin.getAlert('api-activiti/processInstanceCtrl/resumeInstance', {
+                    instanceID: obj.data ? obj.data.id : '',
+                }, function (res) {
+                    layer.close(loadIndex);
+                    table.reload('process-instance-table');
+                });
+            });
+        };
+
+        /* 删除流程定义 */
+        function doDel(obj) {
+            layer.confirm('确定要删除该流程吗？', {
+                skin: 'layui-layer-admin',
+                shade: .1
+            }, function (i) {
+                layer.close(i);
+                var loadIndex = layer.load(2);
+                admin.getAlert('api-activiti/processInstanceCtrl/deleteInstance', {
+                    instanceId: obj.data ? obj.data.id : '',
+                }, function (res) {
+                    layer.close(loadIndex);
+                    table.reload('process-instance-table');
+
+                });
+            });
+        };
+        //# sourceURL=process-instance.js
+    });
+</script>

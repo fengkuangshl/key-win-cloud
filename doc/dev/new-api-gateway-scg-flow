@@ -1,0 +1,54 @@
+[
+    {
+        "app": "new-api-gateway",
+        "controlBehavior": 0,
+        "count": 1000,
+        "grade": 1,
+        "id": 13,
+        "resource": "api-auth",
+        "resourceMode": 0
+    },
+    {
+        "app": "new-api-gateway",
+        "controlBehavior": 0,
+        "count": 1000,
+        "grade": 1,
+        "id": 14,
+        "resource": "api-user",
+        "resourceMode": 0
+    },
+    {
+        "app": "new-api-gateway",
+        "controlBehavior": 0,
+        "count": 1000,
+        "grade": 1,
+        "id": 15,
+        "resource": " api-file",
+        "resourceMode": 0
+    },
+    {
+        "app": "new-api-gateway",
+        "controlBehavior": 0,
+        "count": 1000,
+        "grade": 1,
+        "id": 16,
+        "resource": "api-log",
+        "resourceMode": 0
+    },
+    {
+        "app": "new-api-gateway",
+        "burst": 0,
+        "controlBehavior": 0,
+        "count": 500,
+        "gmtCreate": 1628820272824,
+        "gmtModified": 1628823663200,
+        "grade": 1,
+        "id": 17,
+        "interval": 1,
+        "intervalUnit": 0,
+        "ip": "192.168.1.163",
+        "port": 8720,
+        "resource": "test",
+        "resourceMode": 0
+    }
+]

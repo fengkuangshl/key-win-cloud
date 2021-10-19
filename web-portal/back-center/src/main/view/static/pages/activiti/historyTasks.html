@@ -1,0 +1,72 @@
+<!-- 关闭Tab时顶部标题 -->
+<div class="layui-body-header">
+    <span class="layui-body-header-title">历史任务</span>
+    <span class="layui-breadcrumb pull-right">
+        <a href="#/console/console1">首页</a>
+        <a><cite>历史任务</cite></a>
+    </span>
+</div>
+
+<!-- 正文开始 -->
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm12 layui-col-md12 layui-col-lg12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <!--表格-->
+                    <table class="layui-table" id="history-task-table" lay-filter="history-task-table"></table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- js部分 -->
+<script>
+    layui.use(['layer', 'form', 'table', 'util', 'config', 'dtree', 'admin', 'tableQuery'], function () {
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form = layui.form;
+        var table = layui.table;
+        var util = layui.util;
+        var dtree = layui.dtree;
+        var admin = layui.admin;
+        var config = layui.config;
+        var tbq = layui.tableQuery;
+
+        var tableRander = function () {
+            tbq.post('#history-task-table', 'api-activiti/activitiHistoryCtrl/getInstancesByUserName', [[
+                    {type: "checkbox", width: 50, align: "center"},
+                    {field: 'id', width: 300, title: 'ID', align: "center"},
+                    {field: 'taskDefinitionKey', width: 150, title: 'KEY', align: "center"},
+                    {field: 'name', width: 100, title: '流程名称', align: "center"},
+                    {field: 'processInstanceId', width: 300, title: '实例ID', align: "center"},
+                    {field: 'createTime', title: '创建时间', minWidth: 170, align: "center",templet: function (d) {
+                            if (d.createTime) {
+                                return util.toDateString(d.createTime, 'yyyy-MM-dd HH:mm:ss');
+                            }
+                            return '';
+                        }},
+                    {field: 'startTime', title: '开始时间', minWidth: 170, align: "center",templet: function (d) {
+                            if (d.startTime) {
+                                return util.toDateString(d.startTime, 'yyyy-MM-dd HH:mm:ss');
+                            }
+                            return '';
+                        }},
+                    {field: 'assignee', title: '办理人', minWidth: 90, align: "center"}
+                ]]
+            );
+        };
+        tableRander();
+        table.on('sort(history-task-table)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+            table.reload('history-task-table', {
+                initSort: obj,
+                where: {
+                    sortName: obj.field, //排序字段
+                    order: obj.type //排序方式:desc（降序）、asc（升序）、null（空对象，默认排序）
+                }
+            });
+        });
+        //# sourceURL=history-task.js
+    });
+</script>
