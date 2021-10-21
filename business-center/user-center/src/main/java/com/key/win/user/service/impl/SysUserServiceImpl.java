@@ -406,7 +406,6 @@ public class SysUserServiceImpl implements SysUserService {
                 //throw new IllegalArgumentException("用户名要包含英文字符");
                 return Result.failed("用户名要包含英文字符");
             }
-
             if (username.contains("@")) {// 防止用邮箱直接当用户名，邮箱也要发送验证（暂未开发）
                 //throw new IllegalArgumentException("用户名不能包含@");
                 return Result.failed("用户名不能包含@");
