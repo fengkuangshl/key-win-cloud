@@ -10,6 +10,7 @@ import com.key.win.common.exception.service.ServiceException;
 import com.key.win.common.model.SysRole;
 import com.key.win.common.model.SysUser;
 import com.key.win.common.util.SysUserUtil;
+import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
 import com.key.win.log.annotation.LogAnnotation;
@@ -196,6 +197,14 @@ public class SysUserController {
             throw new ControllerException(e);
         }
     }
+
+    @ApiOperation("分页")
+    @LogAnnotation(module = "user-center", recordRequestParam = false)
+    @PostMapping("/getSysUserByPaged")
+    public PageResult<SysUser> getSysUserByPaged(@RequestBody PageRequest<SysUser> t) {
+        return sysUserService.findSysUserByPaged(t);
+    }
+
 
     /**
      * 修改自己的个人信息

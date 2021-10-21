@@ -3,6 +3,7 @@ package com.key.win.user.service;
 import com.key.win.common.exception.service.ServiceException;
 import com.key.win.common.model.SysPermission;
 import com.key.win.common.model.SysRole;
+import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
 
@@ -62,4 +63,5 @@ public interface SysRoleService {
 	 */
 	Result saveOrUpdate(SysRole sysRole)  throws ServiceException;
 
+    PageResult<SysRole> findSysRoleByPaged(PageRequest<SysRole> t);
 }

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.key.win.common.exception.controller.ControllerException;
 import com.key.win.common.exception.service.ServiceException;
 import com.key.win.common.model.SysRole;
+import com.key.win.common.model.SysUser;
+import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
 import com.key.win.log.annotation.LogAnnotation;
@@ -47,6 +49,13 @@ public class SysRoleController {
 			 throw new ControllerException(e);
 		}
 	}
+
+    @ApiOperation("分页")
+    @LogAnnotation(module = "user-center", recordRequestParam = false)
+    @PostMapping("/getSysRolesByPaged")
+    public PageResult<SysRole> getSysRoleByPaged(@RequestBody PageRequest<SysRole> t) {
+        return sysRoleService.findSysRoleByPaged(t);
+    }
 
 	/**
 	 * 角色新增或者更新

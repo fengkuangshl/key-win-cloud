@@ -4,6 +4,7 @@ import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.exception.service.ServiceException;
 import com.key.win.common.model.SysRole;
 import com.key.win.common.model.SysUser;
+import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
 import com.key.win.user.model.SysUserExcel;
@@ -94,4 +95,5 @@ public interface SysUserService {
 	List<SysUserExcel> findAllUsers(Map<String, Object> params)  throws ServiceException;
 
 
+    PageResult<SysUser> findSysUserByPaged(PageRequest<SysUser> t);
 }
