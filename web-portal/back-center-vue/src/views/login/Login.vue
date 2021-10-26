@@ -1,0 +1,105 @@
+<template>
+  <div class="login_container">
+    <div class="login_box">
+      <div class="avatar_box">
+        <img src="../../assets/logo.png" alt="" />
+      </div>
+      <el-form ref="loginFormRef" :model="loginForm" :rules="loginFormRules" class="login_form">
+        <el-form-item prop="username">
+          <el-input v-model="loginForm.username" prefix-icon="iconfont icon-user"></el-input>
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-input v-model="loginForm.password" prefix-icon="iconfont icon-3702mima" type="password"></el-input>
+        </el-form-item>
+        <el-form-item class="btns">
+          <el-button type="primary" @click="login">登录</el-button>
+          <el-button @click="resetLoginForm">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+import { ElForm } from 'element-ui/types/form'
+import { Component, Vue, Ref } from 'vue-property-decorator'
+import { LoginInfo, LoginRules } from './interface/index'
+import { LoginApi } from './LoginApi'
+import * as qs from 'qs'
+
+@Component
+export default class Login extends Vue {
+  loginForm: LoginInfo = { username: '', password: '', grant_type: 'password', scope: 'app', client_id: 'webApp', client_secret: 'webApp' }
+  readonly loginFormRules: { username: Array<LoginRules>; password: Array<LoginRules> } = { username: [{ required: true, message: '请输入用户名', trigger: 'blur' }], password: [{ required: true, message: '请输入密码', trigger: 'blur' }] }
+  @Ref('loginFormRef')
+  readonly loginFormRef!: ElForm
+
+  resetLoginForm(): void {
+    this.loginFormRef.resetFields()
+  }
+
+  login(): void {
+    this.loginFormRef.validate(async valid => {
+      if (!valid) {
+        return false
+      }
+      console.log(valid)
+      // eslint-disable-next-line no-undef
+      const { code, data, msg }: Ajax.AjaxResult = await LoginApi(qs.stringify(this.loginForm))
+      if (code === 0) {
+        // 登录成功
+        localStorage.setItem('access_token', data.access_token)
+        this.$router.push('/home')
+      } else {
+        this.$message.error(msg)
+      }
+    })
+  }
+}
+</script>
+
+<style lang="less" scoped>
+.login_container {
+  background-color: #2b4b6b;
+  height: 100%;
+}
+.login_box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 450px;
+  height: 300px;
+  background-color: #fff;
+  border-radius: 3px;
+  .avatar_box {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px;
+    width: 130px;
+    height: 130px;
+    border: 1px solid #eee;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #ddd;
+    background-color: #fff;
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background-color: #eeeeee;
+    }
+  }
+  .login_form {
+    box-sizing: border-box;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 0 20px;
+  }
+  .btns {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+</style>
