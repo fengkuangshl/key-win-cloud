@@ -1,4 +1,4 @@
-export default interface LoginRules {
+export interface LoginRules {
     required: boolean
     message: string
     trigger: string

@@ -1,11 +1,11 @@
 declare module '*.vue' {
   import Vue from 'vue'
-  declare global {
+  global {
     namespace Ajax {
-      interface AjaxResult {
+      interface AjaxResult<T = undefined> {
         code: number,
         msg: string,
-        data: S
+        data: T
       }
     }
   }

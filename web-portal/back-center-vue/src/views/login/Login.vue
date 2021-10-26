@@ -23,13 +23,13 @@
 <script lang="ts">
 import { ElForm } from 'element-ui/types/form'
 import { Component, Vue, Ref } from 'vue-property-decorator'
-import { LoginInfo, LoginRules } from './interface/index'
+import { LoginRequest, LoginRules, LoginResponse } from './interface/index'
 import { LoginApi } from './LoginApi'
 import * as qs from 'qs'
 
 @Component
 export default class Login extends Vue {
-  loginForm: LoginInfo = { username: '', password: '', grant_type: 'password', scope: 'app', client_id: 'webApp', client_secret: 'webApp' }
+  loginForm: LoginRequest = { username: '', password: '', grant_type: 'password', scope: 'app', client_id: 'webApp', client_secret: 'webApp' }
   readonly loginFormRules: { username: Array<LoginRules>; password: Array<LoginRules> } = { username: [{ required: true, message: '请输入用户名', trigger: 'blur' }], password: [{ required: true, message: '请输入密码', trigger: 'blur' }] }
   @Ref('loginFormRef')
   readonly loginFormRef!: ElForm
@@ -45,7 +45,7 @@ export default class Login extends Vue {
       }
       console.log(valid)
       // eslint-disable-next-line no-undef
-      const { code, data, msg }: Ajax.AjaxResult = await LoginApi(qs.stringify(this.loginForm))
+      const { code, data, msg }: Ajax.AjaxResult<LoginResponse> = await LoginApi(qs.stringify(this.loginForm))
       if (code === 0) {
         // 登录成功
         localStorage.setItem('access_token', data.access_token)
