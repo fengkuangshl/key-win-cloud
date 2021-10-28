@@ -176,6 +176,25 @@ public class SysMenuController {
 		}
 	}
 
+    @GetMapping("/current/menus")
+    @ApiOperation(value = "查询当前用户菜单")
+    @PreAuthorize("hasAuthority('menu:get/menus/current')")
+    @LogAnnotation(module = "user-center", recordRequestParam = false)
+    public Result findMyMenus() throws ControllerException {
+        try {
+            LoginAppUser loginAppUser = SysUserUtil.getLoginAppUser();
+            Set<SysRole> roles = loginAppUser.getSysRoles();
+            if (CollectionUtils.isEmpty(roles)) {
+                return Result.succeed(Collections.emptyList(),"");
+            }
+            List<SysMenu> menus = menuService
+                    .findByRoles(roles.parallelStream().map(SysRole::getId).collect(Collectors.toSet()));
+            return Result.succeed(treeBuilder(menus),"");
+        } catch (ServiceException e) {
+            throw new ControllerException(e);
+        }
+    }
+
 	/**
 	 * 两层循环实现建树
 	 * 

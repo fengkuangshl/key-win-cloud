@@ -101,8 +101,8 @@ layui.config({
             type: 'POST',
             success: function (data) {
                 console.log(JSON.stringify(data));
-                if (data.access_token) {
-                    config.putToken(data);
+                if (data.code === 0) {
+                    config.putToken(data.data);
                     layer.msg('登录成功', {icon: 1, time: 500}, function () {
                         location.replace('./');
                     });

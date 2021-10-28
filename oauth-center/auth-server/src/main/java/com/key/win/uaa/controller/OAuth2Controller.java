@@ -6,6 +6,7 @@ import com.key.win.common.model.SysPermission;
 import com.key.win.common.util.ResponseUtil;
 import com.key.win.common.util.SysUserUtil;
 import com.key.win.common.web.PageResult;
+import com.key.win.common.web.Result;
 import com.key.win.log.annotation.LogAnnotation;
 import com.key.win.uaa.service.SysTokenService;
 import io.swagger.annotations.Api;
@@ -189,13 +190,13 @@ public class OAuth2Controller {
 	 * 当前登陆用户信息
 	 * security获取当前登录用户的方法是SecurityContextHolder.getContext().getAuthentication()
 	 * 这里的实现类是org.springframework.security.oauth2.provider.OAuth2Authentication
-	 * 
+	 * 后续删除
 	 * @return
 	 */
 	@ApiOperation(value = "当前登陆用户信息")
 	@GetMapping(value = { "/oauth/userinfo" }, produces = "application/json") // 获取用户信息。/auth/user
 	@LogAnnotation(module = "auth-server", recordRequestParam = false)
-	public Map<String, Object> getCurrentUserDetail() {
+	public Map<String, Object> getUserDetail() {
 		try {
 			Map<String, Object> userInfo = new HashMap<>();
 			userInfo.put("code", "0");
@@ -216,6 +217,37 @@ public class OAuth2Controller {
 			throw new ControllerException(e);
 		}
 	}
+
+    /**
+     * 当前登陆用户信息
+     * security获取当前登录用户的方法是SecurityContextHolder.getContext().getAuthentication()
+     * 这里的实现类是org.springframework.security.oauth2.provider.OAuth2Authentication
+     *
+     * @return
+     */
+    @ApiOperation(value = "当前登陆用户信息")
+    @GetMapping(value = { "/oauth/current/userinfo" }, produces = "application/json") // 获取用户信息。/auth/user
+    @LogAnnotation(module = "auth-server", recordRequestParam = false)
+    public Result getCurrentUserDetail() {
+        try {
+            Map<String, Object> userInfo = new HashMap<>();
+            LoginAppUser loginUser = SysUserUtil.getLoginAppUser();
+            userInfo.put("user", loginUser);
+            List<SysPermission> permissions = new ArrayList<>();
+            new ArrayList(loginUser.getAuthorities()).forEach(o -> {
+                SysPermission sysPermission = new SysPermission();
+                sysPermission.setPermission(o.toString());
+                permissions.add(sysPermission);
+            });
+            // userInfo.put("authorities",
+            // AuthorityUtils.authorityListToSet(SecurityContextHolder.getContext().getAuthentication().getAuthorities())
+            // );
+            userInfo.put("permissions", permissions);
+            return Result.succeed(userInfo,"");
+        } catch (Exception e) {
+            throw new ControllerException(e);
+        }
+    }
 
 	@ApiOperation(value = "token列表")
 	@PostMapping("/oauth/token/list")
