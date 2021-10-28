@@ -1,14 +1,12 @@
 import { PermissionResponse } from '../../permission/interface/PermissionResponse'
 import { SysRolesResponse } from '../../sysRole/interface/SysRoleResponse'
-
-export interface UserResponse {
+import { BaseFleidCU } from '../../../../../common/interface/BaseInterface'
+export interface UserResponse extends BaseFleidCU{
     accountNonExpired: boolean
     accountNonLocked: boolean
-    createTime: number
     credentialsNonExpired: boolean
     enabled: boolean
     headImgUrl: string | null
-    id: string
     newPassword: string | null
     nickname: string
     oldPassword: string | null
@@ -20,7 +18,6 @@ export interface UserResponse {
     sex: number
     sysRoles: Array<SysRolesResponse>
     type: string
-    updateTime: number
     username: string
 }
 

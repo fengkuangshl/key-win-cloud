@@ -16,7 +16,20 @@ const routes: Array<RouteConfig> = [
   {
     path: '/index',
     name: 'Index',
-    component: () => import(/* webpackChunkName: "index" */ '../views/index/Index.vue')
+    redirect: '/home',
+    component: () => import(/* webpackChunkName: "index" */ '../views/index/Index.vue'),
+    children: [
+      {
+        path: '/home',
+        name: 'home',
+        component: () => import(/* webpackChunkName: "home" */ '../views/index/home/Home.vue')
+      },
+      {
+        path: '/user',
+        name: 'User',
+        component: () => import(/* webpackChunkName: "user" */ '../views/index/system/user/User.vue')
+      }
+    ]
   }
 ]
 

@@ -24,10 +24,10 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { UserInfoApi } from '../../common/user/UserApi'
-import { MenuApi } from '../../common/menu/MenuApi'
-import { CurrentUserResponse } from '../../common/user/interface/UserResponse'
-import { MenuResponse } from '../../common/menu/interface/MenuResponse'
+import { UserInfoApi } from '../../views/index/system/user/UserApi'
+import { MenuApi } from '../../views/index/system/menu/MenuApi'
+import { CurrentUserResponse } from '../../views/index/system/user/interface/UserResponse'
+import { MenuResponse } from '../../views/index/system/menu/interface/MenuResponse'
 import * as qs from 'qs'
 
 @Component({

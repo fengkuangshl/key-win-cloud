@@ -1,5 +1,4 @@
-import { BaseFleidCU } from '../../base/BaseInterface'
-
+import { BaseFleidCU } from '../../../../../common/interface/BaseInterface'
 export interface PermissionResponse extends BaseFleidCU{
     authIds: string | null
     name: string | null
