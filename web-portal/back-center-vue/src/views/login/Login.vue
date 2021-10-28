@@ -44,12 +44,11 @@ export default class Login extends Vue {
         return false
       }
       console.log(valid)
-      // eslint-disable-next-line no-undef
       const { code, data, msg }: Ajax.AjaxResult<LoginResponse> = await LoginApi(qs.stringify(this.loginForm))
       if (code === 0) {
         // 登录成功
         localStorage.setItem('access_token', data.access_token)
-        this.$router.push('/home')
+        this.$router.push('/index')
       } else {
         this.$message.error(msg)
       }

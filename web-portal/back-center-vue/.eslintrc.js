@@ -1,6 +1,7 @@
 module.exports = {
   root: true,
   env: {
+    browser: true,
     node: true
   },
   extends: ['plugin:vue/essential', '@vue/standard', '@vue/typescript/recommended'],
@@ -11,5 +12,10 @@ module.exports = {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'space-before-function-paren': 0
+  },
+  globals: {
+    Ajax: true,
+    localStorage: true,
+    window: true
   }
 }
