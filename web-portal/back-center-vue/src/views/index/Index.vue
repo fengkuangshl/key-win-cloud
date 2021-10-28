@@ -18,6 +18,9 @@
 import { Component, Vue } from 'vue-property-decorator'
 import HeaderNav from '@/components/header/HeaderNav.vue'
 import LeftMenu from '@/components/left/LeftLeftMenu.vue'
+import { UserInfoApi } from '../../views/index/system/user/UserApi'
+import { CurrentUserResponse } from '../../views/index/system/user/interface/UserResponse'
+import * as qs from 'qs'
 
 @Component({
   components: {
@@ -25,7 +28,21 @@ import LeftMenu from '@/components/left/LeftLeftMenu.vue'
     LeftMenu
   }
 })
-export default class Index extends Vue {}
+export default class Index extends Vue {
+  created(): void {
+    this.getUserInfo()
+  }
+
+  async getUserInfo(): Promise<void> {
+    const { code, data, msg }: Ajax.AjaxResult<CurrentUserResponse> = await UserInfoApi()
+    console.log(data)
+    if (code === 0) {
+      localStorage.setItem('userInfo', qs.stringify(data))
+    } else {
+      this.$message.error(msg || '获取用户失败！')
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>

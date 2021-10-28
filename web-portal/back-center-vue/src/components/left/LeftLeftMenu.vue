@@ -24,11 +24,8 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { UserInfoApi } from '../../views/index/system/user/UserApi'
 import { MenuApi } from '../../views/index/system/menu/MenuApi'
-import { CurrentUserResponse } from '../../views/index/system/user/interface/UserResponse'
 import { MenuResponse } from '../../views/index/system/menu/interface/MenuResponse'
-import * as qs from 'qs'
 
 @Component({
   components: {}
@@ -39,19 +36,8 @@ export default class LeftMenu extends Vue {
   menus: Array<MenuResponse> | [] = []
 
   created(): void {
-    this.getUserInfo()
     this.activePath = localStorage.getItem('activePath') || ''
-  }
-
-  async getUserInfo(): Promise<void> {
-    const { code, data, msg }: Ajax.AjaxResult<CurrentUserResponse> = await UserInfoApi()
-    console.log(data)
-    if (code === 0) {
-      localStorage.setItem('userInfo', qs.stringify(data))
-      this.getMenuList()
-    } else {
-      this.$message.error(msg || '获取用户失败！')
-    }
+    this.getMenuList()
   }
 
   async getMenuList(): Promise<void> {
