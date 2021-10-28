@@ -3,7 +3,7 @@
     <div class="toggle-button" @click="toggleCollpase">|||</div>
     <el-menu background-color="#333744" text-color="#fff" active-text-color="#409EFF" unique-opened :collapse="isCollapse" :collapse-transition="false" router :default-active="activePath">
       <!-- 一级菜单 -->
-      <el-submenu :index="item.id" v-for="item in menus" :key="item.id">
+      <el-submenu :index="item.id" v-for="item in menusList" :key="item.id">
         <!-- 一级菜单模板区 -->
         <template slot="title">
           <i class="el-icon-location"></i>
@@ -23,8 +23,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
-import { MenuApi } from '../../views/index/system/menu/MenuApi'
+import { Component, Prop, Vue } from 'vue-property-decorator'
 import { MenuResponse } from '../../views/index/system/menu/interface/MenuResponse'
 
 @Component({
@@ -33,21 +32,11 @@ import { MenuResponse } from '../../views/index/system/menu/interface/MenuRespon
 export default class LeftMenu extends Vue {
   isCollapse = false
   activePath = ''
-  menus: Array<MenuResponse> | [] = []
+  @Prop({ default: [] })
+  readonly menusList!: Array<MenuResponse> | []
 
   created(): void {
     this.activePath = localStorage.getItem('activePath') || ''
-    this.getMenuList()
-  }
-
-  async getMenuList(): Promise<void> {
-    const { code, data, msg }: Ajax.AjaxResult<Array<MenuResponse>> = await MenuApi()
-    if (code === 0) {
-      console.log(data)
-      this.menus = data
-    } else {
-      this.$message.error(msg || '获取当前用户菜单失败！')
-    }
   }
 
   toggleCollpase(): void {
