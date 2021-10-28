@@ -1,8 +1,8 @@
-export interface MenuResponse {
-    createTime: number
+import { BaseFleidCU } from '../../base/BaseInterface'
+
+export interface MenuResponse extends BaseFleidCU {
     css: string
     hidden: false
-    id: string
     isMenu: number
     menuIds: string | null
     name: string
@@ -11,6 +11,5 @@ export interface MenuResponse {
     roleId: string | null
     sort: number
     subMenus: Array<MenuResponse> | null
-    updateTime: number
     url: string
 }

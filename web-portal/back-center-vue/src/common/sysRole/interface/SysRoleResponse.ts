@@ -1,8 +1,6 @@
-export interface SysRolesResponse {
+import { BaseFleidCU } from '../../base/BaseInterface'
+export interface SysRolesResponse extends BaseFleidCU{
     code: string
-    createTime: number
-    id: string
     name: string
-    updateTime: number
     userId: string | null
 }

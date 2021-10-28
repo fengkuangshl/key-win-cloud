@@ -1,9 +1,8 @@
-export interface PermissionResponse {
+import { BaseFleidCU } from '../../base/BaseInterface'
+
+export interface PermissionResponse extends BaseFleidCU{
     authIds: string | null
-    createTime: number | null
-    id: string | null
     name: string | null
     permission: string
     roleId: string | null
-    updateTime: number | null
 }
