@@ -6,26 +6,8 @@ const instance: AxiosInstance = axios.create({
   timeout: 100000
 })
 
-instance.interceptors.request.use((config: AxiosRequestConfig): AxiosRequestConfig => {
-  config.headers = config.headers || {}
-  config.headers['x-requested-with'] = 'XMLHttpRequest'
-  if (config.url === '/api-auth/oauth/token') {
-    config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
-  } else {
-    config.headers['Content-Type'] = 'application/json;charset=UTF-8'
-    const token: string | null = localStorage.getItem('access_token')
-    if (token) {
-      config.headers.Authorization = 'Bearer ' + token
-    }
-  }
-  return config
-}, err => {
-  return Promise.reject(err)
-})
-
-instance.interceptors.response.use((result: AxiosResponse): Ajax.AjaxResult => {
-  return (result.data as Ajax.AjaxResult)
-}, err => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function errorHandle(err: any): Promise<unknown> {
   let response = err.response
   if (err.message === 'Network Error') {
     response = {}
@@ -47,7 +29,8 @@ instance.interceptors.response.use((result: AxiosResponse): Ajax.AjaxResult => {
     case 404:
       err.message = `请求地址出错: ${response.config.url}`
       break
-    case 408: err.message = '请求超时'
+    case 408:
+      err.message = '请求超时'
       break
     case 500:
       err.message = '服务器内部错误'
@@ -72,6 +55,35 @@ instance.interceptors.response.use((result: AxiosResponse): Ajax.AjaxResult => {
   }
   Message.error(err.message)
   return Promise.reject(err)
-})
+}
+
+instance.interceptors.request.use(
+  (config: AxiosRequestConfig): AxiosRequestConfig => {
+    config.headers = config.headers || {}
+    config.headers['x-requested-with'] = 'XMLHttpRequest'
+    if (config.url === '/api-auth/oauth/token') {
+      config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
+    } else {
+      config.headers['Content-Type'] = 'application/json;charset=UTF-8'
+      const token: string | null = localStorage.getItem('access_token')
+      if (token) {
+        config.headers.Authorization = 'Bearer ' + token
+      }
+    }
+    return config
+  },
+  err => {
+    return errorHandle(err)
+  }
+)
+
+instance.interceptors.response.use(
+  (result: AxiosResponse): KWResponse.Result | KWResponse.PageResult | void => {
+    return result.data as KWResponse.Result | KWResponse.PageResult | void
+  },
+  err => {
+    return errorHandle(err)
+  }
+)
 
 export default instance

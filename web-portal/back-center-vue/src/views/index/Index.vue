@@ -19,7 +19,7 @@ import { Component, Vue } from 'vue-property-decorator'
 import HeaderNav from '@/components/header/HeaderNav.vue'
 import LeftMenu from '@/components/left/LeftLeftMenu.vue'
 import { UserInfoApi } from '../../views/index/system/user/UserApi'
-import { CurrentUserResponse } from '../../views/index/system/user/interface/UserResponse'
+import { LoginSuccessUserInfo } from './system/user/interface/User'
 import { MenuApi } from '../../views/index/system/menu/MenuApi'
 import { MenuResponse } from '../../views/index/system/menu/interface/MenuResponse'
 import * as qs from 'qs'
@@ -38,7 +38,7 @@ export default class Index extends Vue {
   }
 
   async getUserInfo(): Promise<void> {
-    const { code, data, msg }: Ajax.AjaxResult<CurrentUserResponse> = await UserInfoApi()
+    const { code, data, msg }: KWResponse.Result<LoginSuccessUserInfo> = await UserInfoApi()
     console.log(data)
     if (code === 0) {
       localStorage.setItem('userInfo', qs.stringify(data))
@@ -49,7 +49,7 @@ export default class Index extends Vue {
   }
 
   async getMenuList(): Promise<void> {
-    const { code, data, msg }: Ajax.AjaxResult<Array<MenuResponse>> = await MenuApi()
+    const { code, data, msg }: KWResponse.Result<Array<MenuResponse>> = await MenuApi()
     if (code === 0) {
       console.log(data)
       this.menus = data

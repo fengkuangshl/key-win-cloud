@@ -1,5 +1,4 @@
-import { BaseFleidCU } from '../../../../../common/interface/BaseInterface'
-export interface MenuResponse extends BaseFleidCU {
+export interface MenuResponse extends Model.BaseFleidCU {
     css: string
     hidden: false
     isMenu: number

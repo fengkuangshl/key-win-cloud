@@ -14,7 +14,10 @@ module.exports = {
     'space-before-function-paren': 0
   },
   globals: {
-    Ajax: true,
+    KWResponse: true,
+    KWRequest: true,
+    Model: true,
+    KWRule: true,
     localStorage: true,
     window: true
   }

@@ -1,5 +1,4 @@
-import { BaseFleidCU } from '../../../../../common/interface/BaseInterface'
-export interface PermissionResponse extends BaseFleidCU{
+export interface PermissionResponse extends Model.BaseFleidCU{
     authIds: string | null
     name: string | null
     permission: string
