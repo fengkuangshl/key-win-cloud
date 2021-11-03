@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 <template>
   <div>
-    <el-table ref="tableRef" :$ready="false" :row-key="rowKey" :data="pageResult.data" @current-change="doChangeTableCurrent" @selection-change="doChangeTableSelection" @cell-click="doTableCellClick" @row-click="doTableRowClick" height="100%" :highlight-current-row="true" :border="true">
+    <el-table ref="tableRef" :$ready="false" :row-key="rowKey" :data="pageResult.data" @current-change="doChangeTableCurrent" @selection-change="doChangeTableSelection" @cell-click="doTableCellClick" @row-click="doTableRowClick" :highlight-current-row="true" :border="true">
       <slot></slot>
     </el-table>
     <el-pagination
@@ -81,6 +82,10 @@ export default class KWTable<T, RT> extends Vue {
   /** 重载数据 */
   public reload(): void {
     this.load(this.pageNo, this.pageSize, this.param)
+  }
+
+  public loadByCondition(param?: T): void {
+    this.load(this.pageNo, this.pageSize, param)
   }
 
   /** 获取指定行 */
@@ -202,7 +207,7 @@ export default class KWTable<T, RT> extends Vue {
   }
 
   /** 单元格被点击 */
-  private doTableCellClick(row: RT, column: any, cell: any, event: any) {
+  private doTableCellClick(row: RT, column: any, cell: any, event: PointerEvent) {
     this.$emit('table-cell-click', row, column, cell, event)
   }
 }

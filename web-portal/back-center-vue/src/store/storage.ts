@@ -92,8 +92,3 @@ export default class StorageSupport {
     }
   }
 }
-/** 暴露sessionStorage */
-export const session = new StorageSupport(window.sessionStorage)
-
-/** 暴露localStorage */
-export const local = new StorageSupport(window.localStorage)

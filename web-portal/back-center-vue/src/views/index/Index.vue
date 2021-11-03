@@ -17,7 +17,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import HeaderNav from '@/components/header/HeaderNav.vue'
-import LeftMenu from '@/components/left/LeftLeftMenu.vue'
+import LeftMenu from '@/components/left/LeftMenu.vue'
 import { UserInfoApi } from '../../views/index/system/user/UserApi'
 import { LoginSuccessUserInfo } from './system/user/interface/User'
 import { MenuApi } from '../../views/index/system/menu/MenuApi'
