@@ -1,0 +1,209 @@
+<template>
+  <div>
+    <el-table ref="tableRef" :$ready="false" :row-key="rowKey" :data="pageResult.data" @current-change="doChangeTableCurrent" @selection-change="doChangeTableSelection" @cell-click="doTableCellClick" @row-click="doTableRowClick" height="100%" :highlight-current-row="true" :border="true">
+      <slot></slot>
+    </el-table>
+    <el-pagination
+      :page-sizes="pageSizes"
+      :layout="pageLayout"
+      :page-count="pageResult.count"
+      :current-page="pageResult.pageNo"
+      :page-size="pageResult.pageSize"
+      :total="pageResult.count"
+      @size-change="doChangePageSize"
+      @current-change="doChangePageCurrent"
+      :pager-count="5"
+      prev-text="上一页"
+      next-text="下一页"
+    ></el-pagination>
+  </div>
+</template>
+
+<script lang="ts">
+import { Component, Prop, Ref, Vue } from 'vue-property-decorator'
+import { ElTable } from 'element-ui/types/table'
+import request from '../../fetch'
+import { session } from '../../store'
+@Component
+export default class KWTable<T, RT> extends Vue {
+  @Prop({ required: true })
+  private url!: string // url
+
+  @Prop({ default: () => 1 })
+  private pageNo!: number
+
+  @Prop({ default: () => null })
+  private param!: T
+
+  @Prop({ default: () => 10 })
+  private pageSize!: number
+
+  @Prop({ default: 'id', type: [String, Function] })
+  private rowKey!: string | ((row: any) => any)
+
+  @Prop({ default: () => [5, 10, 15, 20] })
+  private pageSizes!: number[]
+
+  @Prop({ default: () => 'prev, pager, next, sizes' })
+  private pageLayout!: string
+
+  // 内部变量
+  pageRequest: KWRequest.PageRequest<T> = {
+    pageSize: 10, // 每页的数据条数
+    pageNo: 1 // 默认开始页面
+  }
+
+  pageResult: KWResponse.PageResult<RT> = {
+    pageNo: 0,
+    pageSize: 0,
+    count: 0,
+    code: 0,
+    data: [],
+    totalPage: 0
+  }
+
+  private currentRow!: RT
+  private selectionRow: Array<RT> = []
+
+  @Ref('tableRef')
+  readonly tableRef!: ElTable
+
+  /** 加载表格数据 */
+  public async load(pageNo?: number, pageSize?: number, param?: T): Promise<void> {
+    // 如果传入空就使用之前的值
+    this.pageRequest.pageNo = pageNo || this.pageNo
+    this.pageRequest.pageSize = pageSize || this.pageSize
+    this.pageRequest.t = param || this.param
+    const res: KWResponse.PageResult<RT> = await request.post(this.url, this.pageRequest)
+    this.pageResult = res
+  }
+
+  /** 重载数据 */
+  public reload(): void {
+    this.load(this.pageNo, this.pageSize, this.param)
+  }
+
+  /** 获取指定行 */
+  public getRow(row: number): RT | undefined {
+    if (row >= 0 && row < this.pageResult.count) {
+      return this.pageResult.data[row]
+    } else {
+      return undefined
+    }
+  }
+
+  /** 获取当前选择行 */
+  public getCurrentRow(): RT {
+    return this.currentRow
+  }
+
+  /** 设置当前选择行 */
+  public setCurrentRow(row: number): void {
+    if (row >= 0 && row < this.pageResult.count) {
+      this.tableRef.setCurrentRow(this.pageResult.data[row] as any)
+    }
+  }
+
+  /** 清空被选中行 */
+  public clearSelection(): void {
+    return this.tableRef.clearSelection()
+  }
+
+  /** 获取被选中行 */
+  public getSelectionRow(): Array<RT> {
+    return this.selectionRow || []
+  }
+
+  /** 获取被选中行(KEY值) */
+  public getSelectionKey(): Array<string> {
+    return this.selectionRow.map((item: any) => {
+      if (typeof this.rowKey === 'function') {
+        return this.rowKey(item)
+      } else {
+        return item[this.rowKey]
+      }
+    })
+  }
+
+  /** 设置行被选中/取消选中 */
+  public setSelectionRow(key: string, check: boolean): void {
+    for (const item of this.pageResult.data) {
+      // 如果Rowkey是函数->判断值是否一致
+      if (typeof this.rowKey === 'function' && this.rowKey(item) === key) {
+        this.tableRef.toggleRowSelection(item as any, check)
+      }
+
+      // 如果Rowkey是字符串->判断值是否一致
+      if (typeof this.rowKey === 'string' /* && item[this.rowKey] === key */) {
+        Object.keys(item).forEach(k => {
+          if (k === key) {
+            this.tableRef.toggleRowSelection(item as any, check)
+            return false
+          }
+        })
+      }
+    }
+  }
+
+  /** 组件创建时：从缓存中获取数据 & 注入实例到管理器 */
+  private mounted() {
+    // 加载缓存配置
+    let cacheParam: any = session.getObj(this.key('p'))
+    let cachePageNum: any = session.getAny(this.key('n'))
+    let cachePageSize: any = session.getAny(this.key('s'))
+
+    // 加载配置条件 & 参数过滤
+    cacheParam = Object.assign(cacheParam || {}, this.param)
+    cachePageSize = cachePageSize || this.pageSize || 10
+    cachePageNum = cachePageNum || this.pageNo || 1
+
+    // 默认第一次加载数据
+    this.load(cachePageNum, cachePageSize, cacheParam)
+    this.$emit('table-page-init', cacheParam)
+  }
+
+  /** 组件销毁时：将表单参数、分页信息存入缓存 */
+  private destroyed() {
+    session.save(this.key('p'), this.pageRequest.t)
+    session.save(this.key('n'), this.pageRequest.pageNo)
+    session.save(this.key('s'), this.pageResult.pageSize)
+  }
+
+  /** 缓存KEY */
+  private key(k: string) {
+    return `page-cache-${k}-${this.url}`
+  }
+
+  /** 每页条数切换 */
+  private doChangePageSize(pageSize: number) {
+    this.load(1, pageSize)
+    this.$emit('table-page-size', pageSize)
+  }
+
+  /** 页码切换 */
+  private doChangePageCurrent(pageNo: number) {
+    this.load(pageNo)
+    this.$emit('table-page-num', pageNo)
+  }
+
+  /** 切换当前选择行 */
+  private doChangeTableCurrent(currentRow: RT, lastRow: RT) {
+    this.$emit('table-row-current', (this.currentRow = currentRow), lastRow)
+  }
+
+  /** 改变被选中行 */
+  private doChangeTableSelection(selectionRows: RT[]) {
+    this.$emit('table-row-selection', (this.selectionRow = selectionRows))
+  }
+
+  /** 行被点击 */
+  private doTableRowClick(row: RT, event: any, column: any) {
+    this.$emit('table-row-click', row, column, event)
+  }
+
+  /** 单元格被点击 */
+  private doTableCellClick(row: RT, column: any, cell: any, event: any) {
+    this.$emit('table-cell-click', row, column, cell, event)
+  }
+}
+</script>

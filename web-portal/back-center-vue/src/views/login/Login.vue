@@ -23,7 +23,7 @@
 <script lang="ts">
 import { ElForm } from 'element-ui/types/form'
 import { Component, Vue, Ref } from 'vue-property-decorator'
-import { LoginRequest, LoginResponse } from './interface/index'
+import { LoginRequest, LoginResponse } from './interface'
 import { LoginApi } from './LoginApi'
 import * as qs from 'qs'
 

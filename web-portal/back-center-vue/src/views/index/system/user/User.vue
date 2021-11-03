@@ -176,10 +176,10 @@ export default class User extends Vue {
   // 展示编辑用于的对话框
   async showEditDialog(id: string): Promise<void> {
     this.usernameDisabled = true
-    const { data: res } = await UserGetApi(id)
-    this.userForm = res
+    const res = await UserGetApi(id)
+    this.userForm = res.data
     // this.userForm.sex = this.userForm.sex === 0 ? '男' : '女'
-    const roleDatas = res.roles
+    const roleDatas = res.data.roles
     console.log(roleDatas)
     this.userForm.roleId = new Array<string>()
     if (roleDatas && roleDatas.length > 0) {
