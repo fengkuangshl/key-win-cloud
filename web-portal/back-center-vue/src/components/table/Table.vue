@@ -14,8 +14,6 @@
       @size-change="doChangePageSize"
       @current-change="doChangePageCurrent"
       :pager-count="5"
-      prev-text="上一页"
-      next-text="下一页"
     ></el-pagination>
   </div>
 </template>
@@ -45,7 +43,7 @@ export default class KWTable<T, RT> extends Vue {
   @Prop({ default: () => [5, 10, 15, 20] })
   private pageSizes!: number[]
 
-  @Prop({ default: () => 'prev, pager, next, sizes' })
+  @Prop({ default: () => 'total, sizes, prev, pager, next, jumper' })
   private pageLayout!: string
 
   // 内部变量
