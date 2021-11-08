@@ -1,51 +1,34 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 <template>
   <div>
-    <el-table ref="tableRef" :$ready="false" :row-key="rowKey" :data="pageResult.data" @current-change="doChangeTableCurrent" @selection-change="doChangeTableSelection" @cell-click="doTableCellClick" @row-click="doTableRowClick" :highlight-current-row="true" :border="true">
+    <el-table
+      :$ready="false"
+      :border="true"
+      :data="pageResult.data"
+      :highlight-current-row="true"
+      :row-key="rowKey"
+      @cell-click="doTableCellClick"
+      @current-change="doChangeTableCurrent"
+      @row-click="doTableRowClick"
+      @selection-change="doChangeTableSelection"
+      @sort-change="doSortChange"
+      ref="tableRef"
+    >
       <slot></slot>
     </el-table>
-    <el-pagination
-      :page-sizes="pageSizes"
-      :layout="pageLayout"
-      :page-count="pageResult.count"
-      :current-page="pageResult.pageNo"
-      :page-size="pageResult.pageSize"
-      :total="pageResult.count"
-      @size-change="doChangePageSize"
-      @current-change="doChangePageCurrent"
-      :pager-count="5"
-    ></el-pagination>
+    <el-pagination :current-page="pageResult.pageNo" :layout="pageLayout" :page-count="pageResult.count" :page-size="pageResult.pageSize" :page-sizes="pageSizes" :pager-count="5" :total="pageResult.count" @current-change="doChangePageCurrent" @size-change="doChangePageSize"></el-pagination>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Ref, Vue } from 'vue-property-decorator'
-import { ElTable } from 'element-ui/types/table'
-import request from '../../fetch'
-import { session } from '../../store'
+import { cellCallbackParams, ElTable, SortOrder } from 'element-ui/types/table'
+import request from '@/fetch'
+import { session } from '@/store'
+import { ElTableColumn } from 'element-ui/types/table-column'
+
 @Component
 export default class KWTable<T, RT> extends Vue {
-  @Prop({ required: true })
-  private url!: string // url
-
-  @Prop({ default: () => 1 })
-  private pageNo!: number
-
-  @Prop({ default: () => null })
-  private param!: T
-
-  @Prop({ default: () => 10 })
-  private pageSize!: number
-
-  @Prop({ default: 'id', type: [String, Function] })
-  private rowKey!: string | ((row: any) => any)
-
-  @Prop({ default: () => [5, 10, 15, 20] })
-  private pageSizes!: number[]
-
-  @Prop({ default: () => 'total, sizes, prev, pager, next, jumper' })
-  private pageLayout!: string
-
   // 内部变量
   pageRequest: KWRequest.PageRequest<T> = {
     pageSize: 10, // 每页的数据条数
@@ -61,11 +44,34 @@ export default class KWTable<T, RT> extends Vue {
     totalPage: 0
   }
 
-  private currentRow!: RT
-  private selectionRow: Array<RT> = []
-
   @Ref('tableRef')
   readonly tableRef!: ElTable
+
+  @Prop({ required: true })
+  private url!: string // url
+
+  @Prop({ default: () => 1 })
+  private pageNo!: number
+
+  @Prop({ default: () => null })
+  private param!: T
+
+  @Prop({ default: () => 10 })
+  private pageSize!: number
+
+  @Prop({ default: 'id', type: [String, Function] })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private rowKey!: string | ((row: any) => any)
+
+  @Prop({ default: () => [5, 10, 15, 20] })
+  private pageSizes!: number[]
+
+  @Prop({ default: () => 'total, sizes, prev, pager, next, jumper' })
+  private pageLayout!: string
+
+  private currentRow!: RT
+
+  private selectionRow: Array<RT> = []
 
   /** 加载表格数据 */
   public async load(pageNo?: number, pageSize?: number, param?: T): Promise<void> {
@@ -103,6 +109,7 @@ export default class KWTable<T, RT> extends Vue {
   /** 设置当前选择行 */
   public setCurrentRow(row: number): void {
     if (row >= 0 && row < this.pageResult.count) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.tableRef.setCurrentRow(this.pageResult.data[row] as any)
     }
   }
@@ -119,6 +126,7 @@ export default class KWTable<T, RT> extends Vue {
 
   /** 获取被选中行(KEY值) */
   public getSelectionKey(): Array<string> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return this.selectionRow.map((item: any) => {
       if (typeof this.rowKey === 'function') {
         return this.rowKey(item)
@@ -133,6 +141,7 @@ export default class KWTable<T, RT> extends Vue {
     for (const item of this.pageResult.data) {
       // 如果Rowkey是函数->判断值是否一致
       if (typeof this.rowKey === 'function' && this.rowKey(item) === key) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this.tableRef.toggleRowSelection(item as any, check)
       }
 
@@ -140,6 +149,7 @@ export default class KWTable<T, RT> extends Vue {
       if (typeof this.rowKey === 'string' /* && item[this.rowKey] === key */) {
         Object.keys(item).forEach(k => {
           if (k === key) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             this.tableRef.toggleRowSelection(item as any, check)
             return false
           }
@@ -151,8 +161,11 @@ export default class KWTable<T, RT> extends Vue {
   /** 组件创建时：从缓存中获取数据 & 注入实例到管理器 */
   private mounted() {
     // 加载缓存配置
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let cacheParam: any = session.getObj(this.key('p'))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let cachePageNum: any = session.getAny(this.key('n'))
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let cachePageSize: any = session.getAny(this.key('s'))
 
     // 加载配置条件 & 参数过滤
@@ -200,13 +213,21 @@ export default class KWTable<T, RT> extends Vue {
   }
 
   /** 行被点击 */
-  private doTableRowClick(row: RT, event: any, column: any) {
+  private doTableRowClick(row: RT, event: PointerEvent, column: ElTableColumn) {
     this.$emit('table-row-click', row, column, event)
   }
 
   /** 单元格被点击 */
-  private doTableCellClick(row: RT, column: any, cell: any, event: PointerEvent) {
+  private doTableCellClick(row: RT, column: ElTableColumn, cell: cellCallbackParams, event: PointerEvent) {
     this.$emit('table-cell-click', row, column, cell, event)
+  }
+
+  /** 排序事件 */
+  private doSortChange(column: { column: ElTableColumn; prop: SortOrder; order: string }) {
+    this.pageRequest.sortName = column.prop
+    this.pageRequest.sortDir = column.order === 'ascending' ? 'ASC' : 'DESC'
+    this.reload()
+    this.$emit('table-sort-change', column.column, column.prop, column.order)
   }
 }
 </script>

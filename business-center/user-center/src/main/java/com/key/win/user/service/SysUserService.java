@@ -29,7 +29,7 @@ public interface SysUserService {
 	 * 修改用户
 	 * @param sysUser
 	 */
-	SysUser updateSysUser(SysUser sysUser)  throws ServiceException;
+    Result updateSysUser(SysUser sysUser)  throws ServiceException;
 
 	/**
 	 * 获取UserDetails对象
@@ -41,7 +41,7 @@ public interface SysUserService {
 	LoginAppUser findByMobile(String mobile)  throws ServiceException;
 
 
-	SysUser findById(Long id)  throws ServiceException;
+    Result findById(Long id)  throws ServiceException;
 
 	/**
 	 * 用户分配角色

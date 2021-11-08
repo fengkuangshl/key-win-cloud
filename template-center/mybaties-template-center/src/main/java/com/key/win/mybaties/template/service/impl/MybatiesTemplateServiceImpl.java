@@ -1,6 +1,6 @@
 package com.key.win.mybaties.template.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -52,7 +52,7 @@ public class MybatiesTemplateServiceImpl extends ServiceImpl<MybatiesTemplateDao
     public PageResult<MybatiesTemplate> findMybatiesTemplateByPaged(PageRequest<MybatiesTemplate> pageRequest) {
         MybatiesPageServiceTemplate<MybatiesTemplate, MybatiesTemplate> page = new MybatiesPageServiceTemplate<MybatiesTemplate, MybatiesTemplate>(this.baseMapper) {
             @Override
-            protected Wrapper<MybatiesTemplate> constructWrapper(MybatiesTemplate mybatiesTemplate) {
+            protected AbstractWrapper constructWrapper(MybatiesTemplate mybatiesTemplate) {
                 LambdaQueryWrapper<MybatiesTemplate> lqw = new LambdaQueryWrapper<MybatiesTemplate>();
                 if(mybatiesTemplate != null && StringUtils.isNotBlank(mybatiesTemplate.getName())){
                     lqw.like(MybatiesTemplate::getName, mybatiesTemplate.getName() == null? "":mybatiesTemplate.getName());

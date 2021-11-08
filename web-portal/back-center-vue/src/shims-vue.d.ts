@@ -26,10 +26,7 @@ declare module '*.vue' {
       }
     }
     namespace KWRequest {
-      enum OrderDir {
-        ASC,
-        DESC
-      }
+      type OrderDir = 'ASC' | 'DESC'
       interface PageRequest<T = undefined> {
         pageNo: number
         pageSize: number

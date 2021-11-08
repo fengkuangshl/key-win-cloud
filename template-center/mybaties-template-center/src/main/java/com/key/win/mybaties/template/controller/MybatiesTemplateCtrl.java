@@ -4,6 +4,7 @@ import com.key.win.common.web.Result;
 import com.key.win.datalog.annotation.DataLog;
 import com.key.win.log.annotation.LogAnnotation;
 import com.key.win.mybaties.template.model.MybatiesTemplate;
+import com.key.win.mybaties.template.service.MybatiesSqlTemplateService;
 import com.key.win.mybaties.template.service.MybatiesTemplateService;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
@@ -18,6 +19,9 @@ public class MybatiesTemplateCtrl {
     @Autowired
     private MybatiesTemplateService mybatiesTemplateService;
 
+    @Autowired
+    private MybatiesSqlTemplateService mybatiesSqlTemplateService;
+
     @ApiOperation("分页")
     @LogAnnotation(module = "mybaties-templat-center", recordRequestParam = false)
     @PostMapping("/getMybatiesTemplateByPaged")
@@ -31,6 +35,13 @@ public class MybatiesTemplateCtrl {
     @GetMapping("/getCacheTest")
     public Result getCacheTest() {
         return Result.succeed(mybatiesTemplateService.getCacheTest());
+    }
+
+    @ApiOperation("getAll")
+    @LogAnnotation(module = "mybaties-templat-center", recordRequestParam = false)
+    @GetMapping("/getAll")
+    public Result getAll() {
+        return Result.succeed(mybatiesSqlTemplateService.getAll(),"");
     }
 
     @DataLog

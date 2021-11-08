@@ -18,12 +18,13 @@
 import { Component, Vue } from 'vue-property-decorator'
 import HeaderNav from '@/components/header/HeaderNav.vue'
 import LeftMenu from '@/components/left/LeftMenu.vue'
-import { UserInfoApi } from '../../views/index/system/user/UserApi'
+import { UserInfoApi } from '@/views/index/system/user/UserApi'
 import { LoginSuccessUserInfo } from './system/user/interface/User'
-import { MenuApi } from '../../views/index/system/menu/MenuApi'
-import { MenuResponse } from '../../views/index/system/menu/interface/MenuResponse'
-import * as qs from 'qs'
-
+import { MenuApi } from '@/views/index/system/menu/MenuApi'
+import { MenuResponse } from '@/views/index/system/menu/interface/MenuResponse'
+// import * as qs from 'qs'
+import { UserModule } from '@/store/UserStore'
+import { MenuModule } from '@/store/MenuStore'
 @Component({
   components: {
     HeaderNav,
@@ -41,7 +42,8 @@ export default class Index extends Vue {
     const { code, data, msg }: KWResponse.Result<LoginSuccessUserInfo> = await UserInfoApi()
     console.log(data)
     if (code === 0) {
-      localStorage.setItem('userInfo', qs.stringify(data))
+      // localStorage.setItem('userInfo', qs.stringify(data))
+      UserModule.changeUser(data)
       this.getMenuList()
     } else {
       this.$message.error(msg || '获取用户失败！')
@@ -53,6 +55,7 @@ export default class Index extends Vue {
     if (code === 0) {
       console.log(data)
       this.menus = data
+      MenuModule.changeMenu(data)
     } else {
       this.$message.error(msg || '获取当前用户菜单失败！')
     }

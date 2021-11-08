@@ -94,7 +94,7 @@ public class SysUserController {
     @PreAuthorize("hasAuthority('user:get/users/{id}')")
     @GetMapping("/users/{id}")
     @LogAnnotation(module = "user-center", recordRequestParam = false)
-    public SysUser findUserById(@PathVariable Long id) throws ControllerException {
+    public Result findUserById(@PathVariable Long id) throws ControllerException {
         try {
             return sysUserService.findById(id);
         } catch (ServiceException e) {
@@ -129,9 +129,9 @@ public class SysUserController {
     @PreAuthorize("hasAuthority('user:put/users/me')")
     @PutMapping("/users")
     @LogAnnotation(module = "user-center", recordRequestParam = false)
-    public void updateSysUser(@RequestBody SysUser sysUser) throws ControllerException {
+    public Result updateSysUser(@RequestBody SysUser sysUser) throws ControllerException {
         try {
-            sysUserService.updateSysUser(sysUser);
+            return sysUserService.updateSysUser(sysUser);
         } catch (ServiceException e) {
             throw new ControllerException(e);
         }
@@ -219,8 +219,7 @@ public class SysUserController {
 //        SysUser user = SysUserUtil.getLoginAppUser();
 //        sysUser.setId(user.getId());
         try {
-            SysUser user = sysUserService.updateSysUser(sysUser);
-            return Result.succeed(user, "操作成功");
+            return  sysUserService.updateSysUser(sysUser);
         } catch (ServiceException e) {
             throw new ControllerException(e);
         }

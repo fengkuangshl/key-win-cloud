@@ -24,7 +24,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { MenuResponse } from '../../views/index/system/menu/interface/MenuResponse'
+import { MenuResponse } from '@/views/index/system/menu/interface/MenuResponse'
 
 @Component({
   components: {}

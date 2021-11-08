@@ -1,13 +1,16 @@
 package com.key.win.user.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.constant.UserType;
 import com.key.win.common.exception.service.ServiceException;
 import com.key.win.common.model.SysPermission;
 import com.key.win.common.model.SysRole;
 import com.key.win.common.model.SysUser;
+import com.key.win.common.web.OrderDir;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
@@ -39,6 +42,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -116,7 +120,7 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     @Transactional
-    public SysUser updateSysUser(SysUser sysUser) throws ServiceException {
+    public Result updateSysUser(SysUser sysUser) throws ServiceException {
         try {
             sysUser.setUpdateTime(new Date());
 
@@ -178,7 +182,7 @@ public class SysUserServiceImpl implements SysUserService {
 
             sysUserDao.updateByPrimaryKey(sysUser);
             log.info("修改用户：{}", sysUser);
-            return sysUser;
+            return Result.succeed(sysUser,"");
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -253,7 +257,7 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public SysUser findById(Long id) throws ServiceException {
+    public Result findById(Long id) throws ServiceException {
         try {
             SysUser byId = sysUserDao.findById(id);
             if(byId!=null){
@@ -261,7 +265,7 @@ public class SysUserServiceImpl implements SysUserService {
                 userIds.add(id);
                 byId.setRoles(userRoleDao.findRolesByUserIds(userIds));
             }
-            return byId;
+            return Result.succeed(byId,"");
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -346,14 +350,36 @@ public class SysUserServiceImpl implements SysUserService {
     public PageResult<SysUser> findSysUserByPaged(PageRequest<SysUser> t) {
         MybatiesPageServiceTemplate<SysUser, SysUser> page = new MybatiesPageServiceTemplate<SysUser, SysUser>(sysUserDao) {
             @Override
-            protected Wrapper<SysUser> constructWrapper(SysUser user) {
+            protected AbstractWrapper constructWrapper(SysUser user) {
                 LambdaQueryWrapper<SysUser> lqw = new LambdaQueryWrapper<SysUser>();
                 if (user != null && StringUtils.isNotBlank(user.getUsername())) {
-                    lqw.like(SysUser::getUsername, user.getUsername() == null ? "" : user.getUsername());
+                    SFunction<SysUser,String> s = SysUser::getUsername;
+                    lqw.like(s, user.getUsername() == null ? "" : user.getUsername());
                 }
-
-                lqw.orderByDesc(SysUser::getCreateTime);
                 return lqw;
+            }
+
+            protected List getDefaultQueryOrder(SysUser user , String sortName){
+                List<SFunction<SysUser,?>> list = new ArrayList<>();
+                if("username".equals(sortName)){
+                    list.add(SysUser::getUsername);
+                }
+                if("nickname".equals(sortName)){
+                    list.add(SysUser::getNickname);
+                }
+                if("phone".equals(sortName)){
+                    list.add(SysUser::getPhone);
+                }
+                if("sex".equals(sortName)){
+                    list.add(SysUser::getSex);
+                }
+                if("createTime".equals(sortName)){
+                    list.add(SysUser::getCreateTime);
+                }
+                if("enabled".equals(sortName)){
+                    list.add(SysUser::getEnabled);
+                }
+                return list;
             }
         };
         return page.doPagingQuery(t);

@@ -1,6 +1,6 @@
 package com.key.win.user.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -8,7 +8,6 @@ import com.google.common.collect.Sets;
 import com.key.win.common.exception.service.ServiceException;
 import com.key.win.common.model.SysPermission;
 import com.key.win.common.model.SysRole;
-import com.key.win.common.model.SysUser;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
@@ -156,7 +155,7 @@ public class SysRoleServiceImpl implements SysRoleService {
     public PageResult<SysRole> findSysRoleByPaged(PageRequest<SysRole> t) {
         MybatiesPageServiceTemplate<SysRole, SysRole> page = new MybatiesPageServiceTemplate<SysRole, SysRole>(sysRoleDao) {
             @Override
-            protected Wrapper<SysRole> constructWrapper(SysRole role) {
+            protected AbstractWrapper constructWrapper(SysRole role) {
                 LambdaQueryWrapper<SysRole> lqw = new LambdaQueryWrapper<SysRole>();
                 if (role != null && StringUtils.isNotBlank(role.getName())) {
                     lqw.eq(SysRole::getName, role.getName() == null ? "" : role.getName());

@@ -19,12 +19,13 @@
       </el-row>
       <KWTable url="api-user/getSysUserByPaged" style="width: 100%" ref="kwTableRef">
         <el-table-column type="index" label="序号" width="50"></el-table-column>
-        <el-table-column prop="username" label="帐号" width="180"> </el-table-column>
-        <el-table-column prop="nickname" label="昵称" width="180"> </el-table-column>
-        <el-table-column prop="phone" label="手机"> </el-table-column>
+        <el-table-column prop="username" sortable="custom" label="帐号" width="180"> </el-table-column>
+        <el-table-column prop="nickname" sortable="custom" label="昵称" width="180"> </el-table-column>
+        <el-table-column prop="phone" sortable="custom" label="手机"> </el-table-column>
         <el-table-column
           prop="sex"
           label="性别"
+          sortable="custom"
           :formatter="
             row => {
               return row.sex === 0 ? '男' : '女'
@@ -33,8 +34,8 @@
           width="100"
         >
         </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" :formatter="formatterDate" width="180"> </el-table-column>
-        <el-table-column prop="enabled" label="状态" width="100">
+        <el-table-column prop="createTime" label="创建时间" sortable="custom" :formatter="formatterDate" width="180"> </el-table-column>
+        <el-table-column prop="enabled" label="状态" sortable="custom" width="100">
           <template v-slot="scope">
             <el-switch v-model="scope.row.enabled" active-color="#13ce66" inactive-color="#ff4949" @change="userStatuChanged(scope.row)"> </el-switch>
           </template>
@@ -153,7 +154,7 @@ export default class User extends Vue {
     this.usernameDisabled = true
     const res = await UserGetApi(id)
     this.userForm = res.data
-    // this.userForm.sex = this.userForm.sex === 0 ? '男' : '女'
+    this.userForm.sex = this.userForm.sex === 0 ? '男' : '女'
     const roleDatas = res.data.roles
     console.log(roleDatas)
     this.userForm.roleId = new Array<string>()
@@ -188,7 +189,7 @@ export default class User extends Vue {
       }
       const roleIds = this.userForm.roleId as Array<string>
       this.userForm.roleId = roleIds.join(',')
-      // this.editUserForm.sex = this.editUserForm.sex === '男' ? 0 : 1
+      this.userForm.sex = this.userForm.sex === '男' ? 0 : 1
       const { code, msg } = await UserSaveOrUpdateApi(this.userForm)
       if (code !== 0) {
         this.$message.error(msg || '操作用户信息失败!')

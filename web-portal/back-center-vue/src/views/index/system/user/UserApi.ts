@@ -1,4 +1,4 @@
-import request from '../../../../fetch'
+import request from '@/fetch'
 import { LoginSuccessUserInfo, UserInfo, UserSearchRequest, UserStatuChangeRequest, UserForm } from './interface/User'
 
 export const UserInfoApi = (): Promise<KWResponse.Result<LoginSuccessUserInfo>> => request.get('api-auth/oauth/current/userinfo')
