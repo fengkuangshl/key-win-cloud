@@ -1,12 +1,12 @@
-import {VuexModule, Mutation, Action, getModule, Module} from 'vuex-module-decorators'
+import { VuexModule, Mutation, Action, getModule, Module } from 'vuex-module-decorators'
 import store from '@/store'
-import {MenuResponse} from '@/views/index/system/menu/interface/MenuResponse'
+import { MenuResponse } from '@/views/index/system/menu/interface/MenuResponse'
 
 export interface MenuState {
   menus: Array<MenuResponse>
 }
 
-@Module({dynamic: true, store, name: 'menu'})
+@Module({ dynamic: true, store, name: 'menu' })
 class MenuStore extends VuexModule implements MenuState {
   public menus!: Array<MenuResponse>
 
