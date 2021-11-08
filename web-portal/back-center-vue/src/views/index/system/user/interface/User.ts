@@ -12,7 +12,7 @@ export interface UserSearchRequest {
 
 export interface UserForm extends UserSearchRequest {
   roleId: Array<string> | string
-  sex: Sex
+  sex: Sex | string
   phone: string
   username: string
 }
