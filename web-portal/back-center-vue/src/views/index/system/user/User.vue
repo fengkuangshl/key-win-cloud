@@ -18,10 +18,10 @@
         </el-col>
       </el-row>
       <KWTable url="api-user/getSysUserByPaged" style="width: 100%" ref="kwTableRef">
-        <el-table-column type="index" label="序号" width="50"></el-table-column>
-        <el-table-column prop="username" sortable="custom" label="帐号" width="180"> </el-table-column>
-        <el-table-column prop="nickname" sortable="custom" label="昵称" width="180"> </el-table-column>
-        <el-table-column prop="phone" sortable="custom" label="手机"> </el-table-column>
+        <el-table-column type="index" label="序号" ></el-table-column>
+        <el-table-column prop="username" sortable="custom" label="帐号" > </el-table-column>
+        <el-table-column prop="nickname" sortable="custom" label="昵称" > </el-table-column>
+        <el-table-column prop="phone" sortable="custom" label="手机" > </el-table-column>
         <el-table-column
           prop="sex"
           label="性别"
@@ -31,16 +31,17 @@
               return row.sex === 0 ? '男' : '女'
             }
           "
-          width="100"
         >
         </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" sortable="custom" :formatter="formatterDate" width="180"> </el-table-column>
-        <el-table-column prop="enabled" label="状态" sortable="custom" width="100">
+        <el-table-column prop="createTime" label="创建时间" sortable="custom" >
+          <template slot-scope="scope">{{ scope.row.createTime | dateTimeFormat }}</template>
+        </el-table-column>
+        <el-table-column prop="enabled" label="状态" sortable="custom" >
           <template v-slot="scope">
             <el-switch v-model="scope.row.enabled" active-color="#13ce66" inactive-color="#ff4949" @change="userStatuChanged(scope.row)"> </el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="操作"  >
           <template v-slot="scope">
             <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
             <el-tooltip effect="dark" content="重置密码" placement="top" :enterable="false">
@@ -123,17 +124,6 @@ export default class User extends Vue {
     setTimeout(() => {
       this.searchUser()
     }, 100)
-  }
-
-  formatterDate(row: UserInfo): string {
-    var date = new Date(row.createTime) // 时间戳为10位需*1000，时间戳为13位的话不需乘1000
-    var Y = date.getFullYear() + '-'
-    var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
-    var D = date.getDate() + ' '
-    var h = date.getHours() + ':'
-    var m = date.getMinutes() + ':'
-    var s = date.getSeconds()
-    return Y + M + D + h + m + s
   }
 
   async userStatuChanged(userInfo: UserInfo): Promise<void> {

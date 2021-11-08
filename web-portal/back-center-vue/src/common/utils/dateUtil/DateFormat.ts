@@ -11,7 +11,7 @@ function padLeft02Twice(source: number) {
   return padLeft(source, 2, '0')
 }
 
-export default function dateFormat(date: string | number | Date, type: DateFormatType = DateFormatType.ISO): string {
+export default function dateFormat(date: string | number | Date, type: DateFormatType = DateFormatType.DateTime): string {
   date = date instanceof Date ? date : new Date(date)
 
   switch (type) {
