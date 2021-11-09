@@ -1,6 +1,6 @@
 import { VuexModule, Mutation, Action, getModule, Module } from 'vuex-module-decorators'
 import store from '@/store'
-import { MenuResponse } from '@/views/index/system/menu/interface/MenuResponse'
+import { MenuResponse } from '@/views/index/system/menu/interface/menu-response'
 
 export interface MenuState {
   menus: Array<MenuResponse>
