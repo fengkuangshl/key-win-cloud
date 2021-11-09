@@ -1,2 +1,2 @@
-export { LoginRequest } from './Request'
-export { LoginResponse } from './Response'
+export { LoginRequest } from './request'
+export { LoginResponse } from './response'

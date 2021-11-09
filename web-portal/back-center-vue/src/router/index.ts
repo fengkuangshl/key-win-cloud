@@ -11,30 +11,35 @@ const routes: Array<RouteConfig> = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import(/* webpackChunkName: "login" */ '../views/login/Login.vue')
+    component: () => import(/* webpackChunkName: "login" */ '@/views/login/Login.vue')
   },
   {
     path: '/index',
     name: 'Index',
     redirect: '/home',
-    component: () => import(/* webpackChunkName: "index" */ '../views/index/Index.vue'),
+    component: () => import(/* webpackChunkName: "index" */ '@/views/index/Index.vue'),
     children: [
       {
         path: '/home',
         name: 'home',
-        component: () => import(/* webpackChunkName: "home" */ '../views/index/home/Home.vue')
+        component: () => import(/* webpackChunkName: "home" */ '@/views/index/home/Home.vue')
       },
       {
         path: '/user',
         name: 'User',
-        component: () => import(/* webpackChunkName: "user" */ '../views/index/system/user/User.vue')
+        component: () => import(/* webpackChunkName: "user" */ '@/views/index/system/user/User.vue')
       },
       {
         path: '/test',
         name: 'Test',
-        component: () => import(/* webpackChunkName: "test" */ '../views/index/test/Test.vue')
+        component: () => import(/* webpackChunkName: "test" */ '@/views/index/test/Test.vue')
       }
     ]
+  },
+  {
+    path: '*',
+    name: '/404',
+    component: () => import(/* webpackChunkName: "test" */ '@/components/404.vue')
   }
 ]
 

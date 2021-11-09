@@ -18,13 +18,13 @@
 import { Component, Vue } from 'vue-property-decorator'
 import HeaderNav from '@/components/header/HeaderNav.vue'
 import LeftMenu from '@/components/left/LeftMenu.vue'
-import { UserInfoApi } from '@/views/index/system/user/UserApi'
-import { LoginSuccessUserInfo } from './system/user/interface/User'
-import { MenuApi } from '@/views/index/system/menu/MenuApi'
+import { UserInfoApi } from '@/views/index/system/user/user-api'
+import { LoginSuccessUserInfo } from './system/user/interface/user'
+import { MenuApi } from '@/views/index/system/menu/menu-api'
 import { MenuResponse } from '@/views/index/system/menu/interface/MenuResponse'
 // import * as qs from 'qs'
-import { UserModule } from '@/store/UserStore'
-import { MenuModule } from '@/store/MenuStore'
+import { UserModule } from '@/store/user-store'
+import { MenuModule } from '@/store/menu-store'
 @Component({
   components: {
     HeaderNav,
@@ -54,7 +54,8 @@ export default class Index extends Vue {
     const { code, data, msg }: KWResponse.Result<Array<MenuResponse>> = await MenuApi()
     if (code === 0) {
       console.log(data)
-      this.menus = data
+      this.menus = data.filter(item => item.name.indexOf('vue') > -1) // 暂时先这么处理
+      // this.menus = data
       MenuModule.changeMenu(data)
     } else {
       this.$message.error(msg || '获取当前用户菜单失败！')

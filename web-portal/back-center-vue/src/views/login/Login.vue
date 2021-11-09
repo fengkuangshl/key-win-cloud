@@ -24,7 +24,7 @@
 import { ElForm } from 'element-ui/types/form'
 import { Component, Vue, Ref } from 'vue-property-decorator'
 import { LoginRequest, LoginResponse } from './interface'
-import { LoginApi } from './LoginApi'
+import { LoginApi } from './login-api'
 import * as qs from 'qs'
 
 @Component

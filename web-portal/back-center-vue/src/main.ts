@@ -5,7 +5,7 @@ import store from './store'
 import './plugins/element.js'
 import './assets/css/global.css'
 import './assets/fonts/iconfont.css'
-import './common/filters/GlobalFilter'
+import './common/filters/global-filter'
 
 Vue.config.productionTip = false
 

@@ -1,5 +1,5 @@
-import { PermissionResponse } from '../../permission/interface/PermissionResponse'
-import { SysRole } from '../../sysRole/interface/SysRole'
+import { PermissionResponse } from '../../permission/interface/permission-response'
+import { SysRole } from '../../sysRole/interface/sysrole'
 
 export enum Sex {
   男 = 0,

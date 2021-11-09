@@ -1,6 +1,6 @@
 import { VuexModule, Mutation, Action, getModule, Module } from 'vuex-module-decorators'
 import store from '@/store'
-import { LoginSuccessUserInfo } from '@/views/index/system/user/interface/User'
+import { LoginSuccessUserInfo } from '@/views/index/system/user/interface/user'
 
 export interface UserState {
   user: LoginSuccessUserInfo

@@ -6,14 +6,14 @@
       <el-submenu :index="item.id" v-for="item in menusList" :key="item.id">
         <!-- 一级菜单模板区 -->
         <template slot="title">
-          <i class="el-icon-location"></i>
+          <i :class="item.css"></i>
           <span>{{ item.name }}</span>
         </template>
         <!--二级菜单-->
         <el-menu-item :index="subItem.url.replace('#!', '/')" v-for="subItem in item.subMenus" :key="subItem.id" @click="saveActivePath(subItem.url.replace('#!', '/'))">
           <!-- 二级菜单模板区 -->
           <template slot="title">
-            <i class="el-icon-menu"></i>
+            <i :class="subItem.css"></i>
             <span>{{ subItem.name }}</span>
           </template>
         </el-menu-item>
