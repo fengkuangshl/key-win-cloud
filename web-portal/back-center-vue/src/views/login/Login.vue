@@ -26,6 +26,7 @@ import { Component, Vue, Ref } from 'vue-property-decorator'
 import { LoginRequest, LoginResponse } from './interface'
 import { LoginApi } from './login-api'
 import * as qs from 'qs'
+import { local } from '@/store'
 
 @Component
 export default class Login extends Vue {
@@ -47,7 +48,8 @@ export default class Login extends Vue {
       const { code, data, msg }: KWResponse.Result<LoginResponse> = await LoginApi(qs.stringify(this.loginForm))
       if (code === 0) {
         // 登录成功
-        localStorage.setItem('access_token', data.access_token)
+        local.save('access_token', data.access_token)
+        local.clear('activePath')
         this.$router.push('/index')
       } else {
         this.$message.error(msg)

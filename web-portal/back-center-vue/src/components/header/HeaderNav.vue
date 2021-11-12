@@ -27,7 +27,6 @@
 <script lang="ts">
 import { UserModule } from '@/store/user-store'
 import { Component, Vue } from 'vue-property-decorator'
-
 @Component({
   components: {}
 })
@@ -62,7 +61,7 @@ export default class HeaderNav extends Vue {
    * @param {*} event
    * @return {*}
    */
-  private imgerrorfun(event: any) {
+  private imgerrorfun(event: any): void {
     // console.log(event);
     const img: HTMLImageElement = event.srcElement
     img.src = require('@/assets/head.png')
