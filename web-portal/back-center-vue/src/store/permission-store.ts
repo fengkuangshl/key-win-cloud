@@ -50,6 +50,7 @@ class Permission extends VuexModule implements IPermissionState {
     })
     // (this.indexRoute.children as Array<RouteConfig>).push(this.route404)
     this.routes = constantRoutes.concat(this.indexRoute)
+    this.routes.push(this.route404)
     this.dynamicRoutes = [this.indexRoute, this.route404]
   }
 
