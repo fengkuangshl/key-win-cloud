@@ -1,6 +1,6 @@
-import { Settings } from '@/settings'
+import settings from '@/settings'
 
-const title = Settings.title || 'key-win 后台管理'
+const title = settings.title || '管理系统'
 
 export default function getPageTitle(pageTitle: string): string {
   if (pageTitle) {
