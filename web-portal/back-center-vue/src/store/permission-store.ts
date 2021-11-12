@@ -102,8 +102,7 @@ export const asyncRouter = (menus: Array<MenuResponse>, routes: Array<RouteConfi
 }
 
 export const loadViewsd = (view: string) => {
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  return (resolve: any) => require([`@/views/index/${view}.vue`], resolve)
+  return (resolve: any): void => require([`@/views/index/${view}.vue`], resolve)
 }
 
 export const PermissionModule = getModule(Permission)
