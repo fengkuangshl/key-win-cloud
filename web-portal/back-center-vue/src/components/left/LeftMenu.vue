@@ -26,7 +26,10 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import { MenuResponse } from '@/views/index/system/menu/interface/menu-response'
 import { local } from '@/store'
+<<<<<<< HEAD
 import settings from '@/settings'
+=======
+>>>>>>> 1a94181f7e1c738b8729fc52d1144d1016b6808f
 
 @Component({
   components: {}
@@ -38,7 +41,11 @@ export default class LeftMenu extends Vue {
   readonly menusList!: Array<MenuResponse> | []
 
   created(): void {
+<<<<<<< HEAD
     this.activePath = local.getStr(settings.activePath)
+=======
+    this.activePath = local.getStr('activePath')
+>>>>>>> 1a94181f7e1c738b8729fc52d1144d1016b6808f
   }
 
   toggleCollpase(): void {
@@ -46,7 +53,11 @@ export default class LeftMenu extends Vue {
   }
 
   saveActivePath(activePath: string): void {
+<<<<<<< HEAD
     local.save(settings.activePath, activePath)
+=======
+    local.save('activePath', activePath)
+>>>>>>> 1a94181f7e1c738b8729fc52d1144d1016b6808f
     this.activePath = activePath
   }
 }
