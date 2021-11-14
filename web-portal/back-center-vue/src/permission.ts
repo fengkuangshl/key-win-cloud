@@ -8,6 +8,7 @@ import { MenuApi } from './views/index/system/menu/menu-api'
 import { LoginSuccessUserInfo } from './views/index/system/user/interface/user'
 import { UserInfoApi } from './views/index/system/user/user-api'
 import { UserModule } from './store/user-store'
+import { local } from './store'
 
 // const whiteList = ['/login', '/auth-redirect', '/registe', '/404']
 
@@ -20,7 +21,7 @@ router.beforeEach(async (to: Route, from: Route, next: any): Promise<void> => {
     return next()
   }
   // 获取token
-  const token = localStorage.getItem('access_token')
+  const token = local.getAny('access_token')
   if (!token) {
     return next('/login')
   } else {

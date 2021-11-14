@@ -1,5 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { Message } from 'element-ui'
+import router from './router'
+import { local } from './store'
 
 const instance: AxiosInstance = axios.create({
   baseURL: 'http://127.0.0.1:9200',
@@ -21,6 +23,7 @@ function errorHandle(err: any): Promise<unknown> {
       err.message = '请求错误'
       break
     case 401:
+      local.clear('access_token')
       err.message = '未授权，请登录'
       break
     case 403:
