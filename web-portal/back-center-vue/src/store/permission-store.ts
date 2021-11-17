@@ -20,17 +20,33 @@ class Permission extends VuexModule implements IPermissionState {
     redirect: '/home',
     component: () => import(/* webpackChunkName: "index" */ '@/views/index/Index.vue'),
     children: [
+      // 这个是空白页面，重新加载当前页面会用到
+      {
+        name: 'blank',
+        path: '/blank'
+      },
       {
         path: '/home',
         name: 'home',
-        component: () => import(/* webpackChunkName: "home" */ '@/views/index/home/Home.vue')
+        component: () => import(/* webpackChunkName: "home" */ '@/views/index/home/Home.vue'),
+        meta: {
+          title: '首页'
+        }
       },
       {
         path: '/test',
         name: 'Test',
-        component: () => import(/* webpackChunkName: "test" */ '@/views/index/test/Test.vue')
+        component: () => import(/* webpackChunkName: "test" */ '@/views/index/test/Test.vue'),
+        meta: {
+          title: 'Test-DataTable'
+        }
       }
     ]
+  }
+
+  public defaultRout: RouteConfig = {
+    path: '/',
+    redirect: '/index'
   }
 
   public route404: RouteConfig = {
@@ -46,12 +62,14 @@ class Permission extends VuexModule implements IPermissionState {
   @Mutation
   private SET_ROUTES(childrenRoutes: RouteConfig[]) {
     childrenRoutes.forEach(item => {
-      (this.indexRoute.children as Array<RouteConfig>).push(item)
+      const children = this.indexRoute.children as Array<RouteConfig>
+      children.push(item)
     })
     // (this.indexRoute.children as Array<RouteConfig>).push(this.route404)
     this.routes = constantRoutes.concat(this.indexRoute)
+    this.routes.push(this.defaultRout)
     this.routes.push(this.route404)
-    this.dynamicRoutes = [this.indexRoute, this.route404]
+    this.dynamicRoutes = [this.indexRoute, this.defaultRout, this.route404]
   }
 
   @Action

@@ -12,7 +12,7 @@ const instance: AxiosInstance = axios.create({
 function errorHandle(err: any): Promise<unknown> {
   let response = err.response
   if (err.message === 'Network Error') {
-    response = {}
+    response = { data: {} }
     response.status = -1
   }
   switch (response?.status) {
@@ -20,7 +20,7 @@ function errorHandle(err: any): Promise<unknown> {
       err.message = '网络异常，请稍后再试！'
       break
     case 400:
-      err.message = '请求错误'
+      err.message = response.data.msg || '请求错误'
       break
     case 401:
       local.clear('access_token')

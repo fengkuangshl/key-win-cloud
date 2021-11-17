@@ -13,17 +13,3 @@ body,
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.12) !important;
   height: 100%;
 }
-.el-pagination {
-  margin-top: 15px;
-  float: right;
-}
-/* .el-cascader-menu {
-  height: 300px;
-} */
-.el-cascader-menu__wrap,
-.el-scrollbar__wrap {
-  height: 290px !important;
-}
-.el-table {
-  margin-top: 15px;
-}

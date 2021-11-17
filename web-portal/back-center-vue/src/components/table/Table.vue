@@ -231,3 +231,20 @@ export default class KWTable<T, RT> extends Vue {
   }
 }
 </script>
+
+<style lang="less" scoped>
+.el-pagination {
+  margin-top: 15px;
+  float: right;
+}
+/* .el-cascader-menu {
+  height: 300px;
+} */
+// .el-cascader-menu__wrap,
+// .el-scrollbar__wrap {
+//   height: 162px !important;
+// }
+.el-table {
+  margin-top: 15px;
+}
+</style>
