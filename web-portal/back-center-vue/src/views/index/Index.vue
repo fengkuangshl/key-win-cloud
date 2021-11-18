@@ -14,6 +14,12 @@
             </keep-alive>
           </div>
         </el-main>
+        <el-footer>
+          <div class="footer">
+            Copyright © {{ new Date().getFullYear() }} key-win All rights reserved.
+            <span class="pull-right">Version 2.0</span>
+          </div>
+        </el-footer>
       </el-container>
     </el-container>
   </div>
@@ -61,6 +67,15 @@ export default class Index extends Vue {
     .el-header {
       background-color: #373d3f;
       align-items: center;
+    }
+    .footer {
+      left: 200px;
+      right: 0;
+      bottom: 0;
+      height: 44px;
+      line-height: 44px;
+      padding: 0 15px;
+      background-color: #eee;
     }
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <el-aside :width="collapseMenuState ? '64px' : '200px'">
+  <el-aside :width="collapseMenuState ? '64px' : '200px'" style="overflow:hidden">
     <div>
       <img src="../../assets/keywin.png" alt="" />
     </div>
