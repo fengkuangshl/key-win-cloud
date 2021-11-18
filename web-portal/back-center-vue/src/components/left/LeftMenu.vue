@@ -1,7 +1,9 @@
 <template>
-  <el-aside :width="isCollapse ? '64px' : '200px'">
-    <div class="toggle-button" @click="toggleCollpase">|||</div>
-    <el-menu background-color="#333744" text-color="#fff" active-text-color="#409EFF" unique-opened :collapse="isCollapse" :collapse-transition="false" router :default-active="activePath">
+  <el-aside :width="collapseMenuState ? '64px' : '200px'">
+    <div>
+      <img src="../../assets/keywin.png" alt="" />
+    </div>
+    <el-menu background-color="#333744" text-color="#fff" active-text-color="#409EFF" unique-opened :collapse="collapseMenuState" :collapse-transition="false" router :default-active="activePath">
       <!-- 一级菜单 -->
       <el-submenu :index="item.id" v-for="item in menusList" :key="item.id">
         <!-- 一级菜单模板区 -->
@@ -26,13 +28,13 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 import { MenuResponse } from '@/views/index/system/menu/interface/menu-response'
 import { local } from '@/store'
+import { MenuCollapseModule } from '@/store/menu-collapse-store'
 import settings from '@/settings'
 
 @Component({
   components: {}
 })
 export default class LeftMenu extends Vue {
-  isCollapse = false
   activePath = ''
   @Prop({ default: [] })
   readonly menusList!: Array<MenuResponse> | []
@@ -41,13 +43,13 @@ export default class LeftMenu extends Vue {
     this.activePath = local.getStr(settings.activePath)
   }
 
-  toggleCollpase(): void {
-    this.isCollapse = !this.isCollapse
-  }
-
   saveActivePath(activePath: string): void {
     local.save(settings.activePath, activePath)
     this.activePath = activePath
+  }
+
+  get collapseMenuState(): boolean {
+    return MenuCollapseModule.getCollapseMenuState
   }
 }
 </script>
@@ -56,6 +58,17 @@ export default class LeftMenu extends Vue {
 .el-aside {
   background-color: #333744;
   align-items: left;
+  > div {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px 10px 20px;
+    img {
+      width: 156px;
+      height: 40px;
+
+      // border-radius: 50%;
+    }
+  }
   .el-menu {
     border-right: none;
   }

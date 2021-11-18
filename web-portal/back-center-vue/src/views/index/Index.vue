@@ -1,11 +1,11 @@
 <template>
   <div class="index">
     <el-container class="index-container">
-      <el-header>
-        <HeaderNav></HeaderNav>
-      </el-header>
+      <LeftMenu :menusList="menus"></LeftMenu>
       <el-container>
-        <LeftMenu :menusList="menus"></LeftMenu>
+        <el-header>
+          <HeaderNav></HeaderNav>
+        </el-header>
         <el-main>
           <PageTabs :keep-alive-component-instance="keepAliveComponentInstance" />
           <div ref="keepAliveContainer" style="padding-top:20px">

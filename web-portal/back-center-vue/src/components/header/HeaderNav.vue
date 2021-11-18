@@ -1,7 +1,8 @@
 <template>
   <div class="el-header-div">
     <div>
-      <img src="../../assets/keywin.png" alt="" />
+      <!-- <div class="toggle-button" @click="toggleCollpase">|||</div> -->
+      <i :class="collapseMenuIcon" @click="toggleCollpase"></i>
       <span>后台管理系统</span>
     </div>
     <div>
@@ -31,21 +32,30 @@
 
 <script lang="ts">
 import { UserModule } from '@/store/user-store'
+import { MenuCollapseModule } from '@/store/menu-collapse-store'
 import { Component, Vue } from 'vue-property-decorator'
 @Component({
   components: {}
 })
 export default class HeaderNav extends Vue {
-  headImgUrl: string | null = ''
-  nickname = ''
   fullScrollClass = 'iconfont icon-quanping_o'
   tipFullScrollContent = '全屏浏览'
-  created(): void {
-    setTimeout(() => {
-      const user = UserModule.getUser.user
-      this.headImgUrl = user.headImgUrl
-      this.nickname = user.nickname
-    }, 100)
+  collapseMenuIcon = 'el-icon-s-fold'
+
+  get nickname(): string {
+    const user = UserModule.getUser.user
+    if (user !== undefined) {
+      return user.nickname
+    }
+    return ''
+  }
+
+  get headImgUrl(): string | null {
+    const user = UserModule.getUser.user
+    if (user !== undefined) {
+      return user.headImgUrl
+    }
+    return null
   }
 
   mounted(): void {
@@ -62,6 +72,17 @@ export default class HeaderNav extends Vue {
         this.isFullscreen()
       })
     })
+  }
+
+  toggleCollpase(): void {
+    const isCollapseMenu = MenuCollapseModule.isCollapseMenu
+    if (isCollapseMenu) {
+      this.collapseMenuIcon = 'el-icon-s-fold'
+    } else {
+      this.collapseMenuIcon = 'el-icon-s-unfold'
+    }
+    MenuCollapseModule.changeCollapseMenu(!isCollapseMenu)
+    console.log('MenuCollapseModule.getCollapseMenuState:', MenuCollapseModule.getCollapseMenuState)
   }
 
   userInfoCenter(): void {
@@ -158,11 +179,6 @@ export default class HeaderNav extends Vue {
   > div {
     display: flex;
     align-items: center;
-    img {
-      width: 156px;
-      height: 40px;
-      // border-radius: 50%;
-    }
     span {
       margin-left: 15px;
     }
