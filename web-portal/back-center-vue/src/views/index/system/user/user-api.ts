@@ -7,3 +7,4 @@ export const UserStatuChangeRequestApi = (param: UserStatuChangeRequest): Promis
 export const UserGetApi = (id: string): Promise<KWResponse.Result<UserInfo>> => request.get('api-user/users/' + id)
 export const UserSaveOrUpdateApi = (userInfo: UserForm): Promise<KWResponse.Result> => request.post('api-user/users/saveOrUpdate', userInfo)
 export const ResetPasswordApi = (id: string): Promise<KWResponse.Result<UserInfo>> => request.post('api-user/users/' + id + '/resetPassword')
+export const UpdateMeApi = (userInfo: UserForm): Promise<KWResponse.Result<UserInfo>> => request.put('api-user/users/me', userInfo)

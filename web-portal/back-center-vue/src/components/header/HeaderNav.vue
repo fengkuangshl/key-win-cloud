@@ -86,6 +86,7 @@ export default class HeaderNav extends Vue {
   }
 
   userInfoCenter(): void {
+    this.$router.push('/myinfo')
     console.log('userInfoCenter')
   }
 
