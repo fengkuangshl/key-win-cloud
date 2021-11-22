@@ -13,7 +13,7 @@ const settings: ISettings = {
   activePath: 'activePath',
   accessToken: 'access_token',
   devDomain: 'http://127.0.0.1:9200',
-  uatDomain: 'http://127.0.0.1:9200',
+  uatDomain: 'http://localhost:9200',
   prodDomain: 'http://127.0.0.1:9200'
 
 }

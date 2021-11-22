@@ -68,7 +68,8 @@ export default class Index extends Vue {
       background-color: #373d3f;
       align-items: center;
     }
-    .footer {
+    .el-footer {
+      height: 44px !important;
       left: 200px;
       right: 0;
       bottom: 0;

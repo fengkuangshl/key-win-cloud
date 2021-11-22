@@ -4,10 +4,10 @@ import settings from '@/settings'
 import { local } from './store'
 
 let baseURL = settings.devDomain
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'dev') {
   // 设置默认本地开发
   baseURL = settings.devDomain
-} else if (process.env.VUE_APP_CURRENTMODE === 'test') {
+} else if (process.env.VUE_APP_CURRENTMODE === 'uat') {
   // 测试
   baseURL = settings.uatDomain
 } else if (process.env.VUE_APP_CURRENTMODE === 'prod') {
@@ -27,7 +27,7 @@ function errorHandle(err: any): Promise<unknown> {
     response = { data: {} }
     response.status = -1
   }
-  switch (response?.status) {
+  switch (response.status) {
     case -1:
       err.message = '网络异常，请稍后再试！'
       break
