@@ -3,16 +3,16 @@ import { Message } from 'element-ui'
 import settings from '@/settings'
 import { local } from './store'
 
-let baseURL = settings.devDomain
-if (process.env.NODE_ENV === 'dev') {
+let baseURL = settings.developmentDomain
+if (process.env.NODE_ENV === 'development') {
   // 设置默认本地开发
-  baseURL = settings.devDomain
+  baseURL = settings.developmentDomain
 } else if (process.env.VUE_APP_CURRENTMODE === 'uat') {
   // 测试
-  baseURL = settings.uatDomain
-} else if (process.env.VUE_APP_CURRENTMODE === 'prod') {
+  baseURL = settings.userAcceptanceTestDomain
+} else if (process.env.VUE_APP_CURRENTMODE === 'production') {
   // 默认正式
-  baseURL = settings.prodDomain
+  baseURL = settings.productionDomain
 }
 
 const instance: AxiosInstance = axios.create({

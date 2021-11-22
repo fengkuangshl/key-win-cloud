@@ -2,9 +2,9 @@ interface ISettings {
   title: string // Overrides the default title
   activePath: string
   accessToken: string
-  devDomain: string
-  uatDomain: string
-  prodDomain: string
+  developmentDomain: string
+  userAcceptanceTestDomain: string
+  productionDomain: string
 }
 
 // You can customize below settings :)
@@ -12,9 +12,9 @@ const settings: ISettings = {
   title: 'key-win后台管理',
   activePath: 'activePath',
   accessToken: 'access_token',
-  devDomain: 'http://127.0.0.1:9200',
-  uatDomain: 'http://localhost:9200',
-  prodDomain: 'http://127.0.0.1:9200'
+  developmentDomain: 'http://127.0.0.1:9200',
+  userAcceptanceTestDomain: 'http://localhost:9200',
+  productionDomain: 'http://127.0.0.1:9200'
 
 }
 
