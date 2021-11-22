@@ -1,11 +1,23 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { Message } from 'element-ui'
-import router from './router'
+import settings from '@/settings'
 import { local } from './store'
 
+let baseURL = settings.devDomain
+if (process.env.NODE_ENV === 'development') {
+  // 设置默认本地开发
+  baseURL = settings.devDomain
+} else if (process.env.VUE_APP_CURRENTMODE === 'test') {
+  // 测试
+  baseURL = settings.uatDomain
+} else if (process.env.VUE_APP_CURRENTMODE === 'prod') {
+  // 默认正式
+  baseURL = settings.prodDomain
+}
+
 const instance: AxiosInstance = axios.create({
-  baseURL: 'http://127.0.0.1:9200',
-  timeout: 100000
+  baseURL: baseURL,
+  timeout: 3000
 })
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

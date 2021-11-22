@@ -9,10 +9,14 @@ import { LoginSuccessUserInfo } from './views/index/system/user/interface/user'
 import { UserInfoApi } from './views/index/system/user/user-api'
 import { UserModule } from './store/user-store'
 import { local } from './store'
+// 导入NProgress 对应的js和css
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 
 // const whiteList = ['/login', '/auth-redirect', '/registe', '/404']
 
 router.beforeEach(async (to: Route, from: Route, next: any): Promise<void> => {
+  NProgress.start()
   // to 将访问哪一个路径
   // from 代表从哪个路径跳转而来
   // next 是一个函数,表示放行
@@ -36,6 +40,7 @@ router.beforeEach(async (to: Route, from: Route, next: any): Promise<void> => {
 })
 
 router.afterEach((to: Route) => {
+  NProgress.done()
   // set page title
   document.title = getPageTitle((to.meta as RouteMeta).title)
 })

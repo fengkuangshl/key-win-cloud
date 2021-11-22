@@ -12,11 +12,7 @@ module.exports = {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     // 左括号前没有空格报错
-    'space-before-function-paren': 0,
-    // 在格式化的时候不加分号
-    semi: false,
-    // 将双引号转成单引号
-    singleQuote: true
+    'space-before-function-paren': 0
   },
   globals: {
     KWResponse: true,
