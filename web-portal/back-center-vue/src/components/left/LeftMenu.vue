@@ -5,21 +5,25 @@
     </div>
     <el-menu background-color="#333744" text-color="#fff" active-text-color="#409EFF" unique-opened :collapse="collapseMenuState" :collapse-transition="false" router :default-active="activePath">
       <!-- 一级菜单 -->
-      <el-submenu :index="item.id" v-for="item in menusList" :key="item.id">
-        <!-- 一级菜单模板区 -->
-        <template v-if="item.hidden === false && item.isMenu === 1" slot="title">
-          <i :class="item.css"></i>
-          <span>{{ item.name }}</span>
-        </template>
-        <!--二级菜单-->
-        <el-menu-item :index="subItem.url.replace('#!', '/')" v-for="subItem in item.subMenus" :key="subItem.id" @click="saveActivePath(subItem.url.replace('#!', '/'))">
-          <!-- 二级菜单模板区 -->
-          <template v-if="subItem.hidden === false && subItem.isMenu === 1" slot="title">
-            <i :class="subItem.css"></i>
-            <span>{{ subItem.name }}</span>
+      <template v-for="item in menusList">
+        <el-submenu v-if="item.hidden === false && item.isMenu === 1" :index="item.id" :key="item.id">
+          <!-- 一级菜单模板区 -->
+          <template slot="title">
+            <i :class="item.css"></i>
+            <span>{{ item.name }}</span>
           </template>
-        </el-menu-item>
-      </el-submenu>
+          <!--二级菜单-->
+          <template v-for="subItem in item.subMenus">
+            <el-menu-item v-if="subItem.hidden === false && subItem.isMenu === 1" :index="subItem.url.replace('#!', '/')" :key="subItem.id" @click="saveActivePath(subItem.url.replace('#!', '/'))">
+              <!-- 二级菜单模板区 -->
+              <template slot="title">
+                <i :class="subItem.css"></i>
+                <span>{{ subItem.name }}</span>
+              </template>
+            </el-menu-item>
+          </template>
+        </el-submenu>
+      </template>
     </el-menu>
   </el-aside>
 </template>

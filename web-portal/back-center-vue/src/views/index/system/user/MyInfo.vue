@@ -1,11 +1,14 @@
 <template>
   <div>
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>后台管理</el-breadcrumb-item>
-      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-      <el-breadcrumb-item>我的信息</el-breadcrumb-item>
-    </el-breadcrumb>
+    <div class="navigation-breadcrumb">
+      <div>我的信息</div>
+      <el-breadcrumb>
+        <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+        <!-- <el-breadcrumb-item>后台管理</el-breadcrumb-item>
+      <el-breadcrumb-item>用户管理</el-breadcrumb-item> -->
+        <el-breadcrumb-item>我的信息</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
     <el-card>
       <el-form :model="userForm" :rules="userFormRules" ref="userFormRef" label-width="70px">
         <el-form-item label="帐号">

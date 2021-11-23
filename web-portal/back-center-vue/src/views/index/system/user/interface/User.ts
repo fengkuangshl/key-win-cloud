@@ -17,11 +17,18 @@ export interface UserForm extends UserSearchRequest {
   username: string
 }
 
-export interface UserInfo extends UserForm, Model.BaseFleidCU {
-  enabled: boolean
-  headImgUrl: string | null
+export interface UserPassword {
   newPassword: string | null
   oldPassword: string | null
+}
+
+export interface ModifyPassword extends Model.Id, UserPassword {
+  rePassword: string
+}
+
+export interface UserInfo extends UserForm, Model.BaseFleidCU, UserPassword {
+  enabled: boolean
+  headImgUrl: string | null
   password: string
   roles: Array<SysRole>
   type: string

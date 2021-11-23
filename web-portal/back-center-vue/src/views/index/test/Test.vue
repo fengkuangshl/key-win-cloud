@@ -1,11 +1,14 @@
 <template>
   <div>
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>后台管理</el-breadcrumb-item>
-      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
-    </el-breadcrumb>
+    <div class="navigation-breadcrumb">
+      <div>用户管理</div>
+      <el-breadcrumb>
+        <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+        <!-- <el-breadcrumb-item>后台管理</el-breadcrumb-item>
+      <el-breadcrumb-item>用户管理</el-breadcrumb-item> -->
+        <el-breadcrumb-item>用户列表</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
     <el-card>
       <el-row :gutter="20">
         <el-col :span="7">
@@ -17,7 +20,7 @@
           <el-button type="primary" @click="addUser">添加用户</el-button>
         </el-col>
       </el-row>
-      <el-table :data="tableData.data" stripe border style="width: 100%">
+      <el-table :data="tableData.data" stripe border style="margin-top:20px;width: 100%">
         <el-table-column type="index" label="序号" width="50"></el-table-column>
         <el-table-column prop="username" label="帐号" width="180"> </el-table-column>
         <el-table-column prop="nickname" label="昵称" width="180"> </el-table-column>

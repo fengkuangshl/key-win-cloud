@@ -6,9 +6,9 @@
         <el-header>
           <HeaderNav></HeaderNav>
         </el-header>
+        <PageTabs :keep-alive-component-instance="keepAliveComponentInstance" />
         <el-main>
-          <PageTabs :keep-alive-component-instance="keepAliveComponentInstance" />
-          <div ref="keepAliveContainer" style="padding-top:20px">
+          <div ref="keepAliveContainer" style="padding-top:20px;background-color: #fff;">
             <keep-alive>
               <router-view :key="$route.fullPath" />
             </keep-alive>
@@ -42,6 +42,7 @@ import { MenuModule } from '@/store/menu-store'
 })
 export default class Index extends Vue {
   menus: Array<MenuResponse> | [] = []
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   keepAliveComponentInstance: any = null
 
   @Ref('pageTabs')
@@ -53,6 +54,7 @@ export default class Index extends Vue {
 
   mounted(): void {
     if (this.$refs.keepAliveContainer) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.keepAliveComponentInstance = (this.$refs.keepAliveContainer as any).childNodes[0].__vue__ // 获取keep-alive的控件实例对象
     }
   }
@@ -65,8 +67,13 @@ export default class Index extends Vue {
   .index-container {
     height: 100%;
     .el-header {
-      background-color: #373d3f;
+      background-color: #fff;
       align-items: center;
+      border-bottom: solid 1px #eee;
+    }
+    .el-main {
+      background-color: #eee;
+      padding: 10px;
     }
     .el-footer {
       height: 44px !important;
@@ -76,7 +83,7 @@ export default class Index extends Vue {
       height: 44px;
       line-height: 44px;
       padding: 0 15px;
-      background-color: #eee;
+      background-color: #fff;
     }
   }
 }

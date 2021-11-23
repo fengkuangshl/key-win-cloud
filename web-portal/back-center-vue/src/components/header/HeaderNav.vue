@@ -108,15 +108,16 @@ export default class HeaderNav extends Vue {
    * @param {*} event
    * @return {*}
    */
-  private imgerrorfun(event: any): void {
+  private imgerrorfun(event: PointerEvent): void {
     // console.log(event);
-    const img: HTMLImageElement = event.srcElement
+    const img: HTMLImageElement = event.target as HTMLImageElement
     img.src = require('@/assets/head.png')
     img.onerror = null // 控制不要一直跳动;
   }
 
   // 判断是否全屏
   public isFullscreen(): boolean {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const doc: any = document
     if (doc.fullscreenElement) {
       this.fullScrollClass = 'iconfont icon-quanping_o'
@@ -132,17 +133,20 @@ export default class HeaderNav extends Vue {
   // 点击按钮全屏事件
   public fullScroll(): void {
     if (this.isFullscreen()) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const doc: any = document
       // 是全屏就退出全屏
       if (doc.exitFullscreen) {
         doc.exitFullscreen()
       } else if (doc.mozCancelFullScreen) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const docAny = doc as any
         docAny.mozCancelFullScreen()
       } else if (doc.webkitCancelFullScreen) {
         doc.webkitCancelFullScreen()
       }
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const doc: any = document.documentElement
       // 否则将页面全屏
       if (doc.requestFullscreen) {
@@ -174,7 +178,7 @@ export default class HeaderNav extends Vue {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #fff;
+  color: #000;
   font-size: 20px;
   height: 100%;
   > div {

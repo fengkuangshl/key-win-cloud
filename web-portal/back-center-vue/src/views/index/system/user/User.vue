@@ -1,11 +1,14 @@
 <template>
   <div>
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>后台管理</el-breadcrumb-item>
-      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
-    </el-breadcrumb>
+    <div class="navigation-breadcrumb">
+      <div>用户管理</div>
+      <el-breadcrumb>
+        <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
+        <!-- <el-breadcrumb-item>后台管理</el-breadcrumb-item>
+      <el-breadcrumb-item>用户管理</el-breadcrumb-item> -->
+        <el-breadcrumb-item>用户列表</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
     <el-card>
       <el-row :gutter="20">
         <el-col :span="7">
@@ -18,10 +21,10 @@
         </el-col>
       </el-row>
       <KWTable url="api-user/getSysUserByPaged" style="width: 100%" ref="kwTableRef">
-        <el-table-column type="index" label="序号" ></el-table-column>
-        <el-table-column prop="username" sortable="custom" label="帐号" > </el-table-column>
-        <el-table-column prop="nickname" sortable="custom" label="昵称" > </el-table-column>
-        <el-table-column prop="phone" sortable="custom" label="手机" > </el-table-column>
+        <el-table-column type="index" label="序号"></el-table-column>
+        <el-table-column prop="username" sortable="custom" label="帐号"> </el-table-column>
+        <el-table-column prop="nickname" sortable="custom" label="昵称"> </el-table-column>
+        <el-table-column prop="phone" sortable="custom" label="手机"> </el-table-column>
         <el-table-column
           prop="sex"
           label="性别"
@@ -33,15 +36,15 @@
           "
         >
         </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" sortable="custom" >
+        <el-table-column prop="createTime" label="创建时间" sortable="custom">
           <template slot-scope="scope">{{ scope.row.createTime | dateTimeFormat }}</template>
         </el-table-column>
-        <el-table-column prop="enabled" label="状态" sortable="custom" >
+        <el-table-column prop="enabled" label="状态" sortable="custom">
           <template v-slot="scope">
             <el-switch v-model="scope.row.enabled" active-color="#13ce66" inactive-color="#ff4949" @change="userStatuChanged(scope.row)"> </el-switch>
           </template>
         </el-table-column>
-        <el-table-column label="操作"  >
+        <el-table-column label="操作">
           <template v-slot="scope">
             <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
             <el-tooltip effect="dark" content="重置密码" placement="top" :enterable="false">

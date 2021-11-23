@@ -44,6 +44,7 @@ import { Route, RouteMeta } from 'vue-router'
 @Component
 export default class PageTabs extends Vue {
   @Prop({ default: {} })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   keepAliveComponentInstance: any
 
   @Prop({ default: 'blank' })
@@ -114,6 +115,7 @@ export default class PageTabs extends Vue {
   }
 
   // 右键显示菜单
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
   showContextMenu(e: any, route: Route): void {
     this.contextMenuTargetPageRoute = route
     this.contextMenuLeft = e.layerX
@@ -253,14 +255,15 @@ export default class PageTabs extends Vue {
   }
   .__tabs {
     display: flex;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 10%);
     .__tab-item {
       white-space: nowrap;
       padding: 8px 6px 8px 18px;
       font-size: 12px;
-      border: 1px solid #dcdfe6;
+      border-right: 1px solid #dcdfe6;
       border-left: none;
       border-bottom: 0px;
-      line-height: 14px;
+      line-height: 20px;
       cursor: pointer;
       transition: color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), padding 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
       &:first-child {
@@ -281,8 +284,10 @@ export default class PageTabs extends Vue {
       }
       &.__is-active {
         padding-right: 12px;
-        border-bottom: 1px solid #fff;
+        //border-bottom: 1px solid #fff;
         color: #409eff;
+        border-top: solid 1px #000;
+        background-color: #fcfcfc;
         .el-icon-close {
           width: 12px;
           margin-right: 0px;
