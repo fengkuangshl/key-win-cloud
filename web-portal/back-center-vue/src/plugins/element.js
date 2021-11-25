@@ -32,7 +32,8 @@ import {
   DropdownItem,
   DropdownMenu,
   Scrollbar,
-  Footer
+  Footer,
+  Tree
 } from 'element-ui'
 
 Vue.use(Button)
@@ -66,5 +67,6 @@ Vue.use(DropdownItem)
 Vue.use(DropdownMenu)
 Vue.use(Scrollbar)
 Vue.use(Footer)
+Vue.use(Tree)
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm

@@ -21,7 +21,7 @@
         </el-col>
       </el-row>
       <KWTable url="api-user/getSysUserByPaged" style="width: 100%" ref="kwTableRef">
-        <el-table-column type="index" label="序号"></el-table-column>
+        <el-table-column type="index" width="80" label="序号"></el-table-column>
         <el-table-column prop="username" sortable="custom" label="帐号"> </el-table-column>
         <el-table-column prop="nickname" sortable="custom" label="昵称"> </el-table-column>
         <el-table-column prop="phone" sortable="custom" label="手机"> </el-table-column>
@@ -89,9 +89,9 @@
 import { ElForm } from 'element-ui/types/form'
 import { Component, Vue, Ref } from 'vue-property-decorator'
 import { UserForm, UserInfo, UserSearchRequest, UserStatuChangeRequest, Sex } from './interface/user'
-import { SysRole } from '../sysRole/interface/sysrole'
+import { SysRoleSearchRequest, SysRole } from '../sys-role/interface/sys-role'
 import { UserStatuChangeRequestApi, UserGetApi, UserSaveOrUpdateApi, ResetPasswordApi } from './user-api'
-import { SysRolePagedApi } from '../sysRole/sysrole-api'
+import { SysRolePagedApi } from '../sys-role/sys-role-api'
 import KWTable from '@/components/table/Table.vue'
 import FormValidatorRule from '@/common/utils/form-validator'
 
@@ -130,7 +130,7 @@ export default class User extends Vue {
   }
 
   roleOptions: Array<SysRole> | [] = []
-  userRolePage: KWRequest.PageRequest = {
+  userRolePage: KWRequest.PageRequest<SysRoleSearchRequest> = {
     pageSize: 10, // 每页的数据条数
     pageNo: 1 // 默认开始页面
   }
@@ -209,12 +209,12 @@ export default class User extends Vue {
 
   addUser(): void {
     this.title = '添加用户'
-    this.userForm = { nickname: '', phone: '', sex: Sex.男, username: '', roleId: '' }
     this.usernameDisabled = false
     this.userDialogVisble = true
     this.getUserRole()
     this.$nextTick(() => {
       this.userFormRef.resetFields()
+      this.userForm = { nickname: '', phone: '', sex: Sex.男, username: '', roleId: '' }
     })
   }
 

@@ -89,9 +89,9 @@
 import { ElForm } from 'element-ui/types/form'
 import { Component, Vue, Ref } from 'vue-property-decorator'
 import { UserForm, UserInfo, UserSearchRequest, UserStatuChangeRequest, Sex } from '@/views/index/system/user/interface/user'
-import { SysRole } from '@/views/index/system/sysRole/interface/sysrole'
+import { SysRoleSearchRequest, SysRole } from '@/views/index/system/sys-role/interface/sys-role'
 import { UserPagedApi, UserStatuChangeRequestApi, UserGetApi, UserSaveOrUpdateApi, ResetPasswordApi } from '@/views/index/system/user/user-api'
-import { SysRolePagedApi } from '@/views/index/system/sysRole/sysrole-api'
+import { SysRolePagedApi } from '@/views/index/system/sys-role/sys-role-api'
 
 @Component
 export default class User extends Vue {
@@ -125,7 +125,7 @@ export default class User extends Vue {
   }
 
   roleOptions: Array<SysRole> | [] = []
-  userRolePage: KWRequest.PageRequest = {
+  userRolePage: KWRequest.PageRequest<SysRoleSearchRequest> = {
     pageSize: 10, // 每页的数据条数
     pageNo: 1 // 默认开始页面
   }

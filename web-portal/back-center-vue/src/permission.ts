@@ -4,7 +4,7 @@ import { PermissionModule } from '@/store/permission-store'
 import getPageTitle from './common/utils/page-title'
 import { MenuModule } from './store/menu-store'
 import { MenuResponse } from './views/index/system/menu/interface/menu-response'
-import { MenuApi } from './views/index/system/menu/menu-api'
+import { CurrentMenuApi } from './views/index/system/menu/menu-api'
 import { LoginSuccessUserInfo } from './views/index/system/user/interface/user'
 import { UserInfoApi } from './views/index/system/user/user-api'
 import { UserModule } from './store/user-store'
@@ -57,7 +57,7 @@ export const getUserInfo = async (): Promise<void> => {
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const getMenus = async (to: Route, from: Route, next: any): Promise<void> => {
-  const { code, data, msg }: KWResponse.Result<Array<MenuResponse>> = await MenuApi()
+  const { code, data, msg }: KWResponse.Result<Array<MenuResponse>> = await CurrentMenuApi()
   if (code === 0) {
     console.log(data)
     const menus: Array<MenuResponse> = data.filter(item => item.name.indexOf('vue') > -1) // 暂时先这么处理

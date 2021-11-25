@@ -109,7 +109,7 @@ export default class HeaderNav extends Vue {
   get nickname(): string {
     const user = (UserModule.loginUser as LoginSuccessUserInfo).user
     console.log(user)
-    if (user !== undefined) {
+    if (user !== null) {
       return user.nickname
     }
     return ''
@@ -117,7 +117,7 @@ export default class HeaderNav extends Vue {
 
   get headImgUrl(): string | null {
     const user = (UserModule.loginUser as LoginSuccessUserInfo).user
-    if (user !== undefined) {
+    if (user !== null) {
       return user.headImgUrl
     }
     return null
