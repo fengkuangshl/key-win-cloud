@@ -37,7 +37,7 @@
 <script lang="ts">
 import { ElForm } from 'element-ui/types/form'
 import { Component, Vue, Ref } from 'vue-property-decorator'
-import { UserForm, Sex, LoginSuccessUserInfo } from './interface/User'
+import { UserForm, Sex, LoginSuccessUserInfo } from './interface/user'
 import { UserGetApi, UpdateMeApi } from './user-api'
 import { UserModule } from '@/store/user-store'
 

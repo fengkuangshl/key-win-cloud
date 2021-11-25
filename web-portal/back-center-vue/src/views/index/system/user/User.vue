@@ -88,7 +88,7 @@
 <script lang="ts">
 import { ElForm } from 'element-ui/types/form'
 import { Component, Vue, Ref } from 'vue-property-decorator'
-import { UserForm, UserInfo, UserSearchRequest, UserStatuChangeRequest, Sex } from './interface/User'
+import { UserForm, UserInfo, UserSearchRequest, UserStatuChangeRequest, Sex } from './interface/user'
 import { SysRole } from '../sysRole/interface/sysrole'
 import { UserStatuChangeRequestApi, UserGetApi, UserSaveOrUpdateApi, ResetPasswordApi } from './user-api'
 import { SysRolePagedApi } from '../sysRole/sysrole-api'
