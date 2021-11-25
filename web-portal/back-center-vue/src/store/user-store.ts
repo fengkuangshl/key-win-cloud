@@ -1,4 +1,4 @@
-import { VuexModule, Mutation, Action, getModule, Module, MutationAction } from 'vuex-module-decorators'
+import { VuexModule, Mutation, Action, getModule, Module } from 'vuex-module-decorators'
 import store from '@/store'
 import { LoginSuccessUserInfo } from '@/views/index/system/user/interface/user'
 
