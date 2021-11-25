@@ -9,19 +9,20 @@ export interface MenuCollapseState {
 class MenuCollapseStore extends VuexModule implements MenuCollapseState {
   public isCollapseMenu = false
 
-  get getCollapseMenuState() {
+  get getCollapseMenuState(): boolean {
     return this.isCollapseMenu
   }
 
   @Mutation
-  private CHANGE_COLLAPSEMENU(isCollapseMenu: boolean) {
+  public CHANGE_COLLAPSEMENU(isCollapseMenu: boolean): void {
     this.isCollapseMenu = isCollapseMenu
   }
 
-  @Action
-  public changeCollapseMenu(isCollapseMenu: boolean) {
+  @Action({ commit: 'CHANGE_COLLAPSEMENU' })
+  public changeCollapseMenu(isCollapseMenu: boolean): boolean {
     console.log('isCollapseMenu:' + isCollapseMenu)
-    this.CHANGE_COLLAPSEMENU(isCollapseMenu)
+    // this.CHANGE_COLLAPSEMENU(isCollapseMenu)
+    return isCollapseMenu
   }
 }
 

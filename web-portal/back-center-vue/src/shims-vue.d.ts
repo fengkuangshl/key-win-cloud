@@ -36,10 +36,28 @@ declare module '*.vue' {
       }
     }
     namespace KWRule {
-      interface Rule {
-        required: boolean
-        message: string
+      interface CallbackFunction {
+        (error?: Error): void
+      }
+      interface TriggerRule {
         trigger: string | Array<string>
+      }
+      interface MessageRule extends TriggerRule {
+        message: string
+      }
+      interface Rule extends MessageRule {
+        required: boolean
+      }
+      interface MixinRule extends BaseRule {
+        min: number
+        max: number
+      }
+      interface ValidatorFunction {
+        // eslint-disable-next-line no-use-before-define
+        (rule: ValidatorRule, value: string, cb: CallbackFunction): void;
+      }
+      interface ValidatorRule extends TriggerRule {
+        validator: ValidatorFunction
       }
     }
   }

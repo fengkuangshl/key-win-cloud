@@ -54,9 +54,9 @@
         </el-table-column>
       </KWTable>
     </el-card>
-    <el-dialog title="修改用户" @close="aditUserClosed" :visible.sync="userDialogVisble" width="20%">
+    <el-dialog :title="title" @close="aditUserClosed" :visible.sync="userDialogVisble" width="20%">
       <el-form :model="userForm" :rules="userFormRules" ref="userFormRef" label-width="70px">
-        <el-form-item label="帐号">
+        <el-form-item label="帐号" prop="username">
           <el-input v-model="userForm.username" style="max-width: 220px;" :disabled="usernameDisabled"></el-input>
         </el-form-item>
         <el-form-item label="用户名" prop="nickname">
@@ -93,6 +93,7 @@ import { SysRole } from '../sysRole/interface/sysrole'
 import { UserStatuChangeRequestApi, UserGetApi, UserSaveOrUpdateApi, ResetPasswordApi } from './user-api'
 import { SysRolePagedApi } from '../sysRole/sysrole-api'
 import KWTable from '@/components/table/Table.vue'
+import FormValidatorRule from '@/common/utils/form-validator'
 
 @Component({
   components: {
@@ -102,6 +103,7 @@ import KWTable from '@/components/table/Table.vue'
 export default class User extends Vue {
   t: UserSearchRequest = { nickname: '' }
 
+  title = ''
   userDialogVisble = false
   usernameDisabled = true
   userForm: UserForm = { nickname: '', phone: '', sex: Sex.男, username: '', roleId: '' }
@@ -111,9 +113,19 @@ export default class User extends Vue {
   @Ref('kwTableRef')
   readonly kwTableRef!: KWTable<UserSearchRequest, UserInfo>
 
-  readonly userFormRules: { nickname: Array<KWRule.Rule>; phone: Array<KWRule.Rule>; roleId: Array<KWRule.Rule> } = {
-    nickname: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-    phone: [{ required: true, message: '请输入手机', trigger: 'blur' }],
+  readonly userFormRules: { username: Array<KWRule.Rule | KWRule.MixinRule>; nickname: Array<KWRule.Rule | KWRule.MixinRule>; phone: Array<KWRule.Rule | KWRule.ValidatorRule>; roleId: Array<KWRule.Rule> } = {
+    username: [
+      { required: true, message: '请输入帐号', trigger: 'blur' },
+      { min: 3, max: 10, message: '用户名的长度3~10个字符之间', trigger: 'blur' }
+    ],
+    nickname: [
+      { required: true, message: '请输入用户名', trigger: 'blur' },
+      { min: 3, max: 10, message: '用户名的长度3~10个字符之间', trigger: 'blur' }
+    ],
+    phone: [
+      { required: true, message: '请输入手机', trigger: 'blur' },
+      { validator: FormValidatorRule.checkMobeli, trigger: 'blur' }
+    ],
     roleId: [{ required: true, message: '请选择角色', trigger: ['blur', 'change'] }]
   }
 
@@ -144,6 +156,7 @@ export default class User extends Vue {
 
   // 展示编辑用于的对话框
   async showEditDialog(id: string): Promise<void> {
+    this.title = '编辑用户'
     this.usernameDisabled = true
     const res = await UserGetApi(id)
     this.userForm = res.data
@@ -195,6 +208,7 @@ export default class User extends Vue {
   }
 
   addUser(): void {
+    this.title = '添加用户'
     this.userForm = { nickname: '', phone: '', sex: Sex.男, username: '', roleId: '' }
     this.usernameDisabled = false
     this.userDialogVisble = true

@@ -8,21 +8,26 @@ export interface MenuState {
 
 @Module({ dynamic: true, store, name: 'menu' })
 class MenuStore extends VuexModule implements MenuState {
-  public menus!: Array<MenuResponse>
+  public menus: Array<MenuResponse> = []
 
   get getMenus() {
     return this.menus
   }
 
   @Mutation
-  private CHANGE_MENU(menus: Array<MenuResponse>) {
+  public CHANGE_MENU(menus: Array<MenuResponse>): void {
     this.menus = menus
   }
 
   @Action
-  public changeMenu(menus: Array<MenuResponse>) {
+  public changeMenu(menus: Array<MenuResponse>): void {
     console.log('action:' + menus)
-    this.CHANGE_MENU(menus)
+    this.context.commit('CHANGE_MENU', menus)
+  }
+
+  @Action({ commit: 'CHANGE_MENU' })
+  public clearMenu(): Array<MenuResponse> {
+    return new Array<MenuResponse>()
   }
 }
 

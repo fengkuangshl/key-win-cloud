@@ -37,7 +37,7 @@
 <script lang="ts">
 import { ElForm } from 'element-ui/types/form'
 import { Component, Vue, Ref } from 'vue-property-decorator'
-import { UserForm, Sex } from './interface/user'
+import { UserForm, Sex, LoginSuccessUserInfo } from './interface/user'
 import { UserGetApi, UpdateMeApi } from './user-api'
 import { UserModule } from '@/store/user-store'
 
@@ -59,7 +59,7 @@ export default class MyInfo extends Vue {
 
   // 展示编辑用于的对话框
   async getUserInfo(): Promise<void> {
-    const res = await UserGetApi(UserModule.getUser.user.id)
+    const res = await UserGetApi((UserModule.loginUser as LoginSuccessUserInfo).user.id)
     this.userForm = res.data
     this.userForm.sex = this.userForm.sex === 0 ? '男' : '女'
   }

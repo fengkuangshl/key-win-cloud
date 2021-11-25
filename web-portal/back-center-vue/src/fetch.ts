@@ -27,7 +27,7 @@ function errorHandle(err: any): Promise<unknown> {
     response = { data: {} }
     response.status = -1
   }
-  switch (response.status) {
+  switch (response?.status) {
     case -1:
       err.message = '网络异常，请稍后再试！'
       break

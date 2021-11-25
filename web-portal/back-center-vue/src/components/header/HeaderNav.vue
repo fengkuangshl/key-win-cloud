@@ -20,30 +20,95 @@
         </div>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item @click.native="userInfoCenter">个人信息</el-dropdown-item>
-          <el-dropdown-item @click.native="modifyPassword">修改密码</el-dropdown-item>
+          <el-dropdown-item @click.native="showEditDialog">修改密码</el-dropdown-item>
           <el-dropdown-item divided @click.native="logout">
             <span style="display:block;">退出系统</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+    <el-dialog title="修改密码" @close="aditUserPasswordClosed" :visible.sync="userPasswordDialogVisble" width="20%">
+      <el-form :model="userForm" :rules="userFormRules" ref="userFormRef" label-width="100px">
+        <el-form-item label="原 密 码" prop="oldPassword">
+          <el-input v-model="userForm.oldPassword" type="password" style="max-width: 220px;"></el-input>
+        </el-form-item>
+        <el-form-item label="新 密 码" prop="newPassword">
+          <el-input v-model="userForm.newPassword" style="max-width: 220px;"></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码" prop="rePassword">
+          <el-input v-model="userForm.rePassword" style="max-width: 220px;"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="userPasswordDialogVisble = false">取 消</el-button>
+        <el-button type="primary" @click="editUserPassword">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
+import { ElForm } from 'element-ui/types/form'
 import { UserModule } from '@/store/user-store'
 import { MenuCollapseModule } from '@/store/menu-collapse-store'
-import { Component, Vue } from 'vue-property-decorator'
-@Component({
-  components: {}
-})
+import { Component, Vue, Ref } from 'vue-property-decorator'
+import { LoginSuccessUserInfo, ModifyPassword } from '@/views/index/system/user/interface/user'
+import { UpdatePasswordApi } from '@/views/index/system/user/user-api'
+import { local } from '@/store'
+import settings from '@/settings'
+import { MenuModule } from '@/store/menu-store'
+import { PermissionModule } from '@/store/permission-store'
+@Component
 export default class HeaderNav extends Vue {
   fullScrollClass = 'iconfont icon-quanping_o'
   tipFullScrollContent = '全屏浏览'
   collapseMenuIcon = 'el-icon-s-fold'
+  userPasswordDialogVisble = false
+  userForm: ModifyPassword = { id: '', oldPassword: '', newPassword: '', rePassword: '' }
+  @Ref('userFormRef')
+  readonly userFormRef!: ElForm
+
+  validatePassword(rule: KWRule.ValidatorRule, value: string, cb: KWRule.CallbackFunction): void {
+    if (value === '') {
+      cb(new Error('请输入密码'))
+    } else {
+      console.log(this)
+      if (this.userForm.rePassword !== '') {
+        console.log(this.userFormRef.validateField)
+        this.userFormRef.validateField('rePassword')
+      }
+      cb()
+    }
+  }
+
+  // <!--二次验证密码-->
+  validateRePassword(rule: KWRule.ValidatorRule, value: string, cb: KWRule.CallbackFunction): void {
+    if (value === '') {
+      cb(new Error('请再次输入密码'))
+    } else if (value !== this.userForm.newPassword) {
+      cb(new Error('两次输入密码不一致!'))
+    } else {
+      cb()
+    }
+  }
+
+  readonly userFormRules: { oldPassword: Array<KWRule.Rule>; newPassword: Array<KWRule.Rule | KWRule.MixinRule | KWRule.ValidatorRule>; rePassword: Array<KWRule.Rule | KWRule.MixinRule | KWRule.ValidatorRule> } = {
+    oldPassword: [{ required: true, message: '请输入原密码', trigger: 'blur' }],
+    newPassword: [
+      { required: true, message: '请输入新密码', trigger: 'blur' },
+      { min: 6, max: 15, message: '密码的长度6~15个字符之间', trigger: 'blur' },
+      { validator: this.validatePassword, trigger: 'blur' }
+    ],
+    rePassword: [
+      { required: true, message: '请再次输入密码', trigger: 'blur' },
+      { min: 6, max: 15, message: '密码的长度6~15个字符之间', trigger: 'blur' },
+      { validator: this.validateRePassword, trigger: 'blur' }
+    ]
+  }
 
   get nickname(): string {
-    const user = UserModule.getUser.user
+    const user = (UserModule.loginUser as LoginSuccessUserInfo).user
+    console.log(user)
     if (user !== undefined) {
       return user.nickname
     }
@@ -51,7 +116,7 @@ export default class HeaderNav extends Vue {
   }
 
   get headImgUrl(): string | null {
-    const user = UserModule.getUser.user
+    const user = (UserModule.loginUser as LoginSuccessUserInfo).user
     if (user !== undefined) {
       return user.headImgUrl
     }
@@ -90,12 +155,11 @@ export default class HeaderNav extends Vue {
     console.log('userInfoCenter')
   }
 
-  modifyPassword(): void {
-    console.log('modifyPassword')
-  }
-
   logout(): void {
-    localStorage.clear()
+    local.clear(settings.accessToken)
+    MenuModule.changeMenu([])
+    PermissionModule.clearRoutes()
+    UserModule.clearUser()
     this.$router.push('/login')
   }
 
@@ -139,7 +203,7 @@ export default class HeaderNav extends Vue {
       if (doc.exitFullscreen) {
         doc.exitFullscreen()
       } else if (doc.mozCancelFullScreen) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const docAny = doc as any
         docAny.mozCancelFullScreen()
       } else if (doc.webkitCancelFullScreen) {
@@ -162,6 +226,51 @@ export default class HeaderNav extends Vue {
         doc.msRequestFullscreen()
       }
     }
+  }
+
+  // 展示编辑用于的对话框
+  showEditDialog(): void {
+    this.userPasswordDialogVisble = true
+  }
+
+  aditUserPasswordClosed(): void {
+    this.userPasswordDialogVisble = false
+    this.userFormRef.resetFields()
+  }
+
+  editUserPassword(): void {
+    console.log(this)
+    this.userFormRef.validate(async valid => {
+      if (!valid) {
+        return false
+      }
+      this.modifyPassword()
+    })
+  }
+
+  modifyPassword(): void {
+    this.$confirm('确定要重置密码, 是否继续?', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(async () => {
+        this.userForm.id = (UserModule.loginUser as LoginSuccessUserInfo).user.id
+        const { code, msg } = await UpdatePasswordApi(this.userForm)
+        if (code !== 0) {
+          this.$message.error(msg || '用户密码修改失败!')
+        } else {
+          this.userPasswordDialogVisble = false
+          this.$message.success('用户密码修改成功!')
+        }
+      })
+      .catch(e => {
+        console.log(e)
+        this.$message({
+          type: 'info',
+          message: '已取消密码修改'
+        })
+      })
   }
 }
 </script>

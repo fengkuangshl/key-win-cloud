@@ -29,7 +29,7 @@ router.beforeEach(async (to: Route, from: Route, next: any): Promise<void> => {
   if (!token) {
     return next('/login')
   } else {
-    const dynamicRoutes: Array<RouteConfig> = PermissionModule.getPermission
+    const dynamicRoutes: Array<RouteConfig> = PermissionModule.getDynamicRoutes
     if (dynamicRoutes.length === 0) {
       getUserInfo()
       getMenus(to, from, next)
@@ -55,6 +55,7 @@ export const getUserInfo = async (): Promise<void> => {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const getMenus = async (to: Route, from: Route, next: any): Promise<void> => {
   const { code, data, msg }: KWResponse.Result<Array<MenuResponse>> = await MenuApi()
   if (code === 0) {
@@ -62,8 +63,8 @@ export const getMenus = async (to: Route, from: Route, next: any): Promise<void>
     const menus: Array<MenuResponse> = data.filter(item => item.name.indexOf('vue') > -1) // 暂时先这么处理
     // this.menus = data
     MenuModule.changeMenu(menus)
-    PermissionModule.GenerateRoutes()
-    router.addRoutes(PermissionModule.dynamicRoutes)
+    PermissionModule.generateRoutes()
+    // router.addRoutes(PermissionModule.getDynamicRoutes)
     next({ ...to, replace: true })
   } else {
     console.log(msg || '获取当前用户菜单失败！')

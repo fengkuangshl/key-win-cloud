@@ -1,28 +1,33 @@
-import { VuexModule, Mutation, Action, getModule, Module } from 'vuex-module-decorators'
+import { VuexModule, Mutation, Action, getModule, Module, MutationAction } from 'vuex-module-decorators'
 import store from '@/store'
 import { LoginSuccessUserInfo } from '@/views/index/system/user/interface/user'
 
 export interface UserState {
-  user: LoginSuccessUserInfo
+  user: LoginSuccessUserInfo | null
 }
 
 @Module({ dynamic: true, store, name: 'user' })
 class UserStore extends VuexModule implements UserState {
-  public user!: LoginSuccessUserInfo
+  public user: LoginSuccessUserInfo | null = null
 
-  get getUser() {
+  get loginUser(): LoginSuccessUserInfo | null {
     return this.user
   }
 
   @Mutation
-  private CHANGE_USER(user: LoginSuccessUserInfo) {
+  public SET_USERINFO(user: LoginSuccessUserInfo | null): void {
     this.user = user
   }
 
-  @Action
-  public changeUser(user: LoginSuccessUserInfo) {
-    console.log('action:' + user)
-    this.CHANGE_USER(user)
+  @Action({ commit: 'SET_USERINFO' })
+  public changeUser(user: LoginSuccessUserInfo): LoginSuccessUserInfo {
+    return user
+    // this.CHANGE_USER(user)
+  }
+
+  @Action({ commit: 'SET_USERINFO' })
+  public clearUser(): null {
+    return null
   }
 }
 
