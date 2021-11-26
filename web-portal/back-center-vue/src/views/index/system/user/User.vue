@@ -91,7 +91,7 @@ import { Component, Vue, Ref } from 'vue-property-decorator'
 import { UserForm, UserInfo, UserSearchRequest, UserStatuChangeRequest, Sex } from './interface/user'
 import { SysRoleSearchRequest, SysRole } from '../sys-role/interface/sys-role'
 import { UserStatuChangeRequestApi, UserGetApi, UserSaveOrUpdateApi, ResetPasswordApi } from './user-api'
-import { SysRolePagedApi } from '../sys-role/sys-role-api'
+import { FindAllSysRoleApi } from '../sys-role/sys-role-api'
 import KWTable from '@/components/table/Table.vue'
 import FormValidatorRule from '@/common/utils/form-validator'
 
@@ -131,7 +131,7 @@ export default class User extends Vue {
 
   roleOptions: Array<SysRole> | [] = []
   userRolePage: KWRequest.PageRequest<SysRoleSearchRequest> = {
-    pageSize: 10, // 每页的数据条数
+    pageSize: 1000000, // 每页的数据条数
     pageNo: 1 // 默认开始页面
   }
 
@@ -178,7 +178,7 @@ export default class User extends Vue {
   }
 
   async getUserRole(): Promise<void> {
-    const { data: res } = await SysRolePagedApi(this.userRolePage)
+    const { data: res } = await FindAllSysRoleApi()
     console.log('1111', res)
     this.roleOptions = res
   }

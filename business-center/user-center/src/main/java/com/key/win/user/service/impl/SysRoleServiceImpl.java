@@ -170,5 +170,9 @@ public class SysRoleServiceImpl implements SysRoleService {
         return page.doPagingQuery(t);
     }
 
+    public List<SysRole> findAllSysRole(){
+        LambdaQueryWrapper<SysRole> lqw = new LambdaQueryWrapper<SysRole>();
+        return sysRoleDao.selectList(lqw);
+    }
 
 }

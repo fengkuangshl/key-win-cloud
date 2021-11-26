@@ -72,7 +72,7 @@ import { DeleteSysRoleApi, SysRoleSaveOrUpdateApi } from './sys-role-api'
 import { MenuTree } from '../menu/model/menu-tree'
 import { IMenuTree, MenuRole, RoleIdAndMenuIds } from '../menu/interface/menu-response'
 import KWTable from '@/components/table/Table.vue'
-import { GetMenuByRoleIdApi, SaveMenuRole } from '../menu/menu-api'
+import { GetMenuByRoleIdApi, SaveMenuRoleApi } from '../menu/menu-api'
 import { ElTree } from 'element-ui/types/tree'
 
 @Component({
@@ -252,7 +252,7 @@ export default class Role extends Vue {
     }
     this.menuRoleDialogVisble = false
     const roleIdAndMenuIds: RoleIdAndMenuIds = { roleId: this.editSysRoleId, menuIds: checkedKeys }
-    const { code, msg } = await SaveMenuRole(roleIdAndMenuIds)
+    const { code, msg } = await SaveMenuRoleApi(roleIdAndMenuIds)
     if (code === 0) {
       this.$message.success('菜单保存成功！')
     } else {
@@ -268,7 +268,9 @@ export default class Role extends Vue {
 
 <style lang="less" scoped>
 .menu-role {
-  border-top: solid 1px #eee;
-  padding-top: 5px;
+  .el-dialog__body {
+    border-top: solid 1px #eee !important;
+    padding-top: 5px;
+  }
 }
 </style>

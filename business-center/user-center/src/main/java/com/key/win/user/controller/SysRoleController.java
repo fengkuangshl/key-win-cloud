@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -95,4 +96,11 @@ public class SysRoleController {
 			 throw new ControllerException(e);
 		}
 	}
+    @PostMapping("/roles/findAllSysRole")
+    @ApiOperation(value = "后台管理删除角色")
+    @PreAuthorize("hasAuthority('role:findAllSysRole')")
+    @LogAnnotation(module="user-center",recordRequestParam=false)
+    public Result findAllSysRole(){
+	    return Result.succeed(sysRoleService.findAllSysRole(),"");
+    }
 }
