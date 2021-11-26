@@ -132,6 +132,15 @@ public class SysPermissionController {
 			throw new ControllerException(e);
 		}
 	}
+
+    @ApiOperation(value = "根据roleId获取对应的权限")
+    @GetMapping("/permissions/{roleId}")
+    @PreAuthorize("hasAuthority('permission:get/permissions/{roleId}')")
+    @LogAnnotation(module="user-center",recordRequestParam=false)
+    public Result getAuthByRoleId(@PathVariable Long roleId) throws ControllerException {
+       return Result.succeed(this.findAuthByRoleId(roleId),"");
+    }
+
 	/**
 	 * 给角色分配权限
 	 * @throws ControllerException 

@@ -44,6 +44,9 @@ function errorHandle(err: any): Promise<unknown> {
     case 404:
       err.message = `请求地址出错: ${response.config.url}`
       break
+    case 405:
+      err.message = `访问不到: ${response.config.url}`
+      break
     case 408:
       err.message = '请求超时'
       break

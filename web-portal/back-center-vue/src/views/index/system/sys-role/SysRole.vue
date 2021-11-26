@@ -52,13 +52,26 @@
         <el-button type="primary" @click="editRole">确 定</el-button>
       </span>
     </el-dialog>
-    <el-dialog class="menu-role" title="菜单管理" @close="aditMenuRoleClosed" :visible.sync="menuRoleDialogVisble" width="20%">
+    <el-dialog title="菜单管理" @close="aditMenuRoleClosed" :visible.sync="menuRoleDialogVisble" width="20%">
       <el-scrollbar style="height:100%;">
         <el-tree :data="menuTreeArray" style="height:300px" show-checkbox default-expand-all node-key="id" ref="treeRef" :default-checked-keys="checkedKeys" highlight-current :props="defaultProps"> </el-tree>
       </el-scrollbar>
       <span slot="footer" class="dialog-footer">
         <el-button @click="menuRoleDialogVisble = false">取 消</el-button>
         <el-button type="primary" @click="saveMenuRole">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog title="权限管理" @close="aditRolePermissionClosed" :visible.sync="rolePermissionVisble">
+      <el-form :model="rolePermissionForm" :rules="rolePermissionFormRules" ref="rolePermissionFormRef">
+        <el-form-item label="权限">
+          <el-select v-model="rolePermissionForm.authIds" clearable multiple filterable placeholder="请选择">
+            <el-option v-for="item in permissionOptions" :key="item.id" :label="item.name" :value="item.id"> </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="rolePermissionVisble = false">取 消</el-button>
+        <el-button type="primary" @click="saveMenuPermission">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -73,7 +86,9 @@ import { MenuTree } from '../menu/model/menu-tree'
 import { IMenuTree, MenuRole, RoleIdAndMenuIds } from '../menu/interface/menu-response'
 import KWTable from '@/components/table/Table.vue'
 import { GetMenuByRoleIdApi, SaveMenuRoleApi } from '../menu/menu-api'
+import { GetByPermissionRoleIdApi, SaveMenuPermissionApi } from '../permission/permission-api'
 import { ElTree } from 'element-ui/types/tree'
+import { AuthIdsAndRoleId, PermissionRole } from '../permission/interface/permission-response'
 
 @Component({
   components: {
@@ -86,19 +101,25 @@ export default class Role extends Vue {
   title = ''
   roleDialogVisble = false
   menuRoleDialogVisble = false
+  rolePermissionVisble = false
   codeDisabled = true
   editSysRoleId = ''
   sysRoleForm: SysRoleForm = { name: '', code: '' }
+  rolePermissionForm: AuthIdsAndRoleId = { roleId: '', authIds: [] }
   @Ref('sysRoleFormRef')
   readonly sysRoleFormRef!: ElForm
 
   @Ref('kwTableRef')
   readonly kwTableRef!: KWTable<SysRoleSearchRequest, SysRole>
 
+  @Ref('rolePermissionFormRef')
+  readonly rolePermissionFormRef!: ElForm
+
   defaultProps: { children: string; label: string } = { children: 'children', label: 'name' }
   checkedKeys: Array<number> = []
   defaultCheckedKeys: Array<number> = []
   menuTreeArray: Array<IMenuTree> = []
+  permissionOptions: Array<PermissionRole> = []
 
   @Ref('treeRef')
   readonly treeRef!: ElTree<number, IMenuTree>
@@ -112,6 +133,10 @@ export default class Role extends Vue {
       { required: true, message: '请输入用户名', trigger: 'blur' },
       { min: 3, max: 10, message: '用户名的长度3~10个字符之间', trigger: 'blur' }
     ]
+  }
+
+  readonly rolePermissionFormRules: { authIds: Array<KWRule.Rule> } = {
+    authIds: [{ required: true, message: '请选择权限', trigger: ['blur', 'change'] }]
   }
 
   created(): void {
@@ -260,17 +285,52 @@ export default class Role extends Vue {
     }
   }
 
-  setPermission(id: string): void {
+  aditRolePermissionClosed(): void {
+    this.rolePermissionVisble = false
+    this.checkedKeys.push(...this.defaultCheckedKeys)
+  }
+
+  async setPermission(id: string): Promise<void> {
     console.log(id)
+    this.rolePermissionForm.roleId = id
+    const { code, data, msg } = await GetByPermissionRoleIdApi(id)
+    if (code === 0) {
+      this.permissionOptions = data
+      this.rolePermissionVisble = true
+      this.rolePermissionForm.authIds = []
+      for (const key in data) {
+        if (Object.prototype.hasOwnProperty.call(data, key)) {
+          const element = data[key]
+          if (element.checked) {
+            this.rolePermissionForm.authIds.push(element.id)
+          }
+        }
+      }
+      console.log(this)
+    } else {
+      this.$message.error(msg || '获取权限失败！')
+    }
+  }
+
+  saveMenuPermission(): void {
+    this.rolePermissionFormRef.validate(async valid => {
+      if (!valid) {
+        return false
+      }
+      const { code, msg } = await SaveMenuPermissionApi(this.rolePermissionForm)
+      if (code !== 0) {
+        this.$message.error(msg || '权限保存失败!')
+      } else {
+        this.rolePermissionVisble = false
+        this.$message.success('权限保存!')
+      }
+    })
   }
 }
 </script>
 
 <style lang="less" scoped>
-.menu-role {
-  .el-dialog__body {
-    border-top: solid 1px #eee !important;
-    padding-top: 5px;
-  }
+.el-select {
+  width: 860px;
 }
 </style>

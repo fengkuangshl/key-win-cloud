@@ -72,7 +72,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="角色" prop="roleId">
-          <el-select v-model="userForm.roleId" multiple filterable allow-create default-first-option placeholder="请选择">
+          <el-select v-model="userForm.roleId" clearable multiple filterable placeholder="请选择">
             <el-option v-for="item in roleOptions" :key="item.id" :label="item.name" :value="item.id"> </el-option>
           </el-select>
         </el-form-item>
