@@ -88,7 +88,7 @@
 <script lang="ts">
 import { ElForm } from 'element-ui/types/form'
 import { Component, Vue, Ref } from 'vue-property-decorator'
-import { UserForm, UserInfo, UserSearchRequest, UserStatuChangeRequest, Sex } from './interface/user'
+import { UserForm, UserInfo, UserSearchRequest, UserStatuChangeRequest } from './interface/user'
 import { SysRoleSearchRequest, SysRole } from '../sys-role/interface/sys-role'
 import { UserStatuChangeRequestApi, UserGetApi, UserSaveOrUpdateApi, ResetPasswordApi } from './user-api'
 import { FindAllSysRoleApi } from '../sys-role/sys-role-api'
@@ -106,7 +106,7 @@ export default class User extends Vue {
   title = ''
   userDialogVisble = false
   usernameDisabled = true
-  userForm: UserForm = { nickname: '', phone: '', sex: Sex.男, username: '', roleId: '' }
+  userForm: UserForm = { nickname: '', phone: '', sex: '', username: '', roleId: '' }
   @Ref('userFormRef')
   readonly userFormRef!: ElForm
 
@@ -133,12 +133,6 @@ export default class User extends Vue {
   userRolePage: KWRequest.PageRequest<SysRoleSearchRequest> = {
     pageSize: 1000000, // 每页的数据条数
     pageNo: 1 // 默认开始页面
-  }
-
-  created(): void {
-    setTimeout(() => {
-      this.searchUser()
-    }, 100)
   }
 
   async userStatuChanged(userInfo: UserInfo): Promise<void> {
@@ -214,7 +208,7 @@ export default class User extends Vue {
     this.getUserRole()
     this.$nextTick(() => {
       this.userFormRef.resetFields()
-      this.userForm = { nickname: '', phone: '', sex: Sex.男, username: '', roleId: '' }
+      this.userForm = { nickname: '', phone: '', sex: '男', username: '', roleId: '' }
     })
   }
 

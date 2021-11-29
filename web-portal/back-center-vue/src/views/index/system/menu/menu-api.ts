@@ -7,4 +7,5 @@ export const SaveMenuRoleApi = (roleIdAndMenuIds: RoleIdAndMenuIds): Promise<KWR
 export const SysMenuPagedApi = (pageRequest: KWRequest.PageRequest<Name>): Promise<KWResponse.PageResult<MenuResponse>> => request.post('api-user/getSysMeunByPaged', pageRequest)
 export const DeleteSysMenuApi = (id: string): Promise<KWResponse.Result> => request.delete('api-user/menus/' + id)
 export const SysMuenSaveOrUpdateApi = (menuForm: MenuForm): Promise<KWResponse.Result> => request.post('api-user/menus/saveOrUpdate', menuForm)
-export const GetMenuByIdApi = (id: string): Promise<KWResponse.Result<MenuResponse>> => request.get('api-user/menus/' + id)
+export const GetMenuByIdApi = (id: string): Promise<KWResponse.Result<MenuResponse>> => request.get('api-user/menus/get/' + id)
+export const GetOnesApi = (): Promise<KWResponse.Result<Array<MenuResponse>>> => request.get('api-user/menus/getOnes', {})

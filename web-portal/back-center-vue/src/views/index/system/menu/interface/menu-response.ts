@@ -1,5 +1,14 @@
 import { TreeData } from 'element-ui/types/tree'
 
+export enum IsHiddenMenu {
+  是 = 1,
+  否 = 0
+}
+export enum IsMenu {
+  是 = 1,
+  否 = 2
+}
+
 export interface Name {
   name: string
 }
@@ -9,8 +18,8 @@ export interface RoleIdAndMenuIds {
 }
 export interface MenuForm extends Name {
   css: string
-  hidden: false
-  isMenu: number
+  hidden: IsHiddenMenu | boolean | string
+  isMenu: IsMenu | number | string
   parentId: string
   path: string
   sort: number

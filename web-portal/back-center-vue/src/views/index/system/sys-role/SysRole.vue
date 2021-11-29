@@ -139,12 +139,6 @@ export default class Role extends Vue {
     authIds: [{ required: true, message: '请选择权限', trigger: ['blur', 'change'] }]
   }
 
-  created(): void {
-    setTimeout(() => {
-      this.searchRole()
-    }, 100)
-  }
-
   // 展示编辑用于的对话框
   async showEditDialog(role: SysRole): Promise<void> {
     this.title = '编辑用户'

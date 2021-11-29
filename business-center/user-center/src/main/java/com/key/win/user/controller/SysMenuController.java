@@ -33,7 +33,7 @@ public class SysMenuController {
     private SysMenuService menuService;
 
     @PreAuthorize("hasAuthority('menus:get/menus/{id}')")
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     @LogAnnotation(module = "user-center", recordRequestParam = false)
     public Result findSysMenuById(@PathVariable Long id) throws ControllerException {
         try {
@@ -137,6 +137,16 @@ public class SysMenuController {
         }
     }
 
+
+    @GetMapping("/getAll")
+    @ApiOperation(value = "查询所有菜单")
+    @PreAuthorize("hasAuthority('menu:get/menus/findAlls')")
+    @LogAnnotation(module = "user-center", recordRequestParam = false)
+    public Result getAll() throws ControllerException {
+        List<SysMenu> all = menuService.findAll();
+        return Result.succeed(all, "");
+    }
+
     @GetMapping("/findOnes")
     @ApiOperation(value = "获取菜单以及顶级菜单")
     @PreAuthorize("hasAuthority('menu:get/menus/findOnes')")
@@ -147,6 +157,15 @@ public class SysMenuController {
         } catch (ServiceException e) {
             throw new ControllerException(e);
         }
+    }
+
+    @GetMapping("/getOnes")
+    @ApiOperation(value = "获取菜单以及顶级菜单")
+    @PreAuthorize("hasAuthority('menu:get/menus/findOnes')")
+    public Result getOnes() throws ControllerException {
+        List<SysMenu> list = menuService.findOnes();
+        return Result.succeed(list, "");
+
     }
 
     /**

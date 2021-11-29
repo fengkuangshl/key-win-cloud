@@ -20,26 +20,25 @@
           <el-button type="primary" @click="addMenu">添加菜单</el-button>
         </el-col>
       </el-row>
-      <KWTable url="api-user/getSysMenusByPaged" style="width: 100%" ref="kwTableRef">
-        <el-table-column type="index" width="80" label="序号"></el-table-column>
-        <el-table-column prop="name" sortable="custom" label="菜单名称"> </el-table-column>
-        <el-table-column prop="path" sortable="custom" label="菜单路由"> </el-table-column>
-        <el-table-column prop="url" sortable="custom" label="菜单URL"> </el-table-column>
-        <el-table-column prop="css" sortable="custom" label="样式"> </el-table-column>
-        <el-table-column prop="sort" sortable="custom" label="排序"> </el-table-column>
+      <KWTable url="api-user/menus/getAll" method="GET" :tableDataFilter="tableDataFilter" :renderPreFn="menuTreeAssemble" :treeProps="treeProps" :isPagination="isPagination" style="width: 100%" ref="kwTableRef">
+        <el-table-column prop="name" sortable label="菜单名称"> </el-table-column>
+        <el-table-column prop="path" sortable label="菜单路由"> </el-table-column>
+        <el-table-column prop="url" sortable label="菜单URL"> </el-table-column>
+        <el-table-column prop="css" sortable label="样式"> </el-table-column>
+        <el-table-column prop="sort" sortable label="排序"> </el-table-column>
         <el-table-column
           prop="isMenu"
-          sortable="custom"
+          sortable
           label="类型"
           :formatter="
             row => {
               if (row.isMenu == 2) {
-                return '<i style=\'el-icon-notebook-2\'>按钮</i>'
+                return '按钮'
               }
               if (row.parentId == -1) {
-                return '<span style=\'el-icon-folder\'>目录</span>'
+                return '目录'
               } else {
-                return '<span style=\'el-icon-menu\'>菜单</span>'
+                return '菜单'
               }
             }
           "
@@ -47,14 +46,14 @@
         </el-table-column>
         <el-table-column label="操作">
           <template v-slot="scope">
-            <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row)"></el-button>
+            <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
             <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteMenu(scope.row.id)"></el-button>
           </template>
         </el-table-column>
       </KWTable>
     </el-card>
     <el-dialog :title="title" @close="aditMenuClosed" :visible.sync="menuDialogVisble" width="20%">
-      <el-form :model="sysMenuForm" :rules="sysMenuFormRules" ref="sysMenuFormRef" label-width="70px">
+      <el-form :model="sysMenuForm" :rules="sysMenuFormRules" ref="sysMenuFormRef" label-width="90px">
         <el-form-item label="菜单名称" prop="name">
           <el-input v-model="sysMenuForm.name" style="max-width: 220px;"></el-input>
         </el-form-item>
@@ -83,7 +82,9 @@
           <el-input v-model="sysMenuForm.sort" type="number" style="max-width: 220px;"></el-input>
         </el-form-item>
         <el-form-item label="上级菜单" prop="parentId">
-          <el-input v-model="sysMenuForm.parentId" style="max-width: 220px;"></el-input>
+          <el-select v-model="sysMenuForm.parentId" placeholder="请选择">
+            <el-option v-for="item in sysMenuOptions" :key="item.id" :label="item.name" :value="item.id"> </el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -98,7 +99,7 @@
 import { ElForm } from 'element-ui/types/form'
 import { Component, Vue, Ref } from 'vue-property-decorator'
 import { Name, MenuResponse, MenuForm } from './interface/menu-response'
-import { DeleteSysMenuApi, SysMuenSaveOrUpdateApi, GetMenuByIdApi } from './menu-api'
+import { DeleteSysMenuApi, SysMuenSaveOrUpdateApi, GetMenuByIdApi, GetOnesApi } from './menu-api'
 import KWTable from '@/components/table/Table.vue'
 
 @Component({
@@ -111,33 +112,38 @@ export default class Menu extends Vue {
 
   title = ''
   menuDialogVisble = false
-  menuMenuDialogVisble = false
   menuPermissionVisble = false
-  sysMenuForm: MenuForm = { name: '', css: '', hidden: false, isMenu: 0, parentId: '', path: '', sort: 0, url: '' }
+  isPagination = false
+  treeProps = { children: 'subMenus' }
+  sysMenuForm: MenuForm = { name: '', css: '', hidden: '', isMenu: '', parentId: '', path: '', sort: 0, url: '' }
+  sysMenuOptions: Array<MenuResponse> = []
   @Ref('sysMenuFormRef')
   readonly sysMenuFormRef!: ElForm
 
   @Ref('kwTableRef')
   readonly kwTableRef!: KWTable<Name, MenuResponse>
 
-  readonly sysMenuFormRules: { name: Array<KWRule.Rule | KWRule.MixinRule> } = {
+  readonly sysMenuFormRules: { name: Array<KWRule.Rule | KWRule.MixinRule>; sort: Array<KWRule.Rule> } = {
     name: [
       { required: true, message: '请输入菜单名称', trigger: 'blur' },
       { min: 3, max: 10, message: '菜单名称的长度3~10个字符之间', trigger: 'blur' }
-    ]
-  }
-
-  created(): void {
-    setTimeout(() => {
-      this.searchMenu()
-    }, 100)
+    ],
+    sort: [{ required: true, message: '请输入排序', trigger: 'blur' }]
   }
 
   // 展示编辑用于的对话框
-  async showEditDialog(menu: MenuResponse): Promise<void> {
+  async showEditDialog(id: string): Promise<void> {
     this.title = '编辑用户'
-    this.sysMenuForm = menu
-    this.menuDialogVisble = true
+    this.getOnes()
+    const { code, data, msg } = await GetMenuByIdApi(id)
+    if (code === 0) {
+      this.menuDialogVisble = true
+      this.sysMenuForm = data
+      this.sysMenuForm.hidden = this.sysMenuForm.hidden === 1 ? '是' : '否'
+      this.sysMenuForm.isMenu = this.sysMenuForm.isMenu === 1 ? '是' : '否'
+    } else {
+      this.$message.error(msg || '获取菜单失败！')
+    }
   }
 
   aditMenuClosed(): void {
@@ -150,6 +156,8 @@ export default class Menu extends Vue {
       if (!valid) {
         return false
       }
+      this.sysMenuForm.isMenu = this.sysMenuForm.isMenu === '是' ? '1' : '2'
+      this.sysMenuForm.hidden = this.sysMenuForm.hidden === '是'
       const { code, msg } = await SysMuenSaveOrUpdateApi(this.sysMenuForm)
       if (code !== 0) {
         this.$message.error(msg || '操作用户信息失败!')
@@ -162,10 +170,12 @@ export default class Menu extends Vue {
   }
 
   addMenu(): void {
-    this.title = '添加角色'
+    this.title = '添加菜单'
     this.menuDialogVisble = true
+    this.getOnes()
     this.$nextTick(() => {
       this.sysMenuFormRef.resetFields()
+      this.sysMenuForm = { name: '', css: '', hidden: '否', isMenu: '是', parentId: '-1', path: '', sort: 0, url: '' }
     })
   }
 
@@ -197,21 +207,87 @@ export default class Menu extends Vue {
     this.kwTableRef.loadByCondition(this.t)
   }
 
-  async setMenu(id: string): Promise<void> {
-    console.log(id)
-    const { code, data, msg } = await GetMenuByIdApi(id)
+  async getOnes(): Promise<void> {
+    const { code, msg, data } = await GetOnesApi()
     if (code === 0) {
-      this.menuMenuDialogVisble = true
-      this.sysMenuForm = data
+      const rootMenus = { id: '-1', parentId: '-1', name: '顶级目录', url: 'javascript:;', path: '', css: '', sort: 9999, createTime: 0, updateTime: 0, isMenu: 1, hidden: false, subMenus: null, roleId: null, menuIds: null }
+      this.sysMenuOptions.push(rootMenus)
+      this.sysMenuOptions.push(...data)
     } else {
-      this.$message.error(msg || '获取菜单失败！')
+      this.$message.error(msg || '获取一级菜单失败！')
     }
+  }
+
+  tableDataFilter(datas: Array<MenuResponse>): Array<MenuResponse> {
+    return datas.filter(data => {
+      if (this.t.name === '') {
+        return true
+      }
+      if (
+        data.name.toLowerCase().includes(this.t.name.toLowerCase()) ||
+        data.path.toLowerCase().includes(this.t.name.toLowerCase()) ||
+        data.url.toLowerCase().includes(this.t.name.toLowerCase()) ||
+        data.css.toLowerCase().includes(this.t.name.toLowerCase()) ||
+        (data.sort + '').toLowerCase().includes(this.t.name.toLowerCase()) ||
+        '目录'.toLowerCase().includes(this.t.name.toLowerCase())
+      ) {
+        return true
+      }
+      const subMenus = data.subMenus
+      if (subMenus !== undefined && subMenus != null) {
+        for (const key in subMenus) {
+          if (Object.prototype.hasOwnProperty.call(subMenus, key)) {
+            const subMenu = subMenus[key]
+            if (
+              subMenu.name.toLowerCase().includes(this.t.name.toLowerCase()) ||
+              subMenu.path.toLowerCase().includes(this.t.name.toLowerCase()) ||
+              subMenu.url.toLowerCase().includes(this.t.name.toLowerCase()) ||
+              subMenu.css.toLowerCase().includes(this.t.name.toLowerCase()) ||
+              (subMenu.sort + '').toLowerCase().includes(this.t.name.toLowerCase()) ||
+              '菜单'.toLowerCase().includes(this.t.name.toLowerCase())
+            ) {
+              return true
+            }
+          }
+        }
+      }
+    })
+  }
+
+  menuTreeAssemble(datas: Array<MenuResponse>): Array<MenuResponse> {
+    console.log(datas)
+    const menus: Array<MenuResponse> = new Array<MenuResponse>()
+    const subMenuMap: Map<string, Array<MenuResponse>> = new Map<string, Array<MenuResponse>>()
+    for (const key in datas) {
+      if (Object.prototype.hasOwnProperty.call(datas, key)) {
+        const element = datas[key]
+        if (element.parentId === '-1') {
+          menus.push(element)
+        } else {
+          let subMenus: Array<MenuResponse> = subMenuMap.get(element.parentId) as Array<MenuResponse>
+          if (subMenus === undefined || subMenus === null) {
+            subMenus = new Array<MenuResponse>()
+          }
+          subMenus.push(element)
+          subMenuMap.set(element.parentId, subMenus)
+        }
+      }
+    }
+    for (const key in menus) {
+      if (Object.prototype.hasOwnProperty.call(menus, key)) {
+        const item = menus[key]
+        const subItem: Array<MenuResponse> = subMenuMap.get(item.id) as Array<MenuResponse>
+        if (item.subMenus === undefined || item.subMenus === null) {
+          item.subMenus = new Array<MenuResponse>()
+        }
+        if (subItem !== undefined) {
+          item.subMenus.push(...subItem)
+        }
+      }
+    }
+    return menus
   }
 }
 </script>
 
-<style lang="less" scoped>
-.el-select {
-  width: 860px;
-}
-</style>
+<style lang="less" scoped></style>
