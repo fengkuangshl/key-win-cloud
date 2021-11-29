@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 <template>
   <div>
     <el-table
@@ -7,6 +6,8 @@
       :data="pageResult.data"
       :highlight-current-row="true"
       :row-key="rowKey"
+      :default-expand-all="isExpandAll"
+      :tree-props="treeProps"
       @cell-click="doTableCellClick"
       @current-change="doChangeTableCurrent"
       @row-click="doTableRowClick"
@@ -47,27 +48,55 @@ export default class KWTable<T, RT> extends Vue {
   @Ref('tableRef')
   readonly tableRef!: ElTable
 
-  @Prop({ required: true })
+  @Prop({ required: true, type: String })
   private url!: string // url
 
-  @Prop({ default: () => 1 })
+  @Prop({ default: () => 1, type: Number })
   private pageNo!: number
 
-  @Prop({ default: () => null })
+  @Prop({ default: () => null, type: Object })
   private param!: T
 
-  @Prop({ default: () => 10 })
+  @Prop({ default: () => 10, type: Number })
   private pageSize!: number
 
   @Prop({ default: 'id', type: [String, Function] })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private rowKey!: string | ((row: any) => any)
 
-  @Prop({ default: () => [5, 10, 15, 20] })
+  @Prop({ default: () => [5, 10, 15, 20], type: [] })
   private pageSizes!: number[]
 
-  @Prop({ default: () => 'total, sizes, prev, pager, next, jumper' })
+  @Prop({ default: () => 'total, sizes, prev, pager, next, jumper', type: String })
   private pageLayout!: string
+
+  @Prop({ default: () => false, type: Boolean })
+  private isExpandAll!: boolean
+
+  @Prop({
+    default: () => ({
+      children: 'children',
+      hasChildren: 'hasChildren'
+    }),
+    type: Object
+  })
+  private treeProps!: { children: string; hasChildren: string }
+
+  @Prop({
+    default: (datas: Array<RT>): Array<RT> => {
+      return datas
+    },
+    type: Function
+  })
+  private renderPreFn!: (datas: Array<RT>) => Array<RT>
+
+  @Prop({
+    default: (datas: Array<RT>): void => {
+      console.log(datas)
+    },
+    type: Function
+  })
+  private callbackFn!: (datas: Array<RT>) => void
 
   private currentRow!: RT
 
@@ -80,7 +109,15 @@ export default class KWTable<T, RT> extends Vue {
     this.pageRequest.pageSize = pageSize || this.pageSize
     this.pageRequest.t = param || this.param
     const res: KWResponse.PageResult<RT> = await request.post(this.url, this.pageRequest)
-    this.pageResult = res
+    // ------------------组装数据开始------------------
+    this.pageResult.data = this.renderPreFn(res.data) // 渲染前的回调函数
+    this.pageResult.pageNo = res.pageNo
+    this.pageResult.pageSize = res.pageSize
+    this.pageResult.count = res.count
+    this.pageResult.code = res.code
+    this.pageResult.totalPage = res.totalPage
+    this.callbackFn(res.data) // 渲染之后的回调函数
+    // ------------------组装数据结束------------------
   }
 
   /** 重载数据 */

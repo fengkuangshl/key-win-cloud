@@ -7,16 +7,17 @@ export interface RoleIdAndMenuIds {
   menuIds: Array<number> | null
   roleId: string | null
 }
-export interface MenuResponse extends Model.BaseFleidCU, Name, RoleIdAndMenuIds {
+export interface MenuForm extends Name {
   css: string
   hidden: false
   isMenu: number
-  name: string
   parentId: string
   path: string
   sort: number
-  subMenus: Array<MenuResponse> | null
   url: string
+}
+export interface MenuResponse extends Model.BaseFleidCU, Name, RoleIdAndMenuIds, MenuForm {
+  subMenus: Array<MenuResponse> | null
 }
 export interface Id extends Name {
   id: number
