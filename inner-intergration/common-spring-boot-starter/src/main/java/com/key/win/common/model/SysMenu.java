@@ -21,7 +21,7 @@ import java.util.Set;
 @Data
 @TableName("sys_menu")
 @EqualsAndHashCode(callSuper=true)
-public class SysMenu extends Model<SysPermission> implements Serializable {
+public class SysMenu extends Model<SysMenu> implements Serializable {
 
 	private static final long serialVersionUID = 749360940290141180L;
 	@JsonSerialize(using=ToStringSerializer.class)

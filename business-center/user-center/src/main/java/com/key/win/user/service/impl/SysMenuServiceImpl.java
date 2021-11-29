@@ -1,21 +1,27 @@
 package com.key.win.user.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.google.common.collect.Maps;
 import com.key.win.common.exception.service.ServiceException;
 import com.key.win.common.model.SysMenu;
+import com.key.win.common.model.SysRole;
+import com.key.win.common.model.SysUser;
+import com.key.win.common.web.PageRequest;
+import com.key.win.common.web.PageResult;
+import com.key.win.page.MybatiesPageServiceTemplate;
 import com.key.win.user.dao.SysMenuDao;
 import com.key.win.user.dao.SysRoleMenuDao;
 import com.key.win.user.service.SysMenuService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -131,5 +137,48 @@ public class SysMenuServiceImpl implements SysMenuService {
 			throw new ServiceException(e);
 		}
 	}
+
+    @Override
+    public PageResult<SysMenu> findSysRoleByPaged(PageRequest<SysMenu> t){
+        MybatiesPageServiceTemplate<SysMenu, SysMenu> page = new MybatiesPageServiceTemplate<SysMenu, SysMenu>(menuDao) {
+            @Override
+            protected AbstractWrapper constructWrapper(SysMenu sysMenu) {
+                LambdaQueryWrapper<SysMenu> lqw = new LambdaQueryWrapper<SysMenu>();
+                if (sysMenu != null && StringUtils.isNotBlank(sysMenu.getName())) {
+                    lqw.eq(SysMenu::getName, sysMenu.getName() == null ? "" : sysMenu.getName());
+                }
+                lqw.orderByDesc(SysMenu::getCreateTime);
+                return lqw;
+            }
+
+            @Override
+            protected List getDefaultQueryOrder(SysMenu sysMenu, String sortName) {
+                List<SFunction<SysMenu,?>> list = new ArrayList<>();
+                if("name".equals(sortName)){
+                    list.add(SysMenu::getName);
+                }
+                if("path".equals(sortName)){
+                    list.add(SysMenu::getPath);
+                }
+                if("url".equals(sortName)){
+                    list.add(SysMenu::getUrl);
+                }
+                if("css".equals(sortName)){
+                    list.add(SysMenu::getCss);
+                }
+                if("isMenu".equals(sortName)){
+                    list.add(SysMenu::getIsMenu);
+                }
+                if("createTime".equals(sortName)){
+                    list.add(SysMenu::getCreateTime);
+                }
+                if("sort".equals(sortName)){
+                    list.add(SysMenu::getSort);
+                }
+                return list;
+            }
+        };
+        return page.doPagingQuery(t);
+    }
 
 }

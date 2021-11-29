@@ -2,6 +2,8 @@ package com.key.win.user.service;
 
 import com.key.win.common.exception.service.ServiceException;
 import com.key.win.common.model.SysMenu;
+import com.key.win.common.web.PageRequest;
+import com.key.win.common.web.PageResult;
 
 import java.util.List;
 import java.util.Set;
@@ -63,4 +65,5 @@ public interface SysMenuService {
 	List<SysMenu> findOnes()  throws ServiceException;
 
 
+    PageResult<SysMenu> findSysRoleByPaged(PageRequest<SysMenu> t);
 }
