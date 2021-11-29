@@ -38,14 +38,28 @@ import { cellCallbackParams, ElTable, SortOrder } from 'element-ui/types/table'
 import request from '@/fetch'
 import { session } from '@/store'
 import { ElTableColumn } from 'element-ui/types/table-column'
+
+/**
+ * KWTable<T, RT> 是table+分页的组件对象
+ * T：查询条件泛型
+ * RT：数据结果泛型
+ * 1、可以根据url查询后台数据
+ * 2、可选择是否需要分页，默认分页
+ * 3、不管是否分页都提供了GET和POST两种方式
+ * 4、@Prop所注解的都是对外开放的输入条件，除url是调用者必须提供，其它均可选
+ * 5、提供选中行的数据及table的各种点击事件
+ * 6、提供table的渲染之前和之后及对table的内存数据检索的回调函数
+ * 最后此组件主要是借鉴：https://gitee.com/virens/vue-demo/blob/master/src/components/table/VirTable.vue
+ */
 @Component
 export default class KWTable<T, RT> extends Vue {
-  // 内部变量
+  // 内部分页查询对象
   pageRequest: KWRequest.PageRequest<T> = {
     pageSize: 10, // 每页的数据条数
     pageNo: 1 // 默认开始页面
   }
 
+  // 内部分页返回对象
   pageResult: KWResponse.PageResult<RT> = {
     pageNo: 0,
     pageSize: 0,
@@ -55,34 +69,44 @@ export default class KWTable<T, RT> extends Vue {
     totalPage: 0
   }
 
+  // table的自身引用
   @Ref('tableRef')
   readonly tableRef!: ElTable
 
+  // 查询的url
   @Prop({ required: true, type: String })
   private url!: string // url
 
+  // 页数
   @Prop({ default: () => 1, type: Number })
   private pageNo!: number
 
+  // 查询条件
   @Prop({ default: () => null, type: Object })
   private param!: T
 
+  // 每页条数
   @Prop({ default: () => 10, type: Number })
   private pageSize!: number
 
+  // table rowKey
   @Prop({ default: 'id', type: [String, Function] })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private rowKey!: string | ((row: any) => any)
 
+  // 每页条数的可选列表
   @Prop({ default: () => [5, 10, 15, 20], type: [] })
   private pageSizes!: number[]
 
+  // 分页布局的样式
   @Prop({ default: () => 'total, sizes, prev, pager, next, jumper', type: String })
   private pageLayout!: string
 
+  // 如果树型结构table，是否需要展开所以树节点，默认是
   @Prop({ default: () => true, type: Boolean })
   private isExpandAll!: boolean
 
+  // 如果树型结构table，children和hasChildren对应的实体属性的字段名称
   @Prop({
     default: () => ({
       children: 'children',
@@ -92,6 +116,7 @@ export default class KWTable<T, RT> extends Vue {
   })
   private treeProps!: { children: string; hasChildren: string }
 
+  // 渲染table之前的数据处理回调函数
   @Prop({
     default: (datas: Array<RT>): Array<RT> => {
       return datas
@@ -100,6 +125,7 @@ export default class KWTable<T, RT> extends Vue {
   })
   private renderPreFn!: (datas: Array<RT>) => Array<RT>
 
+  // 渲染table之后的数据处理回调函数
   @Prop({
     default: (datas: Array<RT>): void => {
       console.log(datas)
@@ -108,12 +134,15 @@ export default class KWTable<T, RT> extends Vue {
   })
   private callbackFn!: (datas: Array<RT>) => void
 
+  // 是否需要分页
   @Prop({ default: () => true, type: Boolean })
   private isPagination!: boolean
 
+  // http的请求类型
   @Prop({ default: () => 'POST', type: String })
   private method!: KWRequest.MethodType
 
+  // 对内存table数据的检索
   @Prop({
     default: (datas: Array<RT>): Array<RT> => {
       return datas
@@ -122,13 +151,22 @@ export default class KWTable<T, RT> extends Vue {
   })
   private tableDataFilter!: (datas: Array<RT>) => Array<RT>
 
+  // 是否展示分页控件
   private hideOnSinglePage = false
 
+  // 当前选中行的数据
   private currentRow!: RT
 
+  // 当前选中多行的数据数组
   private selectionRow: Array<RT> = []
 
-  /** 加载表格数据 */
+  /**
+   * 加载表格数据
+   * pageNo:可选 当前页数
+   * pageSize：可选 每页的条数
+   * param：可选 查询条件
+   * 主要是判断是否分页，调用不同的方法
+   */
   public async load(pageNo?: number, pageSize?: number, param?: T): Promise<void> {
     this.hideOnSinglePage = false
     if (this.isPagination) {
@@ -138,6 +176,10 @@ export default class KWTable<T, RT> extends Vue {
     }
   }
 
+  /**
+   * 不分页所调用的方法
+   * param：可选 查询条件
+   */
   public async loadDatas(param?: T): Promise<void> {
     this.hideOnSinglePage = true
     const condition = { params: param || this.param }
@@ -148,6 +190,12 @@ export default class KWTable<T, RT> extends Vue {
     // ------------------组装数据结束------------------
   }
 
+  /**
+   * pageNo:可选 当前页数
+   * pageSize：可选 每页的条数
+   * param：可选 查询条件
+   * 主要是分页所调用的方法
+   */
   public async loadPagination(pageNo?: number, pageSize?: number, param?: T): Promise<void> {
     // 如果传入空就使用之前的值
     this.pageRequest.pageNo = pageNo || this.pageNo
@@ -171,6 +219,9 @@ export default class KWTable<T, RT> extends Vue {
     this.load(this.pageNo, this.pageSize, this.param)
   }
 
+  /**
+   * 根据条件查询
+   */
   public loadByCondition(param?: T): void {
     this.load(this.pageNo, this.pageSize, param)
   }
