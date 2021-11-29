@@ -2,10 +2,12 @@ package com.key.win.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Sets;
 import com.key.win.common.exception.service.ServiceException;
+import com.key.win.common.model.SysMenu;
 import com.key.win.common.model.SysPermission;
 import com.key.win.common.model.SysRole;
 import com.key.win.common.web.PageRequest;
@@ -24,10 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -165,6 +164,20 @@ public class SysRoleServiceImpl implements SysRoleService {
                 }
                 lqw.orderByDesc(SysRole::getCreateTime);
                 return lqw;
+            }
+            @Override
+            protected List getDefaultQueryOrder(SysRole role, String sortName) {
+                List<SFunction<SysRole,?>> list = new ArrayList<>();
+                if("name".equals(sortName)){
+                    list.add(SysRole::getName);
+                }
+                if("code".equals(sortName)){
+                    list.add(SysRole::getCode);
+                }
+                if("createTime".equals(sortName)){
+                    list.add(SysRole::getCreateTime);
+                }
+                return list;
             }
         };
         return page.doPagingQuery(t);

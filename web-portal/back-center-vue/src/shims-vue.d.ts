@@ -27,6 +27,7 @@ declare module '*.vue' {
     }
     namespace KWRequest {
       type OrderDir = 'ASC' | 'DESC'
+      type MethodType = 'POST' | 'GET'
       interface PageRequest<T = undefined> {
         pageNo: number
         pageSize: number
@@ -54,7 +55,7 @@ declare module '*.vue' {
       }
       interface ValidatorFunction {
         // eslint-disable-next-line no-use-before-define
-        (rule: ValidatorRule, value: string, cb: CallbackFunction): void;
+        (rule: ValidatorRule, value: string, cb: CallbackFunction): void
       }
       interface ValidatorRule extends TriggerRule {
         validator: ValidatorFunction

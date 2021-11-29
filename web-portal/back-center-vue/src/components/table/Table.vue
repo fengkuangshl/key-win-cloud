@@ -1,12 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 <template>
   <div>
     <el-table
       :$ready="false"
       :border="true"
-      :data="pageResult.data"
+      :data="tableDataFilter(pageResult.data)"
       :highlight-current-row="true"
       :row-key="rowKey"
+      :default-expand-all="isExpandAll"
+      :tree-props="treeProps"
       @cell-click="doTableCellClick"
       @current-change="doChangeTableCurrent"
       @row-click="doTableRowClick"
@@ -16,7 +17,18 @@
     >
       <slot></slot>
     </el-table>
-    <el-pagination :current-page="pageResult.pageNo" :layout="pageLayout" :page-count="pageResult.count" :page-size="pageResult.pageSize" :page-sizes="pageSizes" :pager-count="5" :total="pageResult.count" @current-change="doChangePageCurrent" @size-change="doChangePageSize"></el-pagination>
+    <el-pagination
+      :hide-on-single-page="hideOnSinglePage"
+      :current-page="pageResult.pageNo"
+      :layout="pageLayout"
+      :page-count="pageResult.count"
+      :page-size="pageResult.pageSize"
+      :page-sizes="pageSizes"
+      :pager-count="5"
+      :total="pageResult.count"
+      @current-change="doChangePageCurrent"
+      @size-change="doChangePageSize"
+    ></el-pagination>
   </div>
 </template>
 
@@ -26,7 +38,6 @@ import { cellCallbackParams, ElTable, SortOrder } from 'element-ui/types/table'
 import request from '@/fetch'
 import { session } from '@/store'
 import { ElTableColumn } from 'element-ui/types/table-column'
-
 @Component
 export default class KWTable<T, RT> extends Vue {
   // 内部变量
@@ -47,27 +58,71 @@ export default class KWTable<T, RT> extends Vue {
   @Ref('tableRef')
   readonly tableRef!: ElTable
 
-  @Prop({ required: true })
+  @Prop({ required: true, type: String })
   private url!: string // url
 
-  @Prop({ default: () => 1 })
+  @Prop({ default: () => 1, type: Number })
   private pageNo!: number
 
-  @Prop({ default: () => null })
+  @Prop({ default: () => null, type: Object })
   private param!: T
 
-  @Prop({ default: () => 10 })
+  @Prop({ default: () => 10, type: Number })
   private pageSize!: number
 
   @Prop({ default: 'id', type: [String, Function] })
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private rowKey!: string | ((row: any) => any)
 
-  @Prop({ default: () => [5, 10, 15, 20] })
+  @Prop({ default: () => [5, 10, 15, 20], type: [] })
   private pageSizes!: number[]
 
-  @Prop({ default: () => 'total, sizes, prev, pager, next, jumper' })
+  @Prop({ default: () => 'total, sizes, prev, pager, next, jumper', type: String })
   private pageLayout!: string
+
+  @Prop({ default: () => true, type: Boolean })
+  private isExpandAll!: boolean
+
+  @Prop({
+    default: () => ({
+      children: 'children',
+      hasChildren: 'hasChildren'
+    }),
+    type: Object
+  })
+  private treeProps!: { children: string; hasChildren: string }
+
+  @Prop({
+    default: (datas: Array<RT>): Array<RT> => {
+      return datas
+    },
+    type: Function
+  })
+  private renderPreFn!: (datas: Array<RT>) => Array<RT>
+
+  @Prop({
+    default: (datas: Array<RT>): void => {
+      console.log(datas)
+    },
+    type: Function
+  })
+  private callbackFn!: (datas: Array<RT>) => void
+
+  @Prop({ default: () => true, type: Boolean })
+  private isPagination!: boolean
+
+  @Prop({ default: () => 'POST', type: String })
+  private method!: KWRequest.MethodType
+
+  @Prop({
+    default: (datas: Array<RT>): Array<RT> => {
+      return datas
+    },
+    type: Function
+  })
+  private tableDataFilter!: (datas: Array<RT>) => Array<RT>
+
+  private hideOnSinglePage = false
 
   private currentRow!: RT
 
@@ -75,12 +130,40 @@ export default class KWTable<T, RT> extends Vue {
 
   /** 加载表格数据 */
   public async load(pageNo?: number, pageSize?: number, param?: T): Promise<void> {
+    this.hideOnSinglePage = false
+    if (this.isPagination) {
+      this.loadPagination(pageNo, pageSize, param)
+    } else {
+      this.loadDatas(param)
+    }
+  }
+
+  public async loadDatas(param?: T): Promise<void> {
+    this.hideOnSinglePage = true
+    const condition = { params: param || this.param }
+    const res: KWResponse.Result<Array<RT>> = this.method.toUpperCase() === 'POST' ? await request.post(this.url, param || this.param) : await request.get(this.url, condition)
+    // ------------------组装数据开始------------------
+    this.pageResult.data = this.renderPreFn(res.data) // 渲染前的回调函数
+    this.callbackFn(res.data) // 渲染之后的回调函数
+    // ------------------组装数据结束------------------
+  }
+
+  public async loadPagination(pageNo?: number, pageSize?: number, param?: T): Promise<void> {
     // 如果传入空就使用之前的值
     this.pageRequest.pageNo = pageNo || this.pageNo
     this.pageRequest.pageSize = pageSize || this.pageSize
     this.pageRequest.t = param || this.param
-    const res: KWResponse.PageResult<RT> = await request.post(this.url, this.pageRequest)
-    this.pageResult = res
+    const condition = { params: this.pageRequest }
+    const res: KWResponse.PageResult<RT> = this.method.toUpperCase() === 'POST' ? await request.post(this.url, this.pageRequest) : await request.get(this.url, condition)
+    // ------------------组装数据开始------------------
+    this.pageResult.data = this.renderPreFn(res.data) // 渲染前的回调函数
+    this.pageResult.pageNo = res.pageNo
+    this.pageResult.pageSize = res.pageSize
+    this.pageResult.count = res.count
+    this.pageResult.code = res.code
+    this.pageResult.totalPage = res.totalPage
+    this.callbackFn(res.data) // 渲染之后的回调函数
+    // ------------------组装数据结束------------------
   }
 
   /** 重载数据 */
