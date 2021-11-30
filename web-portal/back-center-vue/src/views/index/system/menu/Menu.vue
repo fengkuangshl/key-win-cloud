@@ -210,6 +210,7 @@ export default class Menu extends Vue {
   async getOnes(): Promise<void> {
     const { code, msg, data } = await GetOnesApi()
     if (code === 0) {
+      this.sysMenuOptions = []
       const rootMenus = { id: '-1', parentId: '-1', name: '顶级目录', url: 'javascript:;', path: '', css: '', sort: 9999, createTime: 0, updateTime: 0, isMenu: 1, hidden: false, subMenus: null, roleId: null, menuIds: null }
       this.sysMenuOptions.push(rootMenus)
       this.sysMenuOptions.push(...data)
