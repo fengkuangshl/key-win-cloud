@@ -2,7 +2,9 @@ package com.key.win.user.controller;
 
 import com.key.win.common.exception.controller.ControllerException;
 import com.key.win.common.exception.service.ServiceException;
+import com.key.win.common.model.SysMenu;
 import com.key.win.common.model.SysPermission;
+import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
 import com.key.win.log.annotation.LogAnnotation;
@@ -157,5 +159,12 @@ public class SysPermissionController {
 			throw new ControllerException(e);
 		}
 	}
+
+    @ApiOperation("分页")
+    @LogAnnotation(module = "user-center", recordRequestParam = false)
+    @PostMapping("/permissions/getSysPermissionByPaged")
+    public PageResult<SysPermission> getSysPermissionByPaged(@RequestBody PageRequest<SysPermission> t) {
+        return sysPermissionService.getSysPermissionByPaged(t);
+    }
 
 }
