@@ -5,6 +5,8 @@ interface ISettings {
   developmentDomain: string
   userAcceptanceTestDomain: string
   productionDomain: string
+  menuTypeItem: string
+  menuTypeDirectory: string
 }
 
 // You can customize below settings :)
@@ -14,8 +16,9 @@ const settings: ISettings = {
   accessToken: 'access_token',
   developmentDomain: 'http://127.0.0.1:9200',
   userAcceptanceTestDomain: 'http://localhost:9200',
-  productionDomain: 'http://127.0.0.1:9200'
-
+  productionDomain: 'http://127.0.0.1:9200',
+  menuTypeItem: '菜单',
+  menuTypeDirectory: '目录'
 }
 
 export default settings

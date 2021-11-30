@@ -101,6 +101,7 @@ import { Component, Vue, Ref } from 'vue-property-decorator'
 import { Name, MenuResponse, MenuForm } from './interface/menu-response'
 import { DeleteSysMenuApi, SysMuenSaveOrUpdateApi, GetMenuByIdApi, GetOnesApi } from './menu-api'
 import KWTable from '@/components/table/Table.vue'
+import settings from '@/settings'
 
 @Component({
   components: {
@@ -230,7 +231,7 @@ export default class Menu extends Vue {
         data.url.toLowerCase().includes(this.t.name.toLowerCase()) ||
         data.css.toLowerCase().includes(this.t.name.toLowerCase()) ||
         (data.sort + '').toLowerCase().includes(this.t.name.toLowerCase()) ||
-        '目录'.toLowerCase().includes(this.t.name.toLowerCase())
+        settings.menuTypeDirectory.toLowerCase().includes(this.t.name.toLowerCase())
       ) {
         return true
       }
@@ -245,7 +246,7 @@ export default class Menu extends Vue {
               subMenu.url.toLowerCase().includes(this.t.name.toLowerCase()) ||
               subMenu.css.toLowerCase().includes(this.t.name.toLowerCase()) ||
               (subMenu.sort + '').toLowerCase().includes(this.t.name.toLowerCase()) ||
-              '菜单'.toLowerCase().includes(this.t.name.toLowerCase())
+              settings.menuTypeItem.toLowerCase().includes(this.t.name.toLowerCase())
             ) {
               return true
             }
