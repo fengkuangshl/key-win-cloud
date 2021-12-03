@@ -22,5 +22,6 @@
         <!--工作流-->
         <module>workflow-center</module>
         <module>activiti-workfolw-center</module>
+        <module>param-center</module>
     </modules>
 </project>
