@@ -1,4 +1,4 @@
-import { PermissionResponse } from '../../permission/interface/permission-response'
+import { PermissionResponse } from '../../permission/interface/sys-permission'
 import { SysRole } from '../../sys-role/interface/sys-role'
 
 export enum Sex {
@@ -26,8 +26,11 @@ export interface ModifyPassword extends Model.Id, UserPassword {
   rePassword: string
 }
 
-export interface UserInfo extends UserForm, Model.BaseFleidCU, UserPassword {
+export interface Enabled {
   enabled: boolean
+}
+
+export interface UserInfo extends UserForm, Model.BaseFleid, UserPassword, Enabled {
   headImgUrl: string | null
   password: string
   roles: Array<SysRole>
@@ -47,6 +50,8 @@ export interface LoginSuccessUserInfo {
   user: UserExt
 }
 
+export interface UserStatuChange extends Model.Id, Enabled {}
+
 export interface UserStatuChangeRequest {
-  params: { id: string; enabled: boolean }
+  params: UserStatuChange
 }

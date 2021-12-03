@@ -52,7 +52,7 @@
 <script lang="ts">
 import { ElForm } from 'element-ui/types/form'
 import { Component, Vue, Ref } from 'vue-property-decorator'
-import { Name, PermissionResponse, PermissionForm } from './interface/permission-response'
+import { Name, PermissionResponse, PermissionForm } from './interface/sys-permission'
 import KWTable from '@/components/table/Table.vue'
 import { SysPermissionSaveOrUpdateApi, DeleteSysPermissionApi } from './permission-api'
 

@@ -20,9 +20,17 @@ declare module '*.vue' {
       interface Id {
         id: string
       }
-      interface BaseFleidCU extends Id {
-        createTime: number
-        updateTime: number
+      interface Version extends Id {
+        version: number
+      }
+      interface BaseFleid extends Version {
+        createDate: number
+        updateDate: number | null
+        createUserId: string
+        updateUserId: string | null
+        enableFlag: boolean
+        createUserName: string
+        updateUserName: string | null
       }
     }
     namespace KWRequest {

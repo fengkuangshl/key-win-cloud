@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
-import { MenuResponse } from '@/views/index/system/menu/interface/menu-response'
+import { MenuResponse } from '@/views/index/system/menu/interface/sys-menu'
 import { local } from '@/store'
 import { MenuCollapseModule } from '@/store/menu-collapse-store'
 import settings from '@/settings'

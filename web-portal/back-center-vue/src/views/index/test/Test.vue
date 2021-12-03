@@ -36,7 +36,7 @@
           width="100"
         >
         </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" :formatter="formatterDate" width="180"> </el-table-column>
+        <el-table-column prop="createDate" label="创建时间" :formatter="formatterDate" width="180"> </el-table-column>
         <el-table-column prop="enabled" label="状态" width="100">
           <template v-slot="scope">
             <el-switch v-model="scope.row.enabled" active-color="#13ce66" inactive-color="#ff4949" @change="userStatuChanged(scope.row)"> </el-switch>
@@ -88,7 +88,7 @@
 <script lang="ts">
 import { ElForm } from 'element-ui/types/form'
 import { Component, Vue, Ref } from 'vue-property-decorator'
-import { UserForm, UserInfo, UserSearchRequest, UserStatuChangeRequest, Sex } from '@/views/index/system/user/interface/user'
+import { UserForm, UserInfo, UserSearchRequest, UserStatuChangeRequest, Sex } from '@/views/index/system/user/interface/sys-user'
 import { SysRoleSearchRequest, SysRole } from '@/views/index/system/sys-role/interface/sys-role'
 import { UserPagedApi, UserStatuChangeRequestApi, UserGetApi, UserSaveOrUpdateApi, ResetPasswordApi } from '@/views/index/system/user/user-api'
 import { SysRolePagedApi } from '@/views/index/system/sys-role/sys-role-api'
@@ -153,7 +153,7 @@ export default class User extends Vue {
   }
 
   formatterDate(row: UserInfo): string {
-    var date = new Date(row.createTime) // 时间戳为10位需*1000，时间戳为13位的话不需乘1000
+    var date = new Date(row.createDate) // 时间戳为10位需*1000，时间戳为13位的话不需乘1000
     var Y = date.getFullYear() + '-'
     var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-'
     var D = date.getDate() + ' '

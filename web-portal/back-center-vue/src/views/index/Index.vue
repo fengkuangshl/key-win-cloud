@@ -30,7 +30,7 @@ import { Component, Vue, Ref } from 'vue-property-decorator'
 import HeaderNav from '@/components/header/HeaderNav.vue'
 import LeftMenu from '@/components/left/LeftMenu.vue'
 import PageTabs from '@/components/page-tabs/PageTabs.vue'
-import { MenuResponse } from '@/views/index/system/menu/interface/menu-response'
+import { MenuResponse } from '@/views/index/system/menu/interface/sys-menu'
 // import * as qs from 'qs'
 import { MenuModule } from '@/store/menu-store'
 @Component({

@@ -98,7 +98,7 @@
 <script lang="ts">
 import { ElForm } from 'element-ui/types/form'
 import { Component, Vue, Ref } from 'vue-property-decorator'
-import { Name, MenuResponse, MenuForm } from './interface/menu-response'
+import { Name, MenuResponse, MenuForm } from './interface/sys-menu'
 import { DeleteSysMenuApi, SysMuenSaveOrUpdateApi, GetMenuByIdApi, GetOnesApi } from './menu-api'
 import KWTable from '@/components/table/Table.vue'
 import settings from '@/settings'
@@ -113,7 +113,6 @@ export default class Menu extends Vue {
 
   title = ''
   menuDialogVisble = false
-  menuPermissionVisble = false
   isPagination = false
   treeProps = { children: 'subMenus' }
   sysMenuForm: MenuForm = { name: '', css: '', hidden: '', isMenu: '', parentId: '', path: '', sort: 0, url: '' }
@@ -212,7 +211,28 @@ export default class Menu extends Vue {
     const { code, msg, data } = await GetOnesApi()
     if (code === 0) {
       this.sysMenuOptions = []
-      const rootMenus = { id: '-1', parentId: '-1', name: '顶级目录', url: 'javascript:;', path: '', css: '', sort: 9999, createTime: 0, updateTime: 0, isMenu: 1, hidden: false, subMenus: null, roleId: null, menuIds: null }
+      const rootMenus: MenuResponse = {
+        id: '-1',
+        createDate: 0,
+        updateDate: 0,
+        createUserId: '',
+        updateUserId: '',
+        enableFlag: true,
+        createUserName: '',
+        updateUserName: '',
+        version: 0,
+        parentId: '-1',
+        name: '顶级目录',
+        url: 'javascript:;',
+        path: '',
+        css: '',
+        sort: 9999,
+        isMenu: 1,
+        hidden: false,
+        subMenus: null,
+        roleId: null,
+        menuIds: null
+      }
       this.sysMenuOptions.push(rootMenus)
       this.sysMenuOptions.push(...data)
     } else {

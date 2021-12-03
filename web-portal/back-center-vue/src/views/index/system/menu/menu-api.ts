@@ -1,5 +1,5 @@
 import request from '@/fetch'
-import { MenuForm, MenuResponse, MenuRole, Name, RoleIdAndMenuIds } from './interface/menu-response'
+import { MenuForm, MenuResponse, MenuRole, Name, RoleIdAndMenuIds } from './interface/sys-menu'
 
 export const CurrentMenuApi = (): Promise<KWResponse.Result<Array<MenuResponse>>> => request.get('api-user/menus/current/menus', {})
 export const GetMenuByRoleIdApi = (roleId: string): Promise<KWResponse.Result<Array<MenuRole>>> => request.get('api-user/menus/' + roleId)

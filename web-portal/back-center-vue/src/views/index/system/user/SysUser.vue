@@ -36,8 +36,8 @@
           "
         >
         </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" sortable="custom">
-          <template slot-scope="scope">{{ scope.row.createTime | dateTimeFormat }}</template>
+        <el-table-column prop="createDate" label="创建时间" sortable="custom">
+          <template slot-scope="scope">{{ scope.row.createDate | dateTimeFormat }}</template>
         </el-table-column>
         <el-table-column prop="enabled" label="状态" sortable="custom">
           <template v-slot="scope">
@@ -88,7 +88,7 @@
 <script lang="ts">
 import { ElForm } from 'element-ui/types/form'
 import { Component, Vue, Ref } from 'vue-property-decorator'
-import { UserForm, UserInfo, UserSearchRequest, UserStatuChangeRequest } from './interface/user'
+import { UserForm, UserInfo, UserSearchRequest, UserStatuChangeRequest } from './interface/sys-user'
 import { SysRoleSearchRequest, SysRole } from '../sys-role/interface/sys-role'
 import { UserStatuChangeRequestApi, UserGetApi, UserSaveOrUpdateApi, ResetPasswordApi } from './user-api'
 import { FindAllSysRoleApi } from '../sys-role/sys-role-api'
@@ -219,7 +219,7 @@ export default class User extends Vue {
       type: 'warning'
     })
       .then(async () => {
-        const { code, msg } = await ResetPasswordApi('api-user/users/' + id + '/resetPassword')
+        const { code, msg } = await ResetPasswordApi(id)
         if (code !== 0) {
           this.$message.error(msg || '操作用户信息失败!')
         } else {

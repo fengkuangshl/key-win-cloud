@@ -83,12 +83,12 @@ import { Component, Vue, Ref } from 'vue-property-decorator'
 import { SysRole, SysRoleSearchRequest, SysRoleForm } from './interface/sys-role'
 import { DeleteSysRoleApi, SysRoleSaveOrUpdateApi } from './sys-role-api'
 import { MenuTree } from '../menu/model/menu-tree'
-import { IMenuTree, MenuRole, RoleIdAndMenuIds } from '../menu/interface/menu-response'
+import { IMenuTree, MenuRole, RoleIdAndMenuIds } from '../menu/interface/sys-menu'
 import KWTable from '@/components/table/Table.vue'
 import { GetMenuByRoleIdApi, SaveMenuRoleApi } from '../menu/menu-api'
 import { GetByPermissionRoleIdApi, SaveMenuPermissionApi } from '../permission/permission-api'
 import { ElTree } from 'element-ui/types/tree'
-import { AuthIdsAndRoleId, PermissionRole } from '../permission/interface/permission-response'
+import { AuthIdsAndRoleId, PermissionRole } from '../permission/interface/sys-permission'
 
 @Component({
   components: {
@@ -116,13 +116,13 @@ export default class Role extends Vue {
   readonly rolePermissionFormRef!: ElForm
 
   defaultProps: { children: string; label: string } = { children: 'children', label: 'name' }
-  checkedKeys: Array<number> = []
-  defaultCheckedKeys: Array<number> = []
+  checkedKeys: Array<string> = []
+  defaultCheckedKeys: Array<string> = []
   menuTreeArray: Array<IMenuTree> = []
   permissionOptions: Array<PermissionRole> = []
 
   @Ref('treeRef')
-  readonly treeRef!: ElTree<number, IMenuTree>
+  readonly treeRef!: ElTree<string, IMenuTree>
 
   readonly sysRoleFormRules: { name: Array<KWRule.Rule | KWRule.MixinRule>; code: Array<KWRule.Rule | KWRule.MixinRule> } = {
     name: [
@@ -221,8 +221,8 @@ export default class Role extends Vue {
   }
 
   menuRoleToTree(menus: Array<MenuRole>): void {
-    const treeRoot: Map<number, IMenuTree> = new Map()
-    const treeChildren: Map<number, Array<IMenuTree>> = new Map()
+    const treeRoot: Map<string, IMenuTree> = new Map()
+    const treeChildren: Map<string, Array<IMenuTree>> = new Map()
     if (menus != null && menus.length > 0) {
       for (const key in menus) {
         if (Object.prototype.hasOwnProperty.call(menus, key)) {
@@ -232,7 +232,7 @@ export default class Role extends Vue {
           menuTree.id = item.id
           menuTree.name = item.name
           menuTree.children = new Array<IMenuTree>()
-          if (item.pId === -1) {
+          if (item.pId === '-1') {
             treeRoot.set(item.id, menuTree)
           } else {
             let menuTreeArray = treeChildren.get(item.pId)
@@ -248,7 +248,7 @@ export default class Role extends Vue {
         }
       }
     }
-    treeRoot.forEach((tree: IMenuTree, key: number) => {
+    treeRoot.forEach((tree: IMenuTree, key: string) => {
       const menuTreeArray: Array<IMenuTree> = treeChildren.get(key) as Array<IMenuTree>
       if (menuTreeArray !== undefined) {
         tree.children.push(...menuTreeArray)

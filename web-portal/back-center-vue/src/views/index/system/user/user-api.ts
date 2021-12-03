@@ -1,5 +1,5 @@
 import request from '@/fetch'
-import { LoginSuccessUserInfo, UserInfo, UserSearchRequest, UserStatuChangeRequest, UserForm, ModifyPassword } from './interface/user'
+import { LoginSuccessUserInfo, UserInfo, UserSearchRequest, UserStatuChangeRequest, UserForm, ModifyPassword } from './interface/sys-user'
 
 export const UserInfoApi = (): Promise<KWResponse.Result<LoginSuccessUserInfo>> => request.get('api-auth/oauth/current/userinfo')
 export const UserPagedApi = (pageRequest: KWRequest.PageRequest<UserSearchRequest>): Promise<KWResponse.PageResult<UserInfo>> => request.post('api-user/getSysUserByPaged', pageRequest)

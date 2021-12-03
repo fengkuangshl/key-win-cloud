@@ -13,7 +13,7 @@ export interface Name {
   name: string
 }
 export interface RoleIdAndMenuIds {
-  menuIds: Array<number> | null
+  menuIds: Array<string> | null
   roleId: string | null
 }
 export interface MenuForm extends Name {
@@ -25,11 +25,11 @@ export interface MenuForm extends Name {
   sort: number
   url: string
 }
-export interface MenuResponse extends Model.BaseFleidCU, Name, RoleIdAndMenuIds, MenuForm {
+export interface MenuResponse extends Model.BaseFleid, Name, RoleIdAndMenuIds, MenuForm {
   subMenus: Array<MenuResponse> | null
 }
 export interface Id extends Name {
-  id: number
+  id: string
 }
 
 export interface IMenuTree extends Name, TreeData {
@@ -38,6 +38,6 @@ export interface IMenuTree extends Name, TreeData {
 
 export interface MenuRole extends Id {
   checked: boolean
-  pId: number
+  pId: string
   open: boolean
 }

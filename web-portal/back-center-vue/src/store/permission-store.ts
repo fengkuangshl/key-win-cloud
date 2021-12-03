@@ -3,7 +3,7 @@ import { RouteConfig } from 'vue-router'
 import router, { constantRoutes } from '@/router'
 import store from '@/store'
 import { MenuModule } from './menu-store'
-import { MenuResponse } from '@/views/index/system/menu/interface/menu-response'
+import { MenuResponse } from '@/views/index/system/menu/interface/sys-menu'
 
 export interface IPermissionState {
   routes: Array<RouteConfig>

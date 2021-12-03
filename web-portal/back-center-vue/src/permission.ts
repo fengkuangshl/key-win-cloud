@@ -3,9 +3,9 @@ import { Route, RouteConfig, RouteMeta } from 'vue-router'
 import { PermissionModule } from '@/store/permission-store'
 import getPageTitle from './common/utils/page-title'
 import { MenuModule } from './store/menu-store'
-import { MenuResponse } from './views/index/system/menu/interface/menu-response'
+import { MenuResponse } from './views/index/system/menu/interface/sys-menu'
 import { CurrentMenuApi } from './views/index/system/menu/menu-api'
-import { LoginSuccessUserInfo } from './views/index/system/user/interface/user'
+import { LoginSuccessUserInfo } from './views/index/system/user/interface/sys-user'
 import { UserInfoApi } from './views/index/system/user/user-api'
 import { UserModule } from './store/user-store'
 import { local } from './store'
@@ -15,6 +15,7 @@ import 'nprogress/nprogress.css'
 
 // const whiteList = ['/login', '/auth-redirect', '/registe', '/404']
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 router.beforeEach(async (to: Route, from: Route, next: any): Promise<void> => {
   NProgress.start()
   // to 将访问哪一个路径

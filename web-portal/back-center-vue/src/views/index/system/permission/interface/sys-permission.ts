@@ -10,7 +10,7 @@ export interface PermissionForm extends Name {
   permission: string
 }
 
-export interface PermissionResponse extends Model.BaseFleidCU, AuthIdsAndRoleId, PermissionForm {}
+export interface PermissionResponse extends Model.BaseFleid, AuthIdsAndRoleId, PermissionForm {}
 export interface PermissionRole extends Name, Model.Id {
   checked: true
   open: true

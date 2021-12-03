@@ -1,7 +1,7 @@
-import { IMenuTree } from '../interface/menu-response'
+import { IMenuTree } from '../interface/sys-menu'
 
 export class MenuTree implements IMenuTree {
-  id!: number
+  id!: string
   name!: string
   children!: Array<IMenuTree>
 }
