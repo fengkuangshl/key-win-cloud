@@ -20,7 +20,7 @@ public interface SysPermissionService {
 	 * @param roleIds
 	 * @return
 	 */
-	Set<SysPermission> findByRoleIds(Set<Long> roleIds)  throws ServiceException;
+	Set<SysPermission> findByRoleIds(Set<String> roleIds)  throws ServiceException;
 
 	/**
 	 * 保存权限
@@ -38,7 +38,7 @@ public interface SysPermissionService {
 	 * 删除权限
 	 * @param id
 	 */
-	void delete(Long id)  throws ServiceException;
+	void delete(String id)  throws ServiceException;
 
 	/**
 	 * 权限列表
@@ -52,7 +52,7 @@ public interface SysPermissionService {
 	 * @param roleId
 	 * @param permissions
 	 */
-	void setPermissionToRole(Long roleId, Set<Long> permissions)  throws ServiceException;
+	void setPermissionToRole(String roleId, Set<String> permissions)  throws ServiceException;
 
     PageResult<SysPermission> getSysPermissionByPaged(PageRequest<SysPermission> t);
 }

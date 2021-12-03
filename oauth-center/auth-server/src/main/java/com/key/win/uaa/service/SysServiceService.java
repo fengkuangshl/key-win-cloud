@@ -23,21 +23,21 @@ public interface SysServiceService {
 	 * 删除服务
 	 * @param id
 	 */
-	void delete(Long id);
+	void delete(String id);
 
 	/**
 	 * 客户端分配服务
 	 * @param clientId
 	 * @param serviceIds
 	 */
-	void setMenuToClient(Long clientId, Set<Long> serviceIds);
+	void setMenuToClient(String clientId, Set<String> serviceIds);
 
 	/**
 	 * 客户端服务列表
 	 * @param clientIds
 	 * @return
 	 */
-	List<SysService> findByClient(Set<Long> clientIds);
+	List<SysService> findByClient(Set<String> clientIds);
 
 	/**
 	 * 服务列表
@@ -50,14 +50,14 @@ public interface SysServiceService {
 	 * @param id
 	 * @return
 	 */
-	SysService findById(Long id);
+	SysService findById(String id);
 
 	/**
 	 * 角色ID获取服务
 	 * @param clientId
 	 * @return
 	 */
-	Set<Long> findServiceIdsByClientId(Long clientId);
+	Set<String> findServiceIdsByClientId(String clientId);
 
 	/**
 	 * 一级服务

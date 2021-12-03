@@ -34,11 +34,12 @@
 			</if> 
 			 
 		</set>
-		where id = #{id,jdbcType=BIGINT}
+		where id = #{id,jdbcType=VARCHAR}
 	</update>
 
     <sql id="where">
         <where>
+            and enable_flag = 1
             <if test="params.clientId!= null and params.clientId != ''">
                 and client_id = #{params.clientId}
             </if>
@@ -86,7 +87,7 @@
     </select>
 
     <select id="findList" resultType="com.key.win.common.model.SysClient">
-        select id id , client_id clientId, client_secret clientSecret, client_secret_str clientSecretStr  , resource_ids resourceIds ,scope,authorized_grant_types  authorizedGrantTypes ,access_token_validity accessTokenValidity ,refresh_token_validity  refreshTokenValidity ,web_server_redirect_uri webServerRedirectUri , additional_information additionalInformation ,authorities,if_limit ifLimit , limit_count limitCount  ,autoapprove,status  from oauth_client_details t
+        select t.*  from oauth_client_details t
         <include refid="where"/>
         <!--<if test="params.page != null and params.page != ''  and params.limit != null and params.limit != '' ">-->
 			<!--limit #{params.page},#{params.limit}-->

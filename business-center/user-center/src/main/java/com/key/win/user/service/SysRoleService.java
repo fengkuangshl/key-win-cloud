@@ -1,6 +1,8 @@
 package com.key.win.user.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.key.win.common.exception.service.ServiceException;
+import com.key.win.common.model.SysMenu;
 import com.key.win.common.model.SysPermission;
 import com.key.win.common.model.SysRole;
 import com.key.win.common.web.PageRequest;
@@ -15,28 +17,18 @@ import java.util.Set;
  * @author 作者 owen
  * @version 创建时间：2017年11月12日 上午22:57:51
  */
-public interface SysRoleService {
+public interface SysRoleService extends IService<SysRole> {
 
-    /**
-     * 保存角色
-     *
-     * @param sysRole
-     */
-    void save(SysRole sysRole) throws ServiceException;
 
-    /**
-     * 修改角色
-     *
-     * @param sysRole
-     */
-    void update(SysRole sysRole) throws ServiceException;
+
+
 
     /**
      * 删除角色
      *
      * @param id
      */
-    void deleteRole(Long id) throws ServiceException;
+    void deleteRole(String id) throws ServiceException;
 
 
     /**
@@ -45,7 +37,7 @@ public interface SysRoleService {
      * @param id
      * @return
      */
-    SysRole findById(Long id) throws ServiceException;
+    SysRole findById(String id) throws ServiceException;
 
     /**
      * 角色列表
@@ -61,14 +53,8 @@ public interface SysRoleService {
      * @param roleId
      * @return
      */
-    Set<SysPermission> findPermissionsByRoleId(Long roleId) throws ServiceException;
+    Set<SysPermission> findPermissionsByRoleId(String roleId) throws ServiceException;
 
-    /**
-     * 更新角色
-     *
-     * @param sysRole
-     */
-    Result saveOrUpdate(SysRole sysRole) throws ServiceException;
 
     PageResult<SysRole> findSysRoleByPaged(PageRequest<SysRole> t);
 

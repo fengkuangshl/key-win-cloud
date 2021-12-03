@@ -13,11 +13,11 @@ public interface SysClientService {
 	
 	Result saveOrUpdate(SysClient clientDto);
 	
-	void delete(Long id);
+	void delete(String id);
 	
 	Result updateEnabled(Map<String, Object> params);
 	
-	SysClient getById(Long id) ;
+	SysClient getById(String id) ;
 
   
     

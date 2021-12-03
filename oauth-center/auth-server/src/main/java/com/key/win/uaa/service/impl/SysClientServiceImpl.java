@@ -73,7 +73,7 @@ public class SysClientServiceImpl implements SysClientService {
 
     @Override
     @Transactional
-    public void delete(Long id) {
+    public void delete(String id) {
         try {
         	SysClient client = sysClientDao.getById(id);
 			sysClientDao.delete(id);
@@ -99,7 +99,7 @@ public class SysClientServiceImpl implements SysClientService {
 		}
 
 	}
-	public  SysClient getById(Long id) {
+	public  SysClient getById(String id) {
 		try {
 			return sysClientDao.getById(id);
 		} catch (Exception e) {
@@ -117,7 +117,7 @@ public class SysClientServiceImpl implements SysClientService {
 	@Override
 	public Result updateEnabled(Map<String, Object> params) {
 		try {
-			Long id = MapUtils.getLong(params, "id");
+			String id = MapUtils.getString(params, "id");
 			Boolean enabled = MapUtils.getBoolean(params, "status");
 			SysClient client = sysClientDao.getById(id);
 			if (client == null) {

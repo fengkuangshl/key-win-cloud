@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.key.win.common.model.base.MybatisID;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -23,23 +24,16 @@ import java.util.Set;
 @Data
 @TableName("sys_permission")
 @EqualsAndHashCode(callSuper=true)
-public class SysPermission extends Model<SysPermission> implements Serializable {
+public class SysPermission extends MybatisID {
 
-	private static final long serialVersionUID = 1389727646460449239L;
-	@TableId(value="id",type=IdType.ASSIGN_ID)  //雪花算法  id生成策略
-	@JsonSerialize(using=ToStringSerializer.class)
-	private Long id;
+
 	private String permission;
 	private String name;
-	@TableField(value="create_time")
-	private Date createTime;
-	@TableField(value="update_time")
-	private Date updateTime;
 	@TableField(exist=false)
-	private Long roleId;
+	private String roleId;
 	
 	
 	@TableField(exist=false)
-	private Set<Long> authIds;
+	private Set<String> authIds;
 
 }

@@ -2,7 +2,6 @@ package com.key.win.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.constant.UserType;
@@ -10,13 +9,13 @@ import com.key.win.common.exception.service.ServiceException;
 import com.key.win.common.model.SysPermission;
 import com.key.win.common.model.SysRole;
 import com.key.win.common.model.SysUser;
-import com.key.win.common.web.OrderDir;
-import com.key.win.common.web.PageRequest;
-import com.key.win.common.web.PageResult;
-import com.key.win.common.web.Result;
+import com.key.win.common.model.SysUserRole;
 import com.key.win.common.util.PageUtil;
 import com.key.win.common.util.SysUserUtil;
 import com.key.win.common.util.ValidatorUtil;
+import com.key.win.common.web.PageRequest;
+import com.key.win.common.web.PageResult;
+import com.key.win.common.web.Result;
 import com.key.win.page.MybatiesPageServiceTemplate;
 import com.key.win.user.dao.SysUserDao;
 import com.key.win.user.dao.SysUserRoleDao;
@@ -42,7 +41,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -108,8 +106,6 @@ public class SysUserServiceImpl implements SysUserService {
 
             sysUser.setPassword(passwordEncoder.encode(sysUser.getPassword()));
             sysUser.setEnabled(Boolean.TRUE);
-            sysUser.setCreateTime(new Date());
-            sysUser.setUpdateTime(sysUser.getCreateTime());
             sysUserDao.save(sysUser);
             log.info("添加用户：{}", sysUser);
         } catch (Exception e) {
@@ -122,7 +118,6 @@ public class SysUserServiceImpl implements SysUserService {
     @Transactional
     public Result updateSysUser(SysUser sysUser) throws ServiceException {
         try {
-            sysUser.setUpdateTime(new Date());
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -202,7 +197,7 @@ public class SysUserServiceImpl implements SysUserService {
                 loginAppUser.setSysRoles(sysRoles);// 设置角色
 
                 if (!CollectionUtils.isEmpty(sysRoles)) {
-                    Set<Long> roleIds = sysRoles.parallelStream().map(r -> r.getId()).collect(Collectors.toSet());
+                    Set<String> roleIds = sysRoles.parallelStream().map(r -> r.getId()).collect(Collectors.toSet());
                     Set<SysPermission> sysPermissions = sysPermissionService.findByRoleIds(roleIds);
                     if (!CollectionUtils.isEmpty(sysPermissions)) {
                         Set<String> permissions = sysPermissions.parallelStream().map(p -> p.getPermission())
@@ -236,7 +231,7 @@ public class SysUserServiceImpl implements SysUserService {
                 loginAppUser.setSysRoles(sysRoles);// 设置角色
 
                 if (!CollectionUtils.isEmpty(sysRoles)) {
-                    Set<Long> roleIds = sysRoles.parallelStream().map(r -> r.getId()).collect(Collectors.toSet());
+                    Set<String> roleIds = sysRoles.parallelStream().map(r -> r.getId()).collect(Collectors.toSet());
                     Set<SysPermission> sysPermissions = sysPermissionService.findByRoleIds(roleIds);
                     if (!CollectionUtils.isEmpty(sysPermissions)) {
                         Set<String> permissions = sysPermissions.parallelStream().map(p -> p.getPermission())
@@ -257,11 +252,11 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public Result findById(Long id) throws ServiceException {
+    public Result findById(String id) throws ServiceException {
         try {
             SysUser byId = sysUserDao.findById(id);
             if(byId!=null){
-                List<Long> userIds = new ArrayList<>();
+                List<String> userIds = new ArrayList<>();
                 userIds.add(id);
                 byId.setRoles(userRoleDao.findRolesByUserIds(userIds));
             }
@@ -277,7 +272,7 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     @Transactional
-    public void setRoleToUser(Long id, Set<Long> roleIds) throws ServiceException {
+    public void setRoleToUser(String id, Set<String> roleIds) throws ServiceException {
         try {
             SysUser sysUser = sysUserDao.findById(id);
             if (sysUser == null) {
@@ -301,7 +296,7 @@ public class SysUserServiceImpl implements SysUserService {
 
     @Override
     @Transactional
-    public Result updatePassword(Long id, String oldPassword, String newPassword) throws ServiceException {
+    public Result updatePassword(String id, String oldPassword, String newPassword) throws ServiceException {
         try {
             SysUser sysUser = sysUserDao.findById(id);
             if (StringUtils.isNoneBlank(oldPassword)) {
@@ -331,7 +326,7 @@ public class SysUserServiceImpl implements SysUserService {
                 PageUtil.pageParamConver(params, true);
                 list = sysUserDao.findList(params);
 
-                List<Long> userIds = list.stream().map(SysUser::getId).collect(Collectors.toList());
+                List<String> userIds = list.stream().map(SysUser::getId).collect(Collectors.toList());
 
                 List<SysRole> sysRoles = userRoleDao.findRolesByUserIds(userIds);
 
@@ -373,8 +368,8 @@ public class SysUserServiceImpl implements SysUserService {
                 if("sex".equals(sortName)){
                     list.add(SysUser::getSex);
                 }
-                if("createTime".equals(sortName)){
-                    list.add(SysUser::getCreateTime);
+                if("createDate".equals(sortName)){
+                    list.add(SysUser::getCreateDate);
                 }
                 if("enabled".equals(sortName)){
                     list.add(SysUser::getEnabled);
@@ -386,7 +381,7 @@ public class SysUserServiceImpl implements SysUserService {
     }
 
     @Override
-    public Set<SysRole> findRolesByUserId(Long userId) throws ServiceException {
+    public Set<SysRole> findRolesByUserId(String userId) throws ServiceException {
         try {
             return userRoleDao.findRolesByUserId(userId);
         } catch (Exception e) {
@@ -397,7 +392,7 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public Result updateEnabled(Map<String, Object> params) throws ServiceException {
         try {
-            Long id = MapUtils.getLong(params, "id");
+            String id = MapUtils.getString(params, "id");
             Boolean enabled = MapUtils.getBoolean(params, "enabled");
 
             SysUser appUser = sysUserDao.findById(id);
@@ -406,7 +401,6 @@ public class SysUserServiceImpl implements SysUserService {
                 //throw new IllegalArgumentException("用户不存在");
             }
             appUser.setEnabled(enabled);
-            appUser.setUpdateTime(new Date());
 
             int i = sysUserDao.updateByPrimaryKey(appUser);
             log.info("修改用户：{}", appUser);
@@ -460,9 +454,8 @@ public class SysUserServiceImpl implements SysUserService {
             }
 
 
-            //sysUser.setPassword(passwordEncoder.encode("123456"));
+            sysUser.setPassword(passwordEncoder.encode("123456"));
             sysUser.setEnabled(Boolean.TRUE);
-            sysUser.setCreateTime(new Date());
 
             int i = 0;
 
@@ -472,20 +465,21 @@ public class SysUserServiceImpl implements SysUserService {
                     //throw new IllegalArgumentException("用户名已存在");
                     return Result.failed("用户名已存在");
                 }
-                sysUser.setUpdateTime(sysUser.getCreateTime());
                 i = sysUserDao.insert(sysUser);
             } else {
-                sysUser.setUpdateTime(new Date());
                 SysUser byId = sysUserDao.findById(sysUser.getId());
                 sysUser.setPassword(byId.getPassword());
                 i = sysUserDao.updateByPrimaryKey(sysUser);
             }
 
             userRoleDao.deleteUserRole(sysUser.getId(), null);
-            List roleIds = Arrays.asList(sysUser.getRoleId().split(","));
+            List<String> roleIds = Arrays.asList(sysUser.getRoleId().split(","));
             if (!CollectionUtils.isEmpty(roleIds)) {
                 roleIds.forEach(roleId -> {
-                    userRoleDao.saveUserRoles(sysUser.getId(), Long.parseLong(roleId.toString()));
+                    SysUserRole sysUserRole = new SysUserRole();
+                    sysUserRole.setUserId(sysUser.getId());
+                    sysUserRole.setRoleId(roleId);
+                    userRoleDao.insert(sysUserRole);
                 });
             }
 

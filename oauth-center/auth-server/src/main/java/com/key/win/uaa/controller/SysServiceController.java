@@ -79,7 +79,7 @@ public class SysServiceController {
     @ApiOperation(value = "删除服务")
     @PreAuthorize("hasAuthority('service:delete/service/{id}')")
     @LogAnnotation(module="auth-server",recordRequestParam=false)
-    public Result delete(@PathVariable Long id){
+    public Result delete(@PathVariable String id){
         try {
 			sysServiceService.delete(id);
 			return Result.succeed("操作成功");
@@ -109,15 +109,15 @@ public class SysServiceController {
     @ApiOperation(value = "根据clientId获取对应的服务")
     @GetMapping("/{clientId}/services")
     @LogAnnotation(module="auth-server",recordRequestParam=false)
-    public List<Map<String, Object>> findServicesByclientId(@PathVariable Long clientId) {
+    public List<Map<String, Object>> findServicesByclientId(@PathVariable String clientId) {
         try {
-			Set<Long> clientIds = new HashSet<Long>();
+			Set<String> clientIds = new HashSet<String>();
 			//初始化应用
 			clientIds.add(clientId);
 			List<SysService> clientService = sysServiceService.findByClient(clientIds);
 			List<SysService> allService = sysServiceService.findAll();
 			List<Map<String, Object>> authTrees = new ArrayList<>();
-			Map<Long,SysService> clientServiceMap = clientService.stream().collect(Collectors.toMap(SysService::getId,SysService->SysService));
+			Map<String,SysService> clientServiceMap = clientService.stream().collect(Collectors.toMap(SysService::getId,SysService->SysService));
 			for (SysService sysService: allService) {
 			    Map<String, Object> authTree = new HashMap<>();
 			    authTree.put("id",sysService.getId());

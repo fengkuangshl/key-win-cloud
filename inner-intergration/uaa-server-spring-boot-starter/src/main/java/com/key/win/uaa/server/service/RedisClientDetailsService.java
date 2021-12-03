@@ -216,7 +216,7 @@ public class RedisClientDetailsService extends JdbcClientDetailsService {
 			details.setIfLimit(ifLimit);
 			long limitCount = rs.getLong(13) ;
 			details.setLimitCount(limitCount);
-			details.setId( rs.getLong(14));
+			details.setId( "14");
 			if (scopes != null) {
 				details.setAutoApproveScopes(org.springframework.util.StringUtils.commaDelimitedListToSet(scopes));
 			}

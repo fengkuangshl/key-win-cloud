@@ -17,21 +17,20 @@ import java.util.Map;
 @Mapper
 public interface SysMenuDao extends BaseMapper<SysMenu> {
 
-	@Insert("insert into sys_menu(parent_id, name, url, path, css, sort, create_time, update_time,is_menu,hidden) "
-			+ "values (#{parentId}, #{name}, #{url} , #{path} , #{css}, #{sort}, #{createTime}, #{updateTime},#{isMenu},#{hidden})")
+	@Insert("insert into sys_menu(parent_id, name, url, path, css, sort, is_menu,hidden) "
+			+ "values (#{parentId}, #{name}, #{url} , #{path} , #{css}, #{sort},#{isMenu},#{hidden})")
 	int save(SysMenu menu);
-
 	
 	@Delete("delete from sys_menu where id = #{id}")
-	int deleteByPrimaryKey(Long id);
+	int deleteByPrimaryKey(String id);
 
 	@Delete("delete from sys_menu where parent_id = #{id}")
-	int deleteByParentId(Long id);
+	int deleteByParentId(String id);
 	
 	int updateByPrimaryKey(SysMenu menu);
 
-	@Select("select id ,parent_id parentId , name, url, path, css, sort, create_time createTime , update_time updateTime ,is_menu isMenu,hidden from sys_menu t where t.id = #{id}")
-	SysMenu findById(Long id);
+	@Select("select t.* from sys_menu t where t.id = #{id}")
+	SysMenu findById(String id);
 	
 	int count(Map<String, Object> params);
 	

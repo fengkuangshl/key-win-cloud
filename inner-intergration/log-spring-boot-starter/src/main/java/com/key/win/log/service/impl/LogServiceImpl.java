@@ -24,9 +24,9 @@ public class LogServiceImpl implements LogService {
 	@Override
 	@DataSource(name="log")
 	public void save(SysLog log) {
-		if (log.getCreateTime() == null) {
-			log.setCreateTime(new Date());
-		}
+//		if (log.getCreateTime() == null) {
+//			log.setCreateTime(new Date());
+//		}
 		if (log.getFlag() == null) {
 			log.setFlag(Boolean.TRUE);
 		}

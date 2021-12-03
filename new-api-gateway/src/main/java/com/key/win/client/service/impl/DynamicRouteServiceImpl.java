@@ -102,8 +102,8 @@ public class DynamicRouteServiceImpl implements ApplicationEventPublisherAware, 
     public String add(GatewayRouteDefinition gatewayRouteDefinition) {
         GatewayRoutes gatewayRoutes = transformToGatewayRoutes(gatewayRouteDefinition);
         gatewayRoutes.setDelFlag(0);
-        gatewayRoutes.setCreateTime(new Date());
-        gatewayRoutes.setUpdateTime(new Date());
+        //gatewayRoutes.setCreateTime(new Date());
+        //gatewayRoutes.setUpdateTime(new Date());
         gatewayRoutesDao.insertSelective(gatewayRoutes);
         gatewayRouteDefinition.setId(gatewayRoutes.getId());
         stringRedisTemplate.boundHashOps(GATEWAY_ROUTES_PREFIX).put(gatewayRouteDefinition.getId(), JSONObject.toJSONString(gatewayRouteDefinition));
@@ -119,8 +119,8 @@ public class DynamicRouteServiceImpl implements ApplicationEventPublisherAware, 
     @Override
     public String update(GatewayRouteDefinition gatewayRouteDefinition) {
         GatewayRoutes gatewayRoutes = transformToGatewayRoutes(gatewayRouteDefinition);
-        gatewayRoutes.setCreateTime(new Date());
-        gatewayRoutes.setUpdateTime(new Date());
+        //gatewayRoutes.setCreateTime(new Date());
+        //gatewayRoutes.setUpdateTime(new Date());
         gatewayRoutesDao.updateByPrimaryKeySelective(gatewayRoutes);
         stringRedisTemplate.boundHashOps(GATEWAY_ROUTES_PREFIX).delete(gatewayRouteDefinition.getId());
         stringRedisTemplate.boundHashOps(GATEWAY_ROUTES_PREFIX).put(gatewayRouteDefinition.getId(), JSONObject.toJSONString(gatewayRouteDefinition));
@@ -222,7 +222,7 @@ public class DynamicRouteServiceImpl implements ApplicationEventPublisherAware, 
         }
 
         gatewayRoutes.setDelFlag(flag);
-        gatewayRoutes.setUpdateTime(new Date());
+        //gatewayRoutes.setUpdateTime(new Date());
         int success = gatewayRoutesDao.updateByPrimaryKeySelective(gatewayRoutes);
         return success > 0 ? "更新成功" : "更新失败";
     }

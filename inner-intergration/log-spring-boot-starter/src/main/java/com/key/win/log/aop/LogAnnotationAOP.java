@@ -64,7 +64,7 @@ public class LogAnnotationAOP {
 		Object result = null;
 		List<Object> httpReqArgs = new ArrayList<Object>();
 		SysLog sysLog = new SysLog();
-		sysLog.setCreateTime(new Date());
+		//sysLog.setCreateTime(new Date());
 		LoginAppUser loginAppUser = SysUserUtil.getLoginAppUser();
 		if (loginAppUser != null) {
 			sysLog.setUsername(loginAppUser.getUsername());

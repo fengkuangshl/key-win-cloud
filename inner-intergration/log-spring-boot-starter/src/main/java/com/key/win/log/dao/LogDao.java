@@ -20,7 +20,7 @@ import javax.sql.DataSource;
 @ConditionalOnBean(DataSource.class)
 public interface LogDao {
 
-	@Insert("insert into sys_log(username, module, params, remark, flag, create_time) values(#{username}, #{module}, #{params}, #{remark}, #{flag}, #{createTime})")
+	@Insert("insert into sys_log(username, module, params, remark, flag) values(#{username}, #{module}, #{params}, #{remark}, #{flag})")
 	int save(SysLog log);
 
 }

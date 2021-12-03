@@ -97,7 +97,7 @@ public class SysSentinelContrller {
 	 */
 	@GetMapping("/test/hotParamFlow")
 	@ResponseBody
-	public 	String hotParamFlow(@RequestParam("prodId") Long prodId,@RequestParam("ip") Long ip) {
+	public 	String hotParamFlow(@RequestParam("prodId") Long prodId,@RequestParam("ip") String ip) {
 	    Entry entry = null;
 	    String retVal;
 	    try{

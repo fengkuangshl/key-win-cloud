@@ -19,22 +19,22 @@ import java.util.Map;
 public interface SysUserDao  extends BaseMapper<SysUser> {
 
 	@Options(useGeneratedKeys = true, keyProperty = "id")
-	@Insert("insert into sys_user(username, password, nick_name , head_img_url, phone, sex, enabled, type, create_time, update_time) "
-			+ "values(#{username}, #{password}, #{nickname}, #{headImgUrl}, #{phone}, #{sex}, #{enabled}, #{type}, #{createTime}, #{updateTime})")
+	@Insert("insert into sys_user(username, password, nick_name , head_img_url, phone, sex, enabled, type) "
+			+ "values(#{username}, #{password}, #{nickname}, #{headImgUrl}, #{phone}, #{sex}, #{enabled}, #{type})")
 	int save(SysUser sysUser);
 
 	int updateByPrimaryKey(SysUser sysUser);
 
-	@Select("select id ,username, password,nick_name nickname, head_img_url headImgUrl , phone, sex, enabled, type, create_time createTime , update_time updateTime from sys_user t where t.username = #{username}")
+	@Select("select t.* from sys_user t where t.username = #{username} and t.enable_flag = 1")
 	SysUser findByUsername(String username);
 
-	@Select("select id ,username, password,nick_name nickname, head_img_url headImgUrl , phone, sex, enabled, type, create_time createTime , update_time updateTime from sys_user t where t.id = #{id}")
-	SysUser findById(Long id);
+	@Select("select t.* from sys_user t where t.id = #{id} and t.enable_flag = 1")
+	SysUser findById(String id);
 
-	@Select("select id ,username, password,nick_name nickname, head_img_url headImgUrl , phone, sex, enabled, type, create_time createTime , update_time updateTime  from sys_user u   where u.username = #{username}")
+	@Select("select *  from sys_user u   where u.username = #{username} and u.enable_flag = 1")
 	SysUser findUserByUsername(String username);
 
-	@Select("select id ,username, password,nick_name nickname, head_img_url headImgUrl , phone, sex, enabled, type, create_time createTime , update_time updateTime  from sys_user u   where u.phone = #{mobile}")
+	@Select("select u.*  from sys_user u   where u.phone = #{mobile} and u.enable_flag = 1")
 	SysUser findUserByMobile(String mobile);
 	
 	int count(Map<String, Object> params);

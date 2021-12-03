@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.key.win.common.model.base.MybatisID;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -18,18 +19,11 @@ import java.io.Serializable;
 @Data
 @TableName("sys_role_permission")
 @EqualsAndHashCode(callSuper=true)
-public class SysRolePermission  extends Model<SysRolePermission> implements Serializable{
+public class SysRolePermission extends MybatisID {
 
-	 
-	private static final long serialVersionUID = 4105899775460060259L;
-	
-	@JsonSerialize(using=ToStringSerializer.class)
-	private Long id;
 	@TableField(value="role_id")
-	@JsonSerialize(using=ToStringSerializer.class)
-	private Long roleId;
+	private String roleId;
 	@TableField(value="permission_id")
-	@JsonSerialize(using=ToStringSerializer.class)
-    private Long permissionId;
+    private String permissionId;
 
 }

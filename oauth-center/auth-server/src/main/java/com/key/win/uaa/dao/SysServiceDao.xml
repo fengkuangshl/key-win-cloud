@@ -7,7 +7,7 @@
 		update sys_service
 		<set>
 			<if test="parentId != null">
-				parent_id = #{parentId,jdbcType=INTEGER},
+				parent_id = #{parentId,jdbcType=VARCHAR},
 			</if>
 			<if test="name != null and name != ''">
 				name = #{name,jdbcType=VARCHAR},
@@ -19,13 +19,12 @@
 			<if test="sort != null">
 				sort = #{sort,jdbcType=INTEGER},
 			</if>
-			<if test="updateTime != null">
-				update_time = #{updateTime,jdbcType=TIMESTAMP},
-			</if>
 			<if test="isService != null">
 				is_service = #{isService,jdbcType=INTEGER},
 			</if>
 		</set>
-		where id = #{id,jdbcType=BIGINT}
+		where
+		id = #{id,jdbcType=VARCHAR}
+        and enable_flag = 1
 	</update>
 </mapper>

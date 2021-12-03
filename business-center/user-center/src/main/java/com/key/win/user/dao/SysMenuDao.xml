@@ -36,9 +36,7 @@
 	</select>
 	
 	<select id="findList" resultType="com.key.win.common.model.SysMenu">
-		select id ,parent_id parentId , name, url, path, css, sort,
-		create_time createTime , update_time updateTime ,is_menu isMenu,hidden
-		from sys_menu t
+		select t.* from sys_menu t
 		<include refid="where" />
 		order by t.sort
 		<if test="page != null and page >= 0 and limit != null and limit > 0">
@@ -49,7 +47,7 @@
 		update sys_menu
 		<set>
 			<if test="parentId != null">
-				parent_id = #{parentId,jdbcType=INTEGER},
+				parent_id = #{parentId,jdbcType=VARCHAR},
 			</if>
 			<if test="name != null and name != ''">
 				name = #{name,jdbcType=VARCHAR},
@@ -66,9 +64,6 @@
 			<if test="sort != null">
 				sort = #{sort,jdbcType=INTEGER},
 			</if>
-			<if test="updateTime != null">
-				update_time = #{updateTime,jdbcType=TIMESTAMP},
-			</if>
 			<if test="isMenu != null">
 				is_menu = #{isMenu,jdbcType=INTEGER},
 			</if>
@@ -76,7 +71,7 @@
 				hidden = #{hidden,jdbcType=INTEGER},
 			</if>
 		</set>
-		where id = #{id,jdbcType=BIGINT}
+		where id = #{id,jdbcType=VARCHAR}
 	</update>
 
 

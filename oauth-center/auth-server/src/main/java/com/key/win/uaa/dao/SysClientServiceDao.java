@@ -21,14 +21,14 @@ public interface SysClientServiceDao {
 
 
     @Insert("insert into sys_client_service(client_id, service_id) values(#{clientId}, #{serviceId})")
-    int save(@Param("clientId") Long clientId, @Param("serviceId") Long serviceId);
+    int save(@Param("clientId") String clientId, @Param("serviceId") String serviceId);
 
-    int delete(@Param("clientId") Long clientId, @Param("serviceId") Long serviceId);
+    int delete(@Param("clientId") String clientId, @Param("serviceId") String serviceId);
 
-    @Select("select t.service_id from sys_client_service t where t.clientId = #{clientId}")
-    Set<Long> findServiceIdsByClientId(Long clientId);
+    @Select("select t.service_id from sys_client_service t where t.clientId = #{clientId} and t.enable_flag = 1")
+    Set<String> findServiceIdsByClientId(String clientId);
 
-    List<SysService> findServicesBySlientIds(@Param("clientIds") Set<Long> clientIds);
+    List<SysService> findServicesBySlientIds(@Param("clientIds") Set<String> clientIds);
 
 
 }

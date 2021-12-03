@@ -3,6 +3,7 @@ package com.key.win.common.model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.key.win.common.auth.details.DefaultClientDetails;
+import com.key.win.common.model.base.MybatisID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,13 +22,8 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SysClient implements Serializable{
-	/**
-    *
-    */
-   private static final long serialVersionUID = -8185413579135897885L;
-   @JsonSerialize(using=ToStringSerializer.class)
-   private Long id;
+public class SysClient extends MybatisID {
+
    private String clientId;
    private String clientSecret;
    private String clientSecretStr;
@@ -44,12 +40,12 @@ public class SysClient implements Serializable{
    private Integer ifLimit ;
    @JsonSerialize(using=ToStringSerializer.class)
    private Long limitCount=10000L ;
-   private List<Long> permissionIds;
-   private Set<Long> serviceIds;
+   private List<String> permissionIds;
+   private Set<String> serviceIds;
    
    public DefaultClientDetails map(){
 	   DefaultClientDetails defaultClientDetails = new DefaultClientDetails(this.clientId, this.resourceIds , this.scope,this.authorizedGrantTypes,this.authorities,this.webServerRedirectUri) ;
-	   defaultClientDetails.setId(this.id);
+	   defaultClientDetails.setId(this.getId());
 	   defaultClientDetails.setClientSecret(this.clientSecret);
 	   defaultClientDetails.setAccessTokenValiditySeconds(this.accessTokenValidity);
 	   defaultClientDetails.setRefreshTokenValiditySeconds(this.refreshTokenValidity);

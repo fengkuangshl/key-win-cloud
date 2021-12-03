@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.key.win.common.model.base.MybatisID;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -21,23 +22,15 @@ import java.util.Set;
 @Data
 @TableName("sys_menu")
 @EqualsAndHashCode(callSuper=true)
-public class SysMenu extends Model<SysMenu> implements Serializable {
+public class SysMenu  extends MybatisID {
 
-	private static final long serialVersionUID = 749360940290141180L;
-	@JsonSerialize(using=ToStringSerializer.class)
-	private Long id;
 	@TableField(value="parent_id")
-	@JsonSerialize(using=ToStringSerializer.class)
-	private Long parentId;
+	private String parentId;
 	private String name;
 	private String url;
 	private String path;
 	private String css;
 	private Integer sort;
-	@TableField(value="create_time")
-	private Date createTime;
-	@TableField(value="update_time")
-	private Date updateTime;
 	@TableField(value="is_menu")
 	private Integer isMenu;
 	private Boolean hidden;
@@ -45,10 +38,8 @@ public class SysMenu extends Model<SysMenu> implements Serializable {
 	@TableField(exist=false)
 	private List<SysMenu> subMenus;
 	@TableField(exist=false)
-	private Long roleId;
+	private String roleId;
 	@TableField(exist=false)
-	private Set<Long> menuIds;
-
-
+	private Set<String> menuIds;
 
 }

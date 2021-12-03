@@ -43,7 +43,7 @@ public class SysPermissionController {
 	@ApiOperation(value = "后台管理删除权限标识")
 	@PreAuthorize("hasAuthority('permission:delete/permissions/{id}')")
 	@LogAnnotation(module="user-center",recordRequestParam=false)
-	public Result delete(@PathVariable Long id) throws ControllerException {
+	public Result delete(@PathVariable String id) throws ControllerException {
 
 		try {
 			sysPermissionService.delete(id);
@@ -104,18 +104,18 @@ public class SysPermissionController {
 	@GetMapping("/permissions/{roleId}/permissions")
 	@PreAuthorize("hasAuthority('permission:get/permissions/{roleId}/permissions')")
 	@LogAnnotation(module="user-center",recordRequestParam=false)
-	public List<Map<String, Object>> findAuthByRoleId(@PathVariable Long roleId) throws ControllerException {
+	public List<Map<String, Object>> findAuthByRoleId(@PathVariable String roleId) throws ControllerException {
 		
 		try {
 			List<Map<String, Object>> authTrees = new ArrayList<>();
-			Set<Long> roleIds = new HashSet<Long>();
+			Set<String> roleIds = new HashSet<String>();
 			//初始化角色
 			roleIds.add(roleId);
 			Set<SysPermission> roleAuths = sysPermissionService.findByRoleIds(roleIds);//根据roleId获取对应的权限
 			PageResult<SysPermission> allAuths = sysPermissionService.findPermissions(null);//根据roleId获取对应的权限
 
 
-			Map<Long,SysPermission> roleAuthsMap = roleAuths.stream().collect(Collectors.toMap(SysPermission::getId,SysPermission->SysPermission));
+			Map<String,SysPermission> roleAuthsMap = roleAuths.stream().collect(Collectors.toMap(SysPermission::getId,SysPermission->SysPermission));
 
 			for (SysPermission sysPermission : allAuths.getData() ){
 				Map<String, Object> authTree = new HashMap<>();
@@ -139,7 +139,7 @@ public class SysPermissionController {
     @GetMapping("/permissions/{roleId}")
     @PreAuthorize("hasAuthority('permission:get/permissions/{roleId}')")
     @LogAnnotation(module="user-center",recordRequestParam=false)
-    public Result getAuthByRoleId(@PathVariable Long roleId) throws ControllerException {
+    public Result getAuthByRoleId(@PathVariable String roleId) throws ControllerException {
        return Result.succeed(this.findAuthByRoleId(roleId),"");
     }
 

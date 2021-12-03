@@ -5,6 +5,7 @@ import com.key.win.common.exception.controller.ControllerException;
 import com.key.win.common.exception.service.ServiceException;
 import com.key.win.common.model.SysMenu;
 import com.key.win.common.model.SysRole;
+import com.key.win.common.util.StringUtil;
 import com.key.win.common.util.SysUserUtil;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
@@ -35,7 +36,7 @@ public class SysMenuController {
     @PreAuthorize("hasAuthority('menus:get/menus/{id}')")
     @GetMapping("/get/{id}")
     @LogAnnotation(module = "user-center", recordRequestParam = false)
-    public Result findSysMenuById(@PathVariable Long id) throws ControllerException {
+    public Result findSysMenuById(@PathVariable String id) throws ControllerException {
         try {
             SysMenu byId = menuService.findById(id);
             return Result.succeed(byId, "");
@@ -55,9 +56,9 @@ public class SysMenuController {
     @ApiOperation(value = "删除菜单")
     @PreAuthorize("hasAuthority('menu:delete/menus/{id}')")
     @LogAnnotation(module = "user-center", recordRequestParam = false)
-    public Result delete(@PathVariable Long id) throws ControllerException {
+    public Result delete(@PathVariable String id) throws ControllerException {
         try {
-            menuService.delete(id);
+            menuService.removeById(id);
             return Result.succeed("操作成功");
         } catch (Exception e) {
             throw new ControllerException(e);
@@ -68,16 +69,16 @@ public class SysMenuController {
     @ApiOperation(value = "根据roleId获取对应的菜单")
     @PreAuthorize("hasAuthority('menu:get/menus/{roleId}/menus')")
     @LogAnnotation(module = "user-center", recordRequestParam = false)
-    public List<Map<String, Object>> findMenusByRoleId(@PathVariable Long roleId) throws ControllerException {
+    public List<Map<String, Object>> findMenusByRoleId(@PathVariable String roleId) throws ControllerException {
 
         try {
-            Set<Long> roleIds = new HashSet<Long>();
+            Set<String> roleIds = new HashSet<String>();
             // 初始化角色
             roleIds.add(roleId);
             List<SysMenu> roleMenus = menuService.findByRoles(roleIds); // 获取该角色对应的菜单
-            List<SysMenu> allMenus = menuService.findAll(); // 全部的菜单列表
+            List<SysMenu> allMenus = menuService.list(); // 全部的菜单列表
             List<Map<String, Object>> authTrees = new ArrayList<>();
-            Map<Long, SysMenu> roleMenusMap = roleMenus.stream()
+            Map<String, SysMenu> roleMenusMap = roleMenus.stream()
                     .collect(Collectors.toMap(SysMenu::getId, SysMenu -> SysMenu));
             for (SysMenu sysMenu : allMenus) {
                 Map<String, Object> authTree = new HashMap<>();
@@ -101,7 +102,7 @@ public class SysMenuController {
     @ApiOperation(value = "根据roleId获取对应的菜单")
     @PreAuthorize("hasAuthority('menu:get/menus/{roleId}')")
     @LogAnnotation(module = "user-center", recordRequestParam = false)
-    public Result getMenusByRoleId(@PathVariable Long roleId) throws ControllerException {
+    public Result getMenusByRoleId(@PathVariable String roleId) throws ControllerException {
         return Result.succeed(this.findMenusByRoleId(roleId), "");
     }
 
@@ -130,7 +131,7 @@ public class SysMenuController {
     public PageResult<SysMenu> findAlls() throws ControllerException {
 
         try {
-            List<SysMenu> list = menuService.findAll();
+            List<SysMenu> list = menuService.list();
             return PageResult.<SysMenu>builder().data(list).code(0).count((long) list.size()).build();
         } catch (ServiceException e) {
             throw new ControllerException(e);
@@ -143,7 +144,7 @@ public class SysMenuController {
     @PreAuthorize("hasAuthority('menu:get/menus/findAlls')")
     @LogAnnotation(module = "user-center", recordRequestParam = false)
     public Result getAll() throws ControllerException {
-        List<SysMenu> all = menuService.findAll();
+        List<SysMenu> all = menuService.list();
         return Result.succeed(all, "");
     }
 
@@ -181,11 +182,7 @@ public class SysMenuController {
     @LogAnnotation(module = "user-center", recordRequestParam = false)
     public Result saveOrUpdate(@RequestBody SysMenu menu) throws ControllerException {
         try {
-            if (menu.getId() != null) {
-                menuService.update(menu);
-            } else {
-                menuService.save(menu);
-            }
+            menuService.saveOrUpdate(menu);
             return Result.succeed("操作成功");
         } catch (ServiceException e) {
             throw new ControllerException(e);
@@ -247,7 +244,7 @@ public class SysMenuController {
         try {
             List<SysMenu> menus = new ArrayList<SysMenu>();
             for (SysMenu sysMenu : sysMenus) {
-                if (ObjectUtils.equals(-1L, sysMenu.getParentId())) {
+                if (ObjectUtils.equals("-1", sysMenu.getParentId())) {
                     menus.add(sysMenu);
                 }
                 for (SysMenu menu : sysMenus) {

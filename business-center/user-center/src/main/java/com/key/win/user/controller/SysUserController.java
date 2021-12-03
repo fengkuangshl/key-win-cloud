@@ -94,7 +94,7 @@ public class SysUserController {
     @PreAuthorize("hasAuthority('user:get/users/{id}')")
     @GetMapping("/users/{id}")
     @LogAnnotation(module = "user-center", recordRequestParam = false)
-    public Result findUserById(@PathVariable Long id) throws ControllerException {
+    public Result findUserById(@PathVariable String id) throws ControllerException {
         try {
             return sysUserService.findById(id);
         } catch (ServiceException e) {
@@ -112,7 +112,7 @@ public class SysUserController {
     @PreAuthorize("hasAnyAuthority('user:put/users/password','user:post/users/{id}/resetPassword')")
     @PutMapping(value = "/users/{id}/password", params = {"newPassword"})
     @LogAnnotation(module = "user-center", recordRequestParam = false)
-    public void resetPassword(@PathVariable Long id, String newPassword) throws ControllerException {
+    public void resetPassword(@PathVariable String id, String newPassword) throws ControllerException {
         try {
             sysUserService.updatePassword(id, null, newPassword);
         } catch (ServiceException e) {
@@ -147,7 +147,7 @@ public class SysUserController {
     @PreAuthorize("hasAuthority('user:post/users/{id}/roles')")
     @PostMapping("/users/{id}/roles")
     @LogAnnotation(module = "user-center", recordRequestParam = false)
-    public void setRoleToUser(@PathVariable Long id, @RequestBody Set<Long> roleIds) throws ControllerException {
+    public void setRoleToUser(@PathVariable String id, @RequestBody Set<String> roleIds) throws ControllerException {
         try {
             sysUserService.setRoleToUser(id, roleIds);
         } catch (ServiceException e) {
@@ -165,7 +165,7 @@ public class SysUserController {
     @PreAuthorize("hasAnyAuthority('user:get/users/{id}/roles')")
     @GetMapping("/users/{id}/roles")
     @LogAnnotation(module = "user-center", recordRequestParam = false)
-    public Set<SysRole> findRolesByUserId(@PathVariable Long id) throws ControllerException {
+    public Set<SysRole> findRolesByUserId(@PathVariable String id) throws ControllerException {
         try {
             return sysUserService.findRolesByUserId(id);
         } catch (ServiceException e) {
@@ -177,6 +177,7 @@ public class SysUserController {
     /**
      * 用户查询
      * http://192.168.3.2:7000/users?access_token=3b45d059-601b-4c63-85f9-9d77128ee94d&start=0&length=10
+     *
      * @param params //  searchKey=username, searchValue=as
      * @return
      * @throws ControllerException
@@ -208,6 +209,7 @@ public class SysUserController {
 
     /**
      * 修改自己的个人信息
+     *
      * @param sysUser
      * @return
      * @throws ControllerException
@@ -219,7 +221,7 @@ public class SysUserController {
 //        SysUser user = SysUserUtil.getLoginAppUser();
 //        sysUser.setId(user.getId());
         try {
-            return  sysUserService.updateSysUser(sysUser);
+            return sysUserService.updateSysUser(sysUser);
         } catch (ServiceException e) {
             throw new ControllerException(e);
         }
@@ -227,6 +229,7 @@ public class SysUserController {
 
     /**
      * 修改密码
+     *
      * @param sysUser
      * @throws ControllerException
      */
@@ -241,7 +244,7 @@ public class SysUserController {
             if (StringUtils.isBlank(sysUser.getNewPassword())) {
                 throw new IllegalArgumentException("新密码不能为空");
             }
-            if (sysUser.getId() == 1277137734524300032L) {
+            if ("1277137734524300032".equals(sysUser.getId())) {
                 return Result.failed("超级管理员不给予修改");
             }
             return sysUserService.updatePassword(sysUser.getId(), sysUser.getOldPassword(), sysUser.getNewPassword());
@@ -252,6 +255,7 @@ public class SysUserController {
 
     /**
      * 修改用户状态
+     *
      * @param params
      * @return
      * @throws ControllerException
@@ -267,8 +271,8 @@ public class SysUserController {
     @PreAuthorize("hasAnyAuthority('user:get/users/updateEnabled' ,'user:put/users/me')")
     public Result updateEnabled(@RequestParam Map<String, Object> params) throws ControllerException {
         try {
-            Long id = MapUtils.getLong(params, "id");
-            if (id == 1277137734524300032L) {
+            String id = MapUtils.getString(params, "id");
+            if ("1277137734524300032".equals(id)) {
                 return Result.failed("超级管理员不给予修改");
             }
             return sysUserService.updateEnabled(params);
@@ -279,6 +283,7 @@ public class SysUserController {
 
     /**
      * 管理后台，给用户重置密码
+     *
      * @param id
      * @throws ControllerException
      * @author gitgeek
@@ -286,9 +291,9 @@ public class SysUserController {
     @PreAuthorize("hasAuthority('user:post/users/{id}/resetPassword' )")
     @PostMapping(value = "/users/{id}/resetPassword")
     @LogAnnotation(module = "user-center", recordRequestParam = false)
-    public Result resetPassword(@PathVariable Long id) throws ControllerException {
+    public Result resetPassword(@PathVariable String id) throws ControllerException {
         try {
-            if (id == 1277137734524300032L) {
+            if ("1277137734524300032".equals(id)) {
                 return Result.failed("超级管理员不给予修改");
             }
             sysUserService.updatePassword(id, null, "123456");
@@ -301,6 +306,7 @@ public class SysUserController {
 
     /**
      * 新增or更新
+     *
      * @param sysUser
      * @return
      * @throws ControllerException
@@ -345,6 +351,7 @@ public class SysUserController {
 
     /**
      * 测试幂等接口
+     *
      * @param sysUser
      * @return
      * @throws ControllerException

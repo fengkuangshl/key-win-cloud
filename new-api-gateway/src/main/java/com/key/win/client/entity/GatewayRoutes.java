@@ -20,10 +20,6 @@ public class GatewayRoutes {
 
     private Integer delFlag;
 
-    private Date createTime;
-
-    private Date updateTime;
-
 
     public void setId(String id) {
         this.id = id == null ? null : id.trim();
@@ -60,13 +56,4 @@ public class GatewayRoutes {
         this.delFlag = delFlag == null ? 0 : delFlag;
     }
 
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime == null ? new Date(System.currentTimeMillis()) : createTime;
-    }
-
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime == null ? new Date(System.currentTimeMillis()) : updateTime;
-    }
 }

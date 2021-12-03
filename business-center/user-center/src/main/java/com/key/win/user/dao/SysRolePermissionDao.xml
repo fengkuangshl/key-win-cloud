@@ -26,8 +26,7 @@
 	</delete>
 
 	<select id="findByRoleIds" resultType="com.key.win.common.model.SysPermission">
-		select distinct p.id , p.permission, p.name, p.create_time createTime
-		, p.update_time updateTime from
+		select distinct p.* from
 		sys_permission p
 		inner join
 		sys_role_permission rp on

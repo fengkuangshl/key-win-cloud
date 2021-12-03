@@ -18,24 +18,24 @@ import java.util.List;
 @Mapper
 public interface SysServiceDao {
 	
-    @Insert("insert into sys_service(parent_id,name,path,sort,create_time ,update_time,is_service) values (#{parentId}, #{name}, #{path},#{sort},#{createTime},#{updateTime},#{isService})")
+    @Insert("insert into sys_service(parent_id,name,path,sort,is_service) values (#{parentId}, #{name}, #{path},#{sort},#{isService})")
     int save(SysService service);
 
     int updateByPrimaryKey(SysService service);
 
-    @Select("select id,parent_id parentId , name, path, sort, create_time createTime , update_time updateTime,is_service isService from sys_service t where t.id = #{id}")
-    SysService findById(Long id);
+    @Select("select t.* from sys_service t where t.id = #{id} and t.enable_flag = 1")
+    SysService findById(String id);
 
-    @Delete("delete from sys_service where id = #{id}")
-    int delete(Long id);
+    @Delete("delete from sys_service where id = #{id}  and t.enable_flag = 1")
+    int delete(String id);
 
-    @Delete("delete from sys_service where parent_id = #{id}")
-    int deleteByParentId(Long id);
+    @Delete("delete from sys_service where parent_id = #{id}  and t.enable_flag = 1")
+    int deleteByParentId(String id);
 
-    @Select("select id,parent_id parentId , name, path, sort, create_time createTime , update_time updateTime,is_service isService  from sys_service t order by t.sort")
+    @Select("select t.*  from sys_service t where  t.enable_flag = 1 order by t.sort")
     List<SysService> findAll();
 
-    @Select("select id,parent_id parentId , name, path, sort, create_time createTime , update_time updateTime,is_service isService  from sys_service t where t.is_service = 1 order by t.sort")
+    @Select("select t.*  from sys_service t where t.is_service = 1  and t.enable_flag = 1 order by t.sort")
     List<SysService> findOnes();
 
 }

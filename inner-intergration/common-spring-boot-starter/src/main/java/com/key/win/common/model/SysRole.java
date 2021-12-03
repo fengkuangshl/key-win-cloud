@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.key.win.common.model.base.MybatisID;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -19,17 +20,10 @@ import java.util.Date;
 @Data
 @TableName("sys_role")
 @EqualsAndHashCode(callSuper=true)
-public class SysRole extends Model<SysRole> implements Serializable{
+public class SysRole extends MybatisID {
 
-	private static final long serialVersionUID = -3591576507384897451L;
-	@JsonSerialize(using=ToStringSerializer.class)
-	private Long id;
 	private String code ;
 	private String name;
-	@TableField(value="create_time")
-	private Date createTime;
-	@TableField(value="update_time")
-	private Date updateTime;
 	
 	
 	@TableField(exist=false)

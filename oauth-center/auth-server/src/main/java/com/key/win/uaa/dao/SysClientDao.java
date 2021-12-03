@@ -18,15 +18,15 @@ public interface SysClientDao {
 			+ " #{additionalInformation}, #{autoapprove} ,0 , #{ifLimit} , #{limitCount} )")
 	int save(SysClient client);
 
-	@Delete("delete from oauth_client_details where id = #{id}")
-	int delete(Long id);
+	@Delete("delete from oauth_client_details where id = #{id} and enable_flag = 1")
+	int delete(String id);
 
 	int updateByPrimaryKey(SysClient client);
 
-	@Select("select id id , client_id clientId, client_secret clientSecret, client_secret_str clientSecretStr  , resource_ids resourceIds ,scope,authorized_grant_types  authorizedGrantTypes ,access_token_validity accessTokenValidity ,refresh_token_validity  refreshTokenValidity ,web_server_redirect_uri webServerRedirectUri , additional_information additionalInformation ,authorities,if_limit ifLimit , limit_count limitCount  ,autoapprove,status  from oauth_client_details t where t.id = #{id}  ")
-	SysClient getById(Long id);
+	@Select("select t.* from oauth_client_details t where t.id = #{id} and t.enable_flag = 1  ")
+	SysClient getById(String id);
 
-	@Select("select id id , client_id clientId, client_secret clientSecret, client_secret_str clientSecretStr  , resource_ids resourceIds ,scope,authorized_grant_types  authorizedGrantTypes ,access_token_validity accessTokenValidity ,refresh_token_validity  refreshTokenValidity ,web_server_redirect_uri webServerRedirectUri , additional_information additionalInformation ,authorities,if_limit ifLimit , limit_count limitCount  ,autoapprove,status  from oauth_client_details t where t.client_id = #{clientId}  ")
+	@Select("select t.*  from oauth_client_details t where t.client_id = #{clientId} and t.enable_flag = 1 ")
 	SysClient getClient(String clientId);
 
 	int count(@Param("params") Map<String, Object> params);

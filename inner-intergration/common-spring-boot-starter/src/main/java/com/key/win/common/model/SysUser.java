@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.key.win.common.model.base.MybatisID;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -22,12 +23,8 @@ import java.util.List;
 @Data
 @TableName("sys_user")
 @EqualsAndHashCode(callSuper=true)
-public class SysUser  extends Model<SysUser>  implements Serializable {
+public class SysUser  extends MybatisID {
 
-	private static final long serialVersionUID = -5886012896705137070L;
-	@TableId(value="id",type=IdType.ASSIGN_ID)  //雪花算法  id生成策略
-	@JsonSerialize(using=ToStringSerializer.class)
-	private Long id;
 	private String username;
 	private String password;
 	@TableField(value="nick_name")
@@ -38,10 +35,6 @@ public class SysUser  extends Model<SysUser>  implements Serializable {
 	private Integer sex;
 	private Boolean enabled;
 	private String type;
-	@TableField(value="create_time")
-	private Date createTime;
-	@TableField(value="update_time")
-	private Date updateTime;
 	
 	@TableField(exist=false)
 	private List<SysRole> roles;

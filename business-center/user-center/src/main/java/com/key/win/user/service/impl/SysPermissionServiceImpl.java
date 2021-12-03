@@ -7,6 +7,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.key.win.common.exception.service.ServiceException;
 import com.key.win.common.model.SysPermission;
+import com.key.win.common.model.SysRolePermission;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.page.MybatiesPageServiceTemplate;
@@ -37,7 +38,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
     private SysRolePermissionDao rolePermissionDao;
 
     @Override
-    public Set<SysPermission> findByRoleIds(Set<Long> roleIds) throws ServiceException {
+    public Set<SysPermission> findByRoleIds(Set<String> roleIds) throws ServiceException {
         try {
             return rolePermissionDao.findByRoleIds(roleIds);
         } catch (Exception e) {
@@ -54,8 +55,6 @@ public class SysPermissionServiceImpl implements SysPermissionService {
             if (permission != null) {
                 throw new IllegalArgumentException("权限标识已存在");
             }
-            sysPermission.setCreateTime(new Date());
-            sysPermission.setUpdateTime(sysPermission.getCreateTime());
 
             sysPermissionDao.insert(sysPermission);
             log.info("保存权限标识：{}", sysPermission);
@@ -69,7 +68,6 @@ public class SysPermissionServiceImpl implements SysPermissionService {
     @Transactional
     public void update(SysPermission sysPermission) throws ServiceException {
         try {
-            sysPermission.setUpdateTime(new Date());
             sysPermissionDao.updateByPrimaryKey(sysPermission);
             log.info("修改权限标识：{}", sysPermission);
         } catch (Exception e) {
@@ -80,7 +78,7 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 
     @Override
     @Transactional
-    public void delete(Long id) throws ServiceException {
+    public void delete(String id) throws ServiceException {
         try {
             SysPermission permission = sysPermissionDao.findById(id);
             if (permission == null) {
@@ -114,12 +112,17 @@ public class SysPermissionServiceImpl implements SysPermissionService {
 
     @Override
     @Transactional
-    public void setPermissionToRole(Long roleId, Set<Long> permissions) throws ServiceException {
+    public void setPermissionToRole(String roleId, Set<String> permissions) throws ServiceException {
         try {
             rolePermissionDao.deleteBySelective(roleId, null);
 
             if (!CollectionUtils.isEmpty(permissions)) {
-                rolePermissionDao.saveBatch(roleId, permissions);
+                for (String permission : permissions) {
+                    SysRolePermission sysRolePermission = new SysRolePermission();
+                    sysRolePermission.setPermissionId(permission);
+                    sysRolePermission.setRoleId(roleId);
+                    this.rolePermissionDao.insert(sysRolePermission);
+                }
             }
         } catch (Exception e) {
             throw new ServiceException(e);
@@ -149,8 +152,8 @@ public class SysPermissionServiceImpl implements SysPermissionService {
                 if ("permission".equals(sortName)) {
                     list.add(SysPermission::getPermission);
                 }
-                if ("createTime".equals(sortName)) {
-                    list.add(SysPermission::getCreateTime);
+                if ("createDate".equals(sortName)) {
+                    list.add(SysPermission::getCreateDate);
                 }
                 return list;
             }

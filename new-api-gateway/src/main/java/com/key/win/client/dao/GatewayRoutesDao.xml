@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.key.win.client.dao.GatewayRoutesDao" >
   <resultMap id="BaseResultMap" type="com.key.win.client.entity.GatewayRoutes" >
-    <id column="id" property="id" jdbcType="CHAR" />
+    <id column="id" property="id" jdbcType="VARCHAR" />
     <result column="uri" property="uri" jdbcType="VARCHAR" />
     <result column="predicates" property="predicates" jdbcType="VARCHAR" />
     <result column="filters" property="filters" jdbcType="VARCHAR" />
@@ -30,7 +30,7 @@
       filters, `order`, description,
       delFlag, createTime, updateTime
       )
-    values (#{id,jdbcType=CHAR}, #{uri,jdbcType=VARCHAR}, #{predicates,jdbcType=VARCHAR}, 
+    values (#{id,jdbcType=VARCHAR}, #{uri,jdbcType=VARCHAR}, #{predicates,jdbcType=VARCHAR},
       #{filters,jdbcType=VARCHAR}, #{order,jdbcType=INTEGER}, #{description,jdbcType=VARCHAR}, 
       #{delFlag,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
       )
@@ -124,7 +124,7 @@
         updateTime = #{updateTime,jdbcType=TIMESTAMP},
       </if>
     </set>
-    where id = #{id,jdbcType=CHAR}
+    where id = #{id,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.key.win.client.entity.GatewayRoutes" >
     update sys_gateway_routes
@@ -136,7 +136,7 @@
       delFlag = #{delFlag,jdbcType=INTEGER},
       createTime = #{createTime,jdbcType=TIMESTAMP},
       updateTime = #{updateTime,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=CHAR}
+    where id = #{id,jdbcType=VARCHAR}
   </update>
 
 

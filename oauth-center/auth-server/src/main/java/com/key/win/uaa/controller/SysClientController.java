@@ -47,7 +47,7 @@ public class SysClientController {
     @ApiOperation(value = "根据id获取应用")
     @PreAuthorize("hasAuthority('client:get/clients/{id}')")
     @LogAnnotation(module="auth-server",recordRequestParam=false)
-    public SysClient get(@PathVariable Long id) {
+    public SysClient get(@PathVariable String id) {
         try {
 			return sysClientService.getById(id);
 		} catch (Exception e) {
@@ -71,7 +71,7 @@ public class SysClientController {
     @ApiOperation(value = "删除应用")
     @PreAuthorize("hasAuthority('client:delete/clients')")
     @LogAnnotation(module="auth-server",recordRequestParam=false)
-    public void delete(@PathVariable Long id) {
+    public void delete(@PathVariable String id) {
     	try {
 			sysClientService.delete(id);
 		} catch (Exception e) {

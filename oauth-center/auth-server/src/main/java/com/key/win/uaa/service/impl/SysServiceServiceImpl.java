@@ -44,8 +44,6 @@ public class SysServiceServiceImpl implements SysServiceService {
     @Override
     public void save(SysService service) {
         try {
-        	service.setCreateTime(new Date());
-			service.setUpdateTime(new Date());
 			sysServiceDao.save(service);
 			log.info("添加服务：{}", service);
 		} catch (Exception e) {
@@ -61,8 +59,6 @@ public class SysServiceServiceImpl implements SysServiceService {
     @Override
     public void update(SysService service) {
         try {
-			service.setUpdateTime(new Date());
-			service.setUpdateTime(new Date());
 			sysServiceDao.updateByPrimaryKey(service);
 			log.info("更新服务：{}", service);
 		} catch (Exception e) {
@@ -76,7 +72,7 @@ public class SysServiceServiceImpl implements SysServiceService {
      * @param id
      */
     @Override
-    public void delete(Long id) {
+    public void delete(String id) {
         try {
 			SysService sysService = sysServiceDao.findById(id);
 			sysServiceDao.deleteByParentId(sysService.getId());
@@ -94,7 +90,7 @@ public class SysServiceServiceImpl implements SysServiceService {
      * @param serviceIds
      */
     @Override
-    public void setMenuToClient(Long clientId, Set<Long> serviceIds) {
+    public void setMenuToClient(String clientId, Set<String> serviceIds) {
         try {
 			sysClientServiceDao.delete(clientId,null);
 
@@ -117,7 +113,7 @@ public class SysServiceServiceImpl implements SysServiceService {
      * @return
      */
     @Override
-    public List<SysService> findByClient(Set<Long> clientIds) {
+    public List<SysService> findByClient(Set<String> clientIds) {
         try {
 			return sysClientServiceDao.findServicesBySlientIds(clientIds);
 		} catch (Exception e) {
@@ -146,7 +142,7 @@ public class SysServiceServiceImpl implements SysServiceService {
      * @return
      */
     @Override
-    public SysService findById(Long id) {
+    public SysService findById(String id) {
         try {
 			return sysServiceDao.findById(id);
 		} catch (Exception e) {
@@ -161,7 +157,7 @@ public class SysServiceServiceImpl implements SysServiceService {
      * @return
      */
     @Override
-    public Set<Long> findServiceIdsByClientId(Long clientId) {
+    public Set<String> findServiceIdsByClientId(String clientId) {
         try {
 			return sysClientServiceDao.findServiceIdsByClientId(clientId);
 		} catch (Exception e) {

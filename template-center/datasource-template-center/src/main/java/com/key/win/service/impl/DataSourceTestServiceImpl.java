@@ -1,13 +1,12 @@
 package com.key.win.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.key.win.common.util.BeanUtils;
 import com.key.win.common.web.Result;
 import com.key.win.dao.DataSourceTestDao;
 import com.key.win.model.DataSourceTest;
-import com.key.win.mybaties.vo.MybatiesFeignTemplateVo;
 import com.key.win.page.MybatiesPageServiceTemplate;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
@@ -52,7 +51,7 @@ public class DataSourceTestServiceImpl extends ServiceImpl<DataSourceTestDao, Da
     public PageResult<DataSourceTest> findDataSourceTemplateByPage(PageRequest<DataSourceTest> pageRequest) {
         MybatiesPageServiceTemplate<DataSourceTest, DataSourceTest> page = new MybatiesPageServiceTemplate<DataSourceTest, DataSourceTest>(this.baseMapper) {
             @Override
-            protected Wrapper<DataSourceTest> constructWrapper(DataSourceTest dataSourceTest) {
+            protected AbstractWrapper constructWrapper(DataSourceTest dataSourceTest) {
                 LambdaQueryWrapper<DataSourceTest> lqw = new LambdaQueryWrapper<DataSourceTest>();
                 if (dataSourceTest != null && StringUtils.isNotBlank(dataSourceTest.getName())) {
                     lqw.like(DataSourceTest::getName, dataSourceTest.getName() == null ? "" : dataSourceTest.getName());

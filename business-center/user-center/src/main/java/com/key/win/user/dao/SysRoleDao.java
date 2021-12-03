@@ -16,20 +16,20 @@ import java.util.Map;
 public interface SysRoleDao extends BaseMapper<SysRole>{
 
 	@Options(useGeneratedKeys = true, keyProperty = "id")
-	@Insert("insert into sys_role(code, name, create_time, update_time) values(#{code}, #{name}, #{createTime}, #{createTime})")
+	@Insert("insert into sys_role(code, name) values(#{code}, #{name})")
 	int save(SysRole sysRole);
 
 	
 	@Delete("delete from sys_role where id = #{id}")
-	int deleteByPrimaryKey(Long id);
+	int deleteByPrimaryKey(String id);
 	
-	@Update("update sys_role t set t.name = #{name} ,t.update_time = #{updateTime} where t.id = #{id}")
+	@Update("update sys_role t set t.name = #{name}  where t.id = #{id}")
 	int updateByPrimaryKey(SysRole sysRole);
 
-	@Select("select id ,code, name, create_time createTime , update_time  updateTime from sys_role t where t.id = #{id}")
-	SysRole findById(Long id);
+	@Select("select t.* from sys_role t where t.id = #{id}")
+	SysRole findById(String id);
 
-	@Select("select id ,code, name, create_time createTime , update_time  updateTime from sys_role t where t.code = #{code}")
+	@Select("select t.* from sys_role t where t.code = #{code} and t.enable_flag = 1")
 	SysRole findByCode(String code);
 
 	int count(Map<String, Object> params);

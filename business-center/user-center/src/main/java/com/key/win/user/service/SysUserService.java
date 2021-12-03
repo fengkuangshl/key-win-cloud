@@ -41,14 +41,14 @@ public interface SysUserService {
 	LoginAppUser findByMobile(String mobile)  throws ServiceException;
 
 
-    Result findById(Long id)  throws ServiceException;
+    Result findById(String id)  throws ServiceException;
 
 	/**
 	 * 用户分配角色
 	 * @param id
 	 * @param roleIds
 	 */
-	void setRoleToUser(Long id, Set<Long> roleIds)  throws ServiceException;
+	void setRoleToUser(String id, Set<String> roleIds)  throws ServiceException;
 
 	/**
 	 * 更新密码
@@ -57,7 +57,7 @@ public interface SysUserService {
 	 * @param newPassword
 	 * @return
 	 */
-	Result updatePassword(Long id, String oldPassword, String newPassword)  throws ServiceException;
+	Result updatePassword(String id, String oldPassword, String newPassword)  throws ServiceException;
 
 	/**
 	 * 用户列表
@@ -71,7 +71,7 @@ public interface SysUserService {
 	 * @param userId
 	 * @return
 	 */
-	Set<SysRole> findRolesByUserId(Long userId)  throws ServiceException;
+	Set<SysRole> findRolesByUserId(String userId)  throws ServiceException;
 
 	/**
 	 * 状态变更

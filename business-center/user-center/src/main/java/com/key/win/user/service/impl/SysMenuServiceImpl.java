@@ -3,9 +3,11 @@ package com.key.win.user.service.impl;
 import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Maps;
 import com.key.win.common.exception.service.ServiceException;
 import com.key.win.common.model.SysMenu;
+import com.key.win.common.model.SysRoleMenu;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.page.MybatiesPageServiceTemplate;
@@ -19,67 +21,70 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
-public class SysMenuServiceImpl implements SysMenuService {
+public class SysMenuServiceImpl extends ServiceImpl<SysMenuDao, SysMenu> implements SysMenuService {
 
     @Autowired
     private SysMenuDao menuDao;
     @Autowired
     private SysRoleMenuDao roleMenuDao;
 
-    @Transactional
-    @Override
-    public void save(SysMenu menu) throws ServiceException {
-        try {
-            menu.setCreateTime(new Date());
-            menu.setUpdateTime(menu.getCreateTime());
-
-            menuDao.save(menu);
-            log.info("新增菜单：{}", menu);
-        } catch (Exception e) {
-//			BizLog.info("菜单保存处理失败", LogEntry.builder().clazz(this.getClass().getName()).method("save").error(e.getMessage()).build());
-            throw new ServiceException(e);
-        }
-    }
-
-    @Transactional
-    @Override
-    public void update(SysMenu menu) throws ServiceException {
-        try {
-            menu.setUpdateTime(new Date());
-
-            menuDao.updateByPrimaryKey(menu);
-            log.info("修改菜单：{}", menu);
-        } catch (Exception e) {
-//			BizLog.info("菜单修改处理失败", LogEntry.builder().clazz(this.getClass().getName()).method("update").error(e.getMessage()).build());
-            throw new ServiceException(e);
-        }
-    }
-
-    @Transactional
-    @Override
-    public void delete(Long id) throws ServiceException {
-        try {
-            SysMenu menu = menuDao.findById(id);
-            menuDao.deleteByPrimaryKey(id);
-            log.info("删除菜单：{}", menu);
-        } catch (Exception e) {
-//			BizLog.info("菜单删除处理失败", LogEntry.builder().clazz(this.getClass().getName()).method("delete").error(e.getMessage()).build());
-            throw new ServiceException(e);
-        }
-    }
+//    @Transactional
+//    @Override
+//    public void save(SysMenu menu) throws ServiceException {
+//        try {
+//            menuDao.save(menu);
+//            log.info("新增菜单：{}", menu);
+//        } catch (Exception e) {
+////			BizLog.info("菜单保存处理失败", LogEntry.builder().clazz(this.getClass().getName()).method("save").error(e.getMessage()).build());
+//            throw new ServiceException(e);
+//        }
+//    }
+//
+//    @Transactional
+//    @Override
+//    public void update(SysMenu menu) throws ServiceException {
+//        try {
+//            menuDao.updateByPrimaryKey(menu);
+//            log.info("修改菜单：{}", menu);
+//        } catch (Exception e) {
+////			BizLog.info("菜单修改处理失败", LogEntry.builder().clazz(this.getClass().getName()).method("update").error(e.getMessage()).build());
+//            throw new ServiceException(e);
+//        }
+//    }
+//
+//    @Transactional
+//    @Override
+//    public void delete(String id) throws ServiceException {
+//        try {
+//            SysMenu menu = menuDao.findById(id);
+//            menuDao.deleteByPrimaryKey(id);
+//            log.info("删除菜单：{}", menu);
+//        } catch (Exception e) {
+////			BizLog.info("菜单删除处理失败", LogEntry.builder().clazz(this.getClass().getName()).method("delete").error(e.getMessage()).build());
+//            throw new ServiceException(e);
+//        }
+//    }
 
 
     @Override
     @Transactional
-    public void setMenuToRole(Long roleId, Set<Long> menuIds) throws ServiceException {
+    public void setMenuToRole(String roleId, Set<String> menuIds) throws ServiceException {
         try {
             roleMenuDao.deleteBySelective(roleId, null);
             if (!CollectionUtils.isEmpty(menuIds)) {
-                roleMenuDao.saveBatch(roleId, menuIds);
+                for (String menuId : menuIds) {
+                    SysRoleMenu sysRoleMenu = new SysRoleMenu();
+                    sysRoleMenu.setRoleId(roleId);
+                    sysRoleMenu.setMenuId(menuId);
+                    roleMenuDao.insert(sysRoleMenu);
+                }
             }
         } catch (Exception e) {
 //			BizLog.info("菜单角色处理失败", LogEntry.builder().clazz(this.getClass().getName()).method("setMenuToRole").error(e.getMessage()).build());
@@ -88,7 +93,7 @@ public class SysMenuServiceImpl implements SysMenuService {
     }
 
     @Override
-    public List<SysMenu> findByRoles(Set<Long> roleIds) throws ServiceException {
+    public List<SysMenu> findByRoles(Set<String> roleIds) throws ServiceException {
         try {
             return roleMenuDao.findMenusByRoleIds(roleIds);
         } catch (Exception e) {
@@ -97,18 +102,18 @@ public class SysMenuServiceImpl implements SysMenuService {
         }
     }
 
-    @Override
-    public List<SysMenu> findAll() throws ServiceException {
-        try {
-            return menuDao.findList(Maps.newHashMap()); //查询全部菜单
-        } catch (Exception e) {
-//			BizLog.info("菜单列表失败", LogEntry.builder().clazz(this.getClass().getName()).method("findAll").error(e.getMessage()).build());
-            throw new ServiceException(e);
-        }
-    }
+//    @Override
+//    public List<SysMenu> findAll() throws ServiceException {
+//        try {
+//            return menuDao.findList(Maps.newHashMap()); //查询全部菜单
+//        } catch (Exception e) {
+////			BizLog.info("菜单列表失败", LogEntry.builder().clazz(this.getClass().getName()).method("findAll").error(e.getMessage()).build());
+//            throw new ServiceException(e);
+//        }
+//    }
 
     @Override
-    public SysMenu findById(Long id) throws ServiceException {
+    public SysMenu findById(String id) throws ServiceException {
         try {
             return menuDao.findById(id);
         } catch (Exception e) {
@@ -117,7 +122,7 @@ public class SysMenuServiceImpl implements SysMenuService {
     }
 
     @Override
-    public Set<Long> findMenuIdsByRoleId(Long roleId) throws ServiceException {
+    public Set<String> findMenuIdsByRoleId(String roleId) throws ServiceException {
         try {
             return roleMenuDao.findMenuIdsByRoleId(roleId);
         } catch (Exception e) {
@@ -145,7 +150,7 @@ public class SysMenuServiceImpl implements SysMenuService {
                 if (sysMenu != null && StringUtils.isNotBlank(sysMenu.getName())) {
                     lqw.like(SysMenu::getName, "%" + (sysMenu.getName() == null ? "" : sysMenu.getName()) + "%");
                 }
-                lqw.orderByDesc(SysMenu::getCreateTime);
+                lqw.orderByDesc(SysMenu::getCreateDate);
                 return lqw;
             }
 
@@ -167,8 +172,8 @@ public class SysMenuServiceImpl implements SysMenuService {
                 if ("isMenu".equals(sortName)) {
                     list.add(SysMenu::getIsMenu);
                 }
-                if ("createTime".equals(sortName)) {
-                    list.add(SysMenu::getCreateTime);
+                if ("createDate".equals(sortName)) {
+                    list.add(SysMenu::getCreateDate);
                 }
                 if ("sort".equals(sortName)) {
                     list.add(SysMenu::getSort);
