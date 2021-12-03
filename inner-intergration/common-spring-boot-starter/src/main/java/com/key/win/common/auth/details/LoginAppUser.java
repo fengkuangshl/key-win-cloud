@@ -1,8 +1,8 @@
 package com.key.win.common.auth.details;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.key.win.common.model.SysRole;
-import com.key.win.common.model.SysUser;
+import com.key.win.common.model.system.SysRole;
+import com.key.win.common.model.system.SysUser;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

@@ -1,6 +1,6 @@
 package com.key.win.uaa.service;
 
-import com.key.win.common.model.SysService;
+import com.key.win.common.model.auth.SysService;
 
 import java.util.List;
 import java.util.Set;

@@ -1,7 +1,7 @@
 package com.key.win.uaa.service.impl;
 
 import com.key.win.common.exception.service.ServiceException;
-import com.key.win.common.model.SysService;
+import com.key.win.common.model.auth.SysService;
 import com.key.win.uaa.dao.SysClientServiceDao;
 import com.key.win.uaa.dao.SysServiceDao;
 import com.key.win.uaa.service.SysServiceService;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 

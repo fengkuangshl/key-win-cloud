@@ -1,4 +1,4 @@
-package com.key.win.common.model.base;
+package com.key.win.common.model.basic;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

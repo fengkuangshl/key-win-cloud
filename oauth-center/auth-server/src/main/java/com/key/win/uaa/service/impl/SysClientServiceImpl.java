@@ -5,7 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.key.win.common.constant.UaaConstant;
 import com.key.win.common.exception.service.ServiceException;
-import com.key.win.common.model.SysClient;
+import com.key.win.common.model.auth.SysClient;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
 import com.key.win.uaa.dao.SysClientDao;

@@ -2,7 +2,7 @@ package com.key.win.client.token;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.key.win.common.auth.details.LoginAppUser;
-import com.key.win.common.model.SysRole;
+import com.key.win.common.model.system.SysRole;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;

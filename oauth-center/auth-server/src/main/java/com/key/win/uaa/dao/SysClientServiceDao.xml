@@ -15,7 +15,7 @@
 		</where>
 	</update>
 
-	<select id="findServicesBySlientIds" resultType="com.key.win.common.model.SysService">
+	<select id="findServicesBySlientIds" resultType="com.key.win.common.model.auth.SysService">
 		select t.*  from sys_service t
 		inner join sys_client_service r on r.service_id = t.id
 		where

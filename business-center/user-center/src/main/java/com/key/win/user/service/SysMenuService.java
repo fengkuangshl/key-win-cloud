@@ -2,7 +2,7 @@ package com.key.win.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.key.win.common.exception.service.ServiceException;
-import com.key.win.common.model.SysMenu;
+import com.key.win.common.model.system.SysMenu;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 

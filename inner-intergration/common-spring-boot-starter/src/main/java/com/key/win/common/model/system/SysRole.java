@@ -1,16 +1,10 @@
-package com.key.win.common.model;
+package com.key.win.common.model.system;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.key.win.common.model.base.MybatisID;
+import com.key.win.common.model.basic.MybatisID;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.io.Serializable;
-import java.util.Date;
 
 /**
  * @author 作者 owen 

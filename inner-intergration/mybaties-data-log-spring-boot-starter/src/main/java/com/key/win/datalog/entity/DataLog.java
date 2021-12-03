@@ -1,10 +1,8 @@
 package com.key.win.datalog.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.key.win.common.MybatisID;
+import com.key.win.common.model.basic.MybatisID;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

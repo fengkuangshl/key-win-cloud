@@ -1,8 +1,8 @@
 package com.key.win.user.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.key.win.common.model.SysRole;
-import com.key.win.common.model.SysUserRole;
+import com.key.win.common.model.system.SysRole;
+import com.key.win.common.model.system.SysUserRole;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

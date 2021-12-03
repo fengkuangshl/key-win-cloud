@@ -6,7 +6,7 @@ import com.key.win.activiti.service.FormDataService;
 import com.key.win.activiti.service.ProcessRuntimeService;
 import com.key.win.activiti.service.ProcessTaskService;
 import com.key.win.activiti.vo.ProcessTaskVo;
-import com.key.win.common.model.SysUser;
+import com.key.win.common.model.system.SysUser;
 import com.key.win.common.util.StringUtil;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;

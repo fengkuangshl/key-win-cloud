@@ -2,12 +2,10 @@ package com.key.win.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.key.win.common.exception.service.ServiceException;
-import com.key.win.common.model.SysMenu;
-import com.key.win.common.model.SysPermission;
-import com.key.win.common.model.SysRole;
+import com.key.win.common.model.system.SysPermission;
+import com.key.win.common.model.system.SysRole;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
-import com.key.win.common.web.Result;
 
 import java.util.List;
 import java.util.Map;

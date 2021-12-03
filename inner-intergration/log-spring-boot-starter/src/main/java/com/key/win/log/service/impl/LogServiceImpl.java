@@ -1,13 +1,11 @@
 package com.key.win.log.service.impl;
 
-import com.key.win.common.model.SysLog;
+import com.key.win.common.model.log.SysLog;
 import com.key.win.log.service.LogService;
 import com.key.win.datasource.annotation.DataSource;
 import com.key.win.log.dao.LogDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
-
-import java.util.Date;
 
 /**
  * @author owen

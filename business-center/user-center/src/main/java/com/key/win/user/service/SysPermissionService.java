@@ -1,7 +1,7 @@
 package com.key.win.user.service;
 
 import com.key.win.common.exception.service.ServiceException;
-import com.key.win.common.model.SysPermission;
+import com.key.win.common.model.system.SysPermission;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 

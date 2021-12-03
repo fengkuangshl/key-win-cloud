@@ -1,13 +1,11 @@
 package com.key.win.jpa.config;
 
 import com.key.win.common.auth.details.LoginAppUser;
-import com.key.win.common.model.SysUser;
 import com.key.win.common.util.SysUserUtil;
 import com.key.win.jpa.model.BaseModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+
 import static org.springframework.security.config.Elements.ANONYMOUS;
 import javax.persistence.PostPersist;
 import javax.persistence.PostUpdate;

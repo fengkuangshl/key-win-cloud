@@ -1,7 +1,7 @@
 package com.key.win.user.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.key.win.common.model.SysPermission;
+import com.key.win.common.model.system.SysPermission;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

@@ -2,8 +2,8 @@ package com.key.win.user.service;
 
 import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.exception.service.ServiceException;
-import com.key.win.common.model.SysRole;
-import com.key.win.common.model.SysUser;
+import com.key.win.common.model.system.SysRole;
+import com.key.win.common.model.system.SysUser;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;

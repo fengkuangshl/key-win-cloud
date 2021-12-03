@@ -2,7 +2,7 @@ package com.key.win.uaa.feign;
 
 import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.feign.FeignExceptionConfig;
-import com.key.win.common.model.SysUser;
+import com.key.win.common.model.system.SysUser;
 import com.key.win.common.web.PageResult;
 import com.key.win.uaa.feign.fallback.UserFeignClientFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;

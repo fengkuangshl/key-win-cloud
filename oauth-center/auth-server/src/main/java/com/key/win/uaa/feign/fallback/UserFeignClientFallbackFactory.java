@@ -1,7 +1,7 @@
 package com.key.win.uaa.feign.fallback;
 
 import com.key.win.common.auth.details.LoginAppUser;
-import com.key.win.common.model.SysUser;
+import com.key.win.common.model.system.SysUser;
 import com.key.win.common.web.PageResult;
 import com.key.win.uaa.feign.UserFeignClient;
 import feign.hystrix.FallbackFactory;

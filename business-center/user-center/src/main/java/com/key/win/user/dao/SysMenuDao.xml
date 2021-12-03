@@ -35,7 +35,7 @@
 		<include refid="where" />
 	</select>
 	
-	<select id="findList" resultType="com.key.win.common.model.SysMenu">
+	<select id="findList" resultType="com.key.win.common.model.system.SysMenu">
 		select t.* from sys_menu t
 		<include refid="where" />
 		order by t.sort

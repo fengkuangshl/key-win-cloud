@@ -25,7 +25,7 @@
 		</where>
 	</delete>
 
-	<select id="findByRoleIds" resultType="com.key.win.common.model.SysPermission">
+	<select id="findByRoleIds" resultType="com.key.win.common.model.system.SysPermission">
 		select distinct p.* from
 		sys_permission p
 		inner join

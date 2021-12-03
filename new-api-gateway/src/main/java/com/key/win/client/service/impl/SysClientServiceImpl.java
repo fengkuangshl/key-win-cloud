@@ -4,7 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.key.win.common.constant.UaaConstant;
 import com.key.win.common.exception.service.ServiceException;
-import com.key.win.common.model.SysClient;
+import com.key.win.common.model.auth.SysClient;
 import com.key.win.client.dao.SysClientDao;
 import com.key.win.client.dao.SysServiceDao;
 import com.key.win.client.service.SysClientService;

@@ -1,7 +1,7 @@
 package com.key.win.dds.model;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.key.win.common.model.base.MybatisID;
+import com.key.win.common.model.basic.MybatisID;
 import lombok.Data;
 
 @Data

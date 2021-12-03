@@ -3,7 +3,7 @@ package com.key.win.activiti.feign;
 import com.key.win.activiti.feign.fallback.UserFeignClientFallbackFactory;
 import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.feign.FeignExceptionConfig;
-import com.key.win.common.model.SysUser;
+import com.key.win.common.model.system.SysUser;
 import com.key.win.common.web.PageResult;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

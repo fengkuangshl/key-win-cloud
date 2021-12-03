@@ -1,6 +1,6 @@
 package com.key.win.log.dao;
 
-import com.key.win.common.model.SysLog;
+import com.key.win.common.model.log.SysLog;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;

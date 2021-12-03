@@ -1,12 +1,10 @@
 package com.key.win.activiti.config;
 
-import com.key.win.activiti.feign.UserFeignClient;
 import com.key.win.common.auth.details.LoginAppUser;
-import com.key.win.common.model.SysRole;
+import com.key.win.common.model.system.SysRole;
 import com.key.win.common.util.SysUserUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

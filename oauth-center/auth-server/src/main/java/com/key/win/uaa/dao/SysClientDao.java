@@ -1,6 +1,6 @@
 package com.key.win.uaa.dao;
 
-import com.key.win.common.model.SysClient;
+import com.key.win.common.model.auth.SysClient;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

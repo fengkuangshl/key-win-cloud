@@ -1,8 +1,8 @@
 package com.key.win.uaa.controller;
 
 import com.key.win.common.exception.controller.ControllerException;
-import com.key.win.common.model.SysClient;
-import com.key.win.common.model.SysService;
+import com.key.win.common.model.auth.SysClient;
+import com.key.win.common.model.auth.SysService;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
 import com.key.win.log.annotation.LogAnnotation;

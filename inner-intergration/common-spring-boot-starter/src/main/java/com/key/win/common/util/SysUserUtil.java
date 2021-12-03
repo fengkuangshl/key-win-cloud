@@ -4,7 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.constant.UaaConstant;
-import com.key.win.common.model.SysRole;
+import com.key.win.common.model.system.SysRole;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

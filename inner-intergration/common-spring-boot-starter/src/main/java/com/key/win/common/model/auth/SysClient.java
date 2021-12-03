@@ -1,15 +1,14 @@
-package com.key.win.common.model;
+package com.key.win.common.model.auth;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.key.win.common.auth.details.DefaultClientDetails;
-import com.key.win.common.model.base.MybatisID;
+import com.key.win.common.model.basic.MybatisID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.util.StringUtils;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 

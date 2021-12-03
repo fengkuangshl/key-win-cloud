@@ -2,7 +2,7 @@ package com.key.win.uaa.controller;
 
 import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.exception.controller.ControllerException;
-import com.key.win.common.model.SysPermission;
+import com.key.win.common.model.system.SysPermission;
 import com.key.win.common.util.ResponseUtil;
 import com.key.win.common.util.SysUserUtil;
 import com.key.win.common.web.PageResult;

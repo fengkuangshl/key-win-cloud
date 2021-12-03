@@ -1,6 +1,6 @@
 package com.key.win.uaa.service;
 
-import com.key.win.common.model.SysClient;
+import com.key.win.common.model.auth.SysClient;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
 

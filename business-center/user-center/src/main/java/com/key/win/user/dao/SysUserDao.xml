@@ -76,7 +76,7 @@
 		<include refid="where" />
 	</select>
 
-	<select id="findList" resultType="com.key.win.common.model.SysUser">
+	<select id="findList" resultType="com.key.win.common.model.system.SysUser">
 		select t.* from sys_user t
 		<include refid="where" />
 		order by t.id desc

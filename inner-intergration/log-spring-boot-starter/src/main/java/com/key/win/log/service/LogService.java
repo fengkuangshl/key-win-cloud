@@ -1,6 +1,6 @@
 package com.key.win.log.service;
 
-import com.key.win.common.model.SysLog;
+import com.key.win.common.model.log.SysLog;
 
 /**
  * 

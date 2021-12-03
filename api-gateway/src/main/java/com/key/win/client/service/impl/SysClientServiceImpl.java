@@ -7,7 +7,7 @@ import com.key.win.client.dao.SysServiceDao;
 import com.key.win.client.service.SysClientService;
 import com.key.win.common.constant.UaaConstant;
 import com.key.win.common.exception.service.ServiceException;
-import com.key.win.common.model.SysClient;
+import com.key.win.common.model.auth.SysClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

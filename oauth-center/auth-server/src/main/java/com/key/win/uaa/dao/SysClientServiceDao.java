@@ -1,6 +1,6 @@
 package com.key.win.uaa.dao;
 
-import com.key.win.common.model.SysService;
+import com.key.win.common.model.auth.SysService;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
