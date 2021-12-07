@@ -283,7 +283,11 @@ public class SysUserServiceImpl implements SysUserService {
             userRoleDao.deleteUserRole(id, null);
             if (!CollectionUtils.isEmpty(roleIds)) {
                 roleIds.forEach(roleId -> {
-                    userRoleDao.saveUserRoles(id, roleId);
+                    SysUserRole ur = new SysUserRole();
+                    ur.setRoleId(roleId);
+                    ur.setUserId(id);
+                    // userRoleDao.saveUserRoles(id, roleId);
+                    userRoleDao.insert(ur);
                 });
             }
 
