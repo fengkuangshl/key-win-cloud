@@ -1,6 +1,6 @@
 package com.key.win.dds.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
+import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -51,7 +51,7 @@ public class MybatiesDynamicDataSourceTemplateServiceImpl extends ServiceImpl<My
     public PageResult<MybatiesDynamicDataSourceTemplate> findMybatiesDynamicDataSourceTemplateByPaged(PageRequest<MybatiesDynamicDataSourceTemplate> pageRequest) {
         MybatiesPageServiceTemplate<MybatiesDynamicDataSourceTemplate, MybatiesDynamicDataSourceTemplate> page = new MybatiesPageServiceTemplate<MybatiesDynamicDataSourceTemplate, MybatiesDynamicDataSourceTemplate>(this.baseMapper) {
             @Override
-            protected Wrapper<MybatiesDynamicDataSourceTemplate> constructWrapper(MybatiesDynamicDataSourceTemplate mybatiesTemplate) {
+            protected AbstractWrapper constructWrapper(MybatiesDynamicDataSourceTemplate mybatiesTemplate) {
                 LambdaQueryWrapper<MybatiesDynamicDataSourceTemplate> lqw = new LambdaQueryWrapper<MybatiesDynamicDataSourceTemplate>();
                 if(mybatiesTemplate != null && StringUtils.isNotBlank(mybatiesTemplate.getName())){
                     lqw.like(MybatiesDynamicDataSourceTemplate::getName, mybatiesTemplate.getName() == null? "":mybatiesTemplate.getName());

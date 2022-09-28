@@ -1,7 +1,7 @@
 #端口
 server:
   port: 8000
-#  port: ${randomServerPort.value[8000,8000]}    #随机端口
+#  port: ${randomServerPort.value[8000,8000]}     #随机端口
   servlet:
     context-path: /api-auth
   use-forward-headers: false  
@@ -12,7 +12,7 @@ spring:
   session:
     store-type: redis  
   datasource:
-      url: jdbc:mysql://127.0.0.1:3307/oauth-center?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
+      url: jdbc:mysql://127.0.0.1:3307/oauth-center-new?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
       username: root
       password: key-win123
       driver-class-name:  com.mysql.cj.jdbc.Driver

@@ -1,0 +1,9 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: dqhse-sysother
+sysother:
+  attachment:
+    # word,ppt,pdf,png,jpg,emf,文本，压缩文件 rar目前支持的事以rar4进行压缩
+    previewTypes: word,ppt,pdf,png,jpg,emf,txt,zip,rar

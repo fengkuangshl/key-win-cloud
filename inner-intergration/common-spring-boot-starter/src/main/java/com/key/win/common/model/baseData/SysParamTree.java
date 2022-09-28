@@ -1,17 +1,15 @@
 package com.key.win.common.model.baseData;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.key.win.common.model.baseData.enums.SysParamTreeEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/**
- * @author 作者 gitgeek
- * @version 创建时间：2018-08-06 21:29
- * 类说明  菜单实体
- */
+
 @Data
 @TableName("sys_param_tree")
 @EqualsAndHashCode(callSuper = true)
 public class SysParamTree extends SysBaseParam {
     private String parentId;
+    private SysParamTreeEnum type;
 }

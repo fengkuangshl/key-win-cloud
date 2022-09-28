@@ -20,30 +20,30 @@ public class MybatiesFeignClientFallbackFactory implements FallbackFactory<Mybat
         return new MybatiesFeignClient() {
 
             public PageResult<MybatiesFeignTemplateVo> getMybatiesFeignTemplateByPaged(PageRequest<MybatiesFeignTemplateVo> t) {
-                log.error("查询列表异常:{}");
+                log.error("查询列表异常:", throwable);
                 return new PageResult<MybatiesFeignTemplateVo>();
             }
 
 
             public Result saveOrUpdateMybatiesFeignTemplate(MybatiesFeignTemplateVo mybatiesTemplate) {
-                log.error("保存或更新异常:{}");
+                log.error("保存或更新异常:", throwable);
                 return Result.failed("操作失败！");
             }
 
             public MybatiesFeignTemplateVo get(String id) {
-                log.error("根据id查询异常:{}");
+                log.error("根据id查询异常:", throwable);
                 return new MybatiesFeignTemplateVo();
             }
 
 
             public Result delete(String id) {
-                log.error("根据id删除记录失败！！");
+                log.error("根据id删除记录失败:", throwable);
                 return Result.failed("操作失败！！");
             }
 
             @Override
             public List<MybatiesFeignTemplateVo> getMybatiesFeignTemplateByCondition(MybatiesFeignTemplateVo mybatiesTemplate) {
-                log.error("查询异常！！");
+                log.error("查询异常：", throwable);
                 return new ArrayList<>();
             }
 

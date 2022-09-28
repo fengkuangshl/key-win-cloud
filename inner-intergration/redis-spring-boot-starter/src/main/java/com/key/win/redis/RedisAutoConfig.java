@@ -120,7 +120,7 @@ public class RedisAutoConfig {
 					.enableAdaptiveRefreshTrigger(ClusterTopologyRefreshOptions.RefreshTrigger.MOVED_REDIRECT,
 							ClusterTopologyRefreshOptions.RefreshTrigger.PERSISTENT_RECONNECTS)
 					// 开启所有自适应刷新，MOVED，ASK，PERSISTENT都会触发
-					// .enableAllAdaptiveRefreshTriggers()
+					.enableAllAdaptiveRefreshTriggers()
 					// 自适应刷新超时时间(默认30秒)
 					.adaptiveRefreshTriggersTimeout(Duration.ofSeconds(25)) // 默认关闭开启后时间为30秒
 					// 开周期刷新

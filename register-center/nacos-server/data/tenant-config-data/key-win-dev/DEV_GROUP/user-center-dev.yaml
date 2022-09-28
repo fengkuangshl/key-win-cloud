@@ -1,13 +1,23 @@
 #端口配置
 server:
-  port: 7000   #固定端口
+  port: 7000    #固定端口
 #  port: ${randomServerPort.value[7000,7005]}  #随机端口
 
-
 spring:
+  cloud:
+    sentinel:
+      datasource:
+        ds01:
+          nacos:
+            server-addr: 127.0.0.1:8848
+            group-id: SENTINEL_GROUP
+            namespace: key-win-dev
+            rule-type: flow
+            data-type: json
+            data-id: user-center-flow-rules
   datasource:
     # JDBC 配置(驱动类自动从url的mysql识别,数据源类型自动识别)
-    url: jdbc:mysql://127.0.0.1:3307/user-center?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://127.0.0.1:3307/user-center-new?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
     username: root
     password: key-win123
     driver-class-name:  com.mysql.cj.jdbc.Driver
@@ -135,9 +145,4 @@ logging:
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.hibernate.type.descriptor.sql.BasicExtractor: TRACE
 #    com.neusoft: DEBUG     
-#    com.netflix: DEBUG                    #用于心跳检测输出的日志   
-management:  
-  endpoints:  
-    web:  
-      exposure:  
-        include: "*"   
+#    com.netflix: DEBUG                    #用于心跳检测输出的日志    

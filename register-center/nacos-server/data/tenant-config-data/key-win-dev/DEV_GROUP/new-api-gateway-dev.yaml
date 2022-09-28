@@ -1,37 +1,59 @@
-#端口
+# 端口
 server:
   port: 9200
 
 spring:
   cloud:
     sentinel:
-      # 指定sentinel 控制台的地址
-      dashboard: 127.0.0.1:8080
       scg:
         fallback:
           response-status: 426
           response-body: "{'code':'426' , 'msg':'程序异常'}"
         enabled: true
       filter:
-        enabled: true
+        enabled: true #心跳启动
       datasource:
         # 名称随意
         flow:
           nacos:
-            server-addr: 127.0.0.1:8848
-            dataId: ${spring.application.name}-sentinel-gw-flow
-            groupId: SENTINEL_GROUP
+            server-addr: ${spring.cloud.nacos.discovery.server-addr}
+            data-id: ${spring.application.name}-scg-flow
+            group-id: SENTINEL_GROUP
+            namespace: ${spring.cloud.nacos.discovery.namespace}
             # 规则类型，取值见：
             # com.alibaba.cloud.sentinel.datasource.RuleType
             rule-type: gw-flow
+            data-type: json
         api:
           nacos:
-            server-addr: 127.0.0.1:8848
-            dataId: ${spring.application.name}-sentinel-gw-api-group
-            groupId: SENTINEL_GROUP
+            server-addr: ${spring.cloud.nacos.discovery.server-addr}
+            data-id: ${spring.application.name}-scg-api
+            group-id: SENTINEL_GROUP
+            namespace: ${spring.cloud.nacos.discovery.namespace}
             # 规则类型，取值见：
             # com.alibaba.cloud.sentinel.datasource.RuleType
             rule-type: gw-api-group
+            data-type: json
+        degrade:
+          nacos:
+            server-addr: ${spring.cloud.nacos.discovery.server-addr}
+            data-id: ${spring.application.name}-degrade-rules
+            group-id: SENTINEL_GROUP
+            namespace: ${spring.cloud.nacos.discovery.namespace}
+            # 规则类型，取值见：
+            # com.alibaba.cloud.sentinel.datasource.RuleType
+            rule-type: degrade
+            data-type: json
+        system:
+          nacos:
+            server-addr: ${spring.cloud.nacos.discovery.server-addr}
+            data-id: ${spring.application.name}-system-rules
+            group-id: SENTINEL_GROUP
+            namespace: ${spring.cloud.nacos.discovery.namespace}
+            # 规则类型，取值见：
+            # com.alibaba.cloud.sentinel.datasource.RuleType
+            rule-type: system
+            data-type: json
     gateway:
       discovery:
         locator:
@@ -123,15 +145,29 @@ spring:
             - StripPrefix=1
         - id: api-rpc-jpa
           uri: lb://jpa-rpc-template-application
-          order: 8012
+          order: 8013
           predicates:
             - Path=/api-rpc-jpa/**
+          filters:
+            - StripPrefix=1
+        - id: api-mybaties-dynamic
+          uri: lb://dynamic-data-source-center
+          order: 8014
+          predicates:
+            - Path=/api-mybaties-dynamic/**
+          filters:
+            - StripPrefix=1
+        - id: api-activiti
+          uri: lb://activiti-workfolw-center
+          order: 8014
+          predicates:
+            - Path=/api-activiti/**
           filters:
             - StripPrefix=1
   datasource:
     druid:
       # JDBC 配置(驱动类自动从url的mysql识别,数据源类型自动识别)
-      url: jdbc:mysql://127.0.0.1:3307/oauth-center?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
+      url: jdbc:mysql://127.0.0.1:3307/oauth-center-new?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
       username: root
       password: key-win123
       driver-class-name:  com.mysql.cj.jdbc.Driver

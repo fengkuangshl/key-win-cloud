@@ -12,6 +12,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
@@ -41,7 +42,7 @@ import javax.annotation.Resource;
 @Import({RestTemplateConfig.class, FeignInterceptorConfig.class})
 @EnableFeignClients(defaultConfiguration= GlobalFeignConfig.class)
 //开启spring security 注解
-//@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class UAAClientAutoConfig extends ResourceServerConfigurerAdapter {
 
 	// 对应oauth_client_details的 resource_ids字段 如果表中有数据

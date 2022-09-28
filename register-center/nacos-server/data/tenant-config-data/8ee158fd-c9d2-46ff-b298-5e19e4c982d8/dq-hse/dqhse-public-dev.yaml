@@ -1,0 +1,173 @@
+endpoints:
+  enabled: false
+  health:
+    enabled: false
+logging:
+  level:
+    root: info
+spring:
+  autoconfigure:
+    exclude: org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  rabbitmq:
+    addresses: rabbitmq.dqhse.dev.pcep.cloud:80
+    username: myrabbit
+    password: lfmqK3gyKAUU
+  redis:
+    host: 11.11.157.165
+    port: 38000
+    password: dqhse-Redis-211022
+  datasource:
+    #username: DQRH_HSE
+    username: DQHSE_DEV
+    password: Passc0de21tp18$13
+    #password: Passc0de21tp18$10
+    url: jdbc:oracle:thin:@10.88.104.186:1521:EPIMS
+    driver-class-name: oracle.jdbc.driver.OracleDriver
+    # url: jdbc:p6spy:oracle:thin:@11.11.156.53:1521:EPIMS
+    # driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      initial-size: 5
+      min-idle: 5
+      maxActive: 20
+      # 配置获取连接等待超 时的时间
+      maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 300000
+      maxEvictableIdleTimeMillis: 900000
+      validationQuery: SELECT 1  FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      # 打开PSCache，并且指定每个连接上PSCache的大小
+      poolPreparedStatements: true
+      maxPoolPreparedStatementPerConnectionSize: 20
+      # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+      # filters: stat,wall,log4j
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      # 合并多个DruidDataSource的监控数据
+      #useGlobalDataSourceStat: true
+      web-stat-filter:
+        enabled: false
+      stat-view-servlet:
+        enabled: false
+        login-username: admin
+        login-password: 123456
+        allow: 10.88.106.4
+        deny:
+        # 禁用HTML页面上的“Reset All”功能
+        reset-enable: false
+        url-pattern: /druid/*
+  # nacos配置
+  cloud:
+    config:
+      enabled: false
+    nacos:
+      discovery:
+        # 集群中各节点信息都配置在这里
+        #server-addr: nacos.dqhse.dev.pcep.cloud:80
+        server-addr: 127.0.0.1:8848
+        namespace: 8ee158fd-c9d2-46ff-b298-5e19e4c982d8
+        #namespace: 8d5854d8-1875-4525-8caf-72418f0833d9
+        group: dq-hse
+        # 存在多网卡时，选择固定IP注册服务
+        # ip: 127.0.0.1
+      config:
+        server-addr: ${spring.cloud.nacos.discovery.server-addr}
+        namespace: ${spring.cloud.nacos.discovery.namespace}
+        group: ${spring.cloud.nacos.discovery.group}
+        file-extension: yaml
+        ext-config[0]:
+          data-id: dqhse-public-${spring.profiles.active}.yaml
+          group: ${spring.cloud.nacos.discovery.group}
+          refresh: true
+
+# security:
+#   oauth2:
+#     resource:
+#       jwt:
+#         key-value: -----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAnGp/Q5lh0P8nPL21oMMrt2RrkT9AW5jgYwLfSUnJVc9G6uR3cXRRDCjHqWU5WYwivcF180A6CWp/ireQFFBNowgc5XaA0kPpzEtgsA5YsNX7iSnUibB004iBTfU9hZ2Rbsc8cWqynT0RyN4TP1RYVSeVKvMQk4GT1r7JCEC+TNu1ELmbNwMQyzKjsfBXyIOCFU/E94ktvsTZUHF4Oq44DBylCDsS1k7/sfZC2G5EU7Oz0mhG8+Uz6MSEQHtoIi6mc8u64Rwi3Z3tscuWG2ShtsUFuNSAFNkY7LkLn+/hxLCu2bNISMaESa8dG22CIMuIeRLVcAmEWEWH5EEforTg+QIDAQAB\n-----END PUBLIC KEY-----\n
+#   headers:
+#     frame: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  # 暴露健康接口的细节
+  endpoint:
+    health:
+      show-details: always
+  security:
+    enabled: false
+  health:
+    elasticsearch:
+      enabled: false
+
+#针对的被调用方微服务名称,不加就是全局生效
+# dq-hse-service:
+ribbon:
+  #请求连接超时时间
+  ConnectTimeout: 2000
+  #请求处理超时时间 Feign超时时长设置
+  ReadTimeout: 3000
+  #对所有操作都进行重试
+  OkToRetryOnAllOperations: true
+  MaxAutoRetries: 0 #对当前选中实例重试次数，不包括第一次调用
+  MaxAutoRetriesNextServer: 0 #切换实例的重试次数
+  NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RoundRobinRule #负载策略调整
+
+# 开启Feign的熔断功能
+feign:
+  hystrix:
+    enabled: true
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            #Hystrix的超时时长设置
+            timeoutInMilliseconds: 15000
+mybatis:
+  global-config:
+    #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
+    id-type: 3
+    #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+    field-strategy: 2
+    #驼峰下划线转换
+    db-column-underline: true
+    #刷新mapper 调试神器
+    refresh-mapper: true
+    #数据库大写下划线转换
+    #capital-mode: true
+    #逻辑删除配置
+    logic-delete-value: 0
+    logic-not-delete-value: 1
+    #自定义SQL注入器
+    #sql-injector: com.baomidou.springboot.xxx
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+
+fss:
+  url: http://fss.dev.pcep.cloud
+  clientId: c184f59b-832e-46e4-ab0a-fb5ad526d3e9
+  clientSecret: 74a95261-890d-49a4-b095-8f363bd2e94d
+  dirCode: e5e518nfgtv54y2ijdy93ya2
+  dataRegion: ZB
+  previewPrefix: /sys/file/preview/
+  createDirUrl: /sys/file/dir
+
+  # url: http://fss.dev.pcep.cloud
+  # clientId: c184f59b-832e-46e4-ab0a-fb5ad526d3e9
+  # clientSecret: 74a95261-890d-49a4-b095-8f363bd2e94d
+  # dirCode: e5e518nfgtv54y2ijdy93ya2
+
+
+  
