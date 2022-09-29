@@ -2,7 +2,7 @@ package com.key.win.activiti.model;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.key.win.common.MybatisID;
+import com.key.win.common.model.basic.MybatisID;
 import lombok.Data;
 
 /**

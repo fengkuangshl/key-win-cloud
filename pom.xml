@@ -45,16 +45,16 @@
 
 	<properties>
 		<jmh.version>1.23</jmh.version>
-		<java.version>1.8</java.version>
+		<java.version>11</java.version>
 		<core.version>2.0.1</core.version>
 		<log4j2.version>2.1</log4j2.version>
 		<jasypt.version>1.14</jasypt.version>
 		<hutool.version>5.1.0</hutool.version>
 		<fastjson.version>1.2.70</fastjson.version>
   		<disruptor.version>3.4.1</disruptor.version>
-  		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<spring-boot.version>2.3.2.RELEASE</spring-boot.version>
+  		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
+		<spring-boot.version>2.3.12.RELEASE</spring-boot.version>
 		<spring-platform.version>Cairo-SR3</spring-platform.version>
 		<spring.social.version>1.1.6.RELEASE</spring.social.version>
 		<spring-security.version>5.1.1.RELEASE</spring-security.version>
@@ -63,8 +63,9 @@
         <commons-lang3.version>3.9</commons-lang3.version>
 		<hibernate-validator.verion>5.4.2.Final</hibernate-validator.verion>
 		<flowable.version>6.4.1</flowable.version>
-		<spring-cloud-dependencies.version>Hoxton.SR8</spring-cloud-dependencies.version>
-		<spring-cloud-alibaba-dependencies.version>2.2.5.RELEASE</spring-cloud-alibaba-dependencies.version>
+		<jaxb.version>2.2.11</jaxb.version>
+		<spring-cloud-dependencies.version>Hoxton.SR12</spring-cloud-dependencies.version>
+		<spring-cloud-alibaba-dependencies.version>2.2.8.RELEASE</spring-cloud-alibaba-dependencies.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
@@ -115,6 +116,26 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>${jaxb.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-core</artifactId>
+			<version>${jaxb.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>${jaxb.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.activation</groupId>
+			<artifactId>activation</artifactId>
+			<version>1.1.1</version>
 		</dependency>
 
 <!--        <dependency>-->

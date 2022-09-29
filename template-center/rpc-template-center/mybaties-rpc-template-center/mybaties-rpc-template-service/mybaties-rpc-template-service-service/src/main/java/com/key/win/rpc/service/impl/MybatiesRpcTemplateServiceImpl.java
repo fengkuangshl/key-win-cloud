@@ -1,5 +1,6 @@
 package com.key.win.rpc.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -91,7 +92,7 @@ public class MybatiesRpcTemplateServiceImpl extends ServiceImpl<MybatiesRpcTempl
     public PageResult<MybatiesRpcTemplateVo> findMybatiesRpcTemplateByPaged(PageRequest<MybatiesRpcTemplateVo> pageRequest) {
         MybatiesPageServiceTemplate<MybatiesRpcTemplateVo, MybatiesRpcTemplate> page = new MybatiesPageServiceTemplate<MybatiesRpcTemplateVo, MybatiesRpcTemplate>(this.baseMapper) {
             @Override
-            protected Wrapper<MybatiesRpcTemplate> constructWrapper(MybatiesRpcTemplateVo mybatiesTemplate) {
+            protected LambdaQueryWrapper<MybatiesRpcTemplate> constructWrapper(MybatiesRpcTemplateVo mybatiesTemplate) {
                 LambdaQueryWrapper<MybatiesRpcTemplate> lqw = new LambdaQueryWrapper<MybatiesRpcTemplate>();
                 if(mybatiesTemplate != null && StringUtils.isNotBlank(mybatiesTemplate.getName())){
                     lqw.like(MybatiesRpcTemplate::getName, mybatiesTemplate.getName() == null? "":mybatiesTemplate.getName());

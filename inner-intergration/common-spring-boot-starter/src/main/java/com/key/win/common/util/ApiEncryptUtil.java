@@ -11,10 +11,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESedeKeySpec;
 import java.security.SecureRandom;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * 三重数据加密算法加密Api工具类
@@ -150,7 +147,8 @@ public class ApiEncryptUtil {
 			cipher.init(Cipher.ENCRYPT_MODE, key, secureRandom);
 
 			byte[] bytesresult = cipher.doFinal(data.getBytes());
-			result = new sun.misc.BASE64Encoder().encode(bytesresult);
+			Base64.Encoder encoder = Base64.getEncoder();
+			result = new String(encoder.encode(bytesresult));
 		} catch (Exception e) {
 			log.error("EncryptBy3DES加密失败，data = " + data, e);
 		}
@@ -172,7 +170,8 @@ public class ApiEncryptUtil {
 			SecretKey key = secretKeyFactory.generateSecret(sedeKeySpec);
 			Cipher cipher = Cipher.getInstance("DESede/ECB/PKCS5Padding");
 			cipher.init(Cipher.DECRYPT_MODE, key, secureRandom);
-			byte[] bytesResult = cipher.doFinal(new sun.misc.BASE64Decoder().decodeBuffer(data));
+			Base64.Decoder decoder = Base64.getDecoder();
+			byte[] bytesResult = cipher.doFinal(decoder.decode(data));
 			desResult = new String(bytesResult);
 		} catch (Exception e) {
 			log.error("decryptBy3DES解密失败，data = " + data, e);
