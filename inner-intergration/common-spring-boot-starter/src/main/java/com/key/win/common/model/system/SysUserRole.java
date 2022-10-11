@@ -3,6 +3,8 @@ package com.key.win.common.model.system;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.key.win.common.model.basic.MybatisID;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -11,15 +13,14 @@ import lombok.EqualsAndHashCode;
 * @version 创建时间：2018-08-06 21:29
 * 类说明  用户角色实体
 */
+@ApiModel("用户角色实体")
 @Data
-@TableName("sys_role_user")
-@EqualsAndHashCode(callSuper=true)
-public class SysUserRole  extends MybatisID {
-
-
-	@TableField(value="user_id")
-	private String userId;
-	@TableField(value="role_id")
-    private String roleId;
+@TableName("sys_user_role")
+@EqualsAndHashCode(callSuper = true)
+public class SysUserRole extends MybatisID {
+	@ApiModelProperty("用户Id")
+	private Long userId;
+	@ApiModelProperty("角色Id")
+	private Long roleId;
 
 }

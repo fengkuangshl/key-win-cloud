@@ -1,12 +1,12 @@
 import { VuexModule, Mutation, Action, getModule, Module } from 'vuex-module-decorators'
 import store from '@/store'
 
-export interface MenuCollapseState {
+export interface IMenuCollapseState {
   isCollapseMenu: boolean
 }
 
 @Module({ dynamic: true, store, name: 'menuCollapse' })
-class MenuCollapseStore extends VuexModule implements MenuCollapseState {
+class MenuCollapseStore extends VuexModule implements IMenuCollapseState {
   public isCollapseMenu = false
 
   get getCollapseMenuState(): boolean {

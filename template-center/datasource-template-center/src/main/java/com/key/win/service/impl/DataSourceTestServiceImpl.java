@@ -7,7 +7,7 @@ import com.key.win.common.util.BeanUtils;
 import com.key.win.common.web.Result;
 import com.key.win.dao.DataSourceTestDao;
 import com.key.win.model.DataSourceTest;
-import com.key.win.page.MybatiesPageServiceTemplate;
+import com.key.win.mybatis.page.MybatisPageServiceTemplate;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.service.DataSourceTestService;
@@ -49,7 +49,7 @@ public class DataSourceTestServiceImpl extends ServiceImpl<DataSourceTestDao, Da
 
     @Override
     public PageResult<DataSourceTest> findDataSourceTemplateByPage(PageRequest<DataSourceTest> pageRequest) {
-        MybatiesPageServiceTemplate<DataSourceTest, DataSourceTest> page = new MybatiesPageServiceTemplate<DataSourceTest, DataSourceTest>(this.baseMapper) {
+        MybatisPageServiceTemplate<DataSourceTest, DataSourceTest> page = new MybatisPageServiceTemplate<DataSourceTest, DataSourceTest>(this.baseMapper) {
             @Override
             protected AbstractWrapper constructWrapper(DataSourceTest dataSourceTest) {
                 LambdaQueryWrapper<DataSourceTest> lqw = new LambdaQueryWrapper<DataSourceTest>();

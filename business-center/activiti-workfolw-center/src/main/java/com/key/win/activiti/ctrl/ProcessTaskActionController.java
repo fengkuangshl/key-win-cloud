@@ -258,7 +258,7 @@ public class ProcessTaskActionController {
             Execution execution = iterator.next();
             // 获取当前执行任务
             Task task = taskService.createTaskQuery().executionId(execution.getId()).singleResult();
-            String comment = "【" + loginAppUser.getNickname() + "】追回了该申请";
+            String comment = "【" + loginAppUser.getNickName() + "】追回了该申请";
             handleResult(task.getId(), procInstId, ActivitiConstant.HANDLE_STATUS_YCX, comment, task.getTaskDefinitionKey(), loginAppUser.getUsername(), execution.getId());
         }
 
@@ -282,7 +282,7 @@ public class ProcessTaskActionController {
             Execution execution = iterator.next();
             // 获取当前执行任务
             Task task = taskService.createTaskQuery().executionId(execution.getId()).singleResult();
-            String comment = "【" + loginAppUser.getNickname() + "】作废了该申请";
+            String comment = "【" + loginAppUser.getNickName() + "】作废了该申请";
             handleResult(task.getId(), procInstId, ActivitiConstant.HANDLE_STATUS_YZF, comment, task.getTaskDefinitionKey(), loginAppUser.getUsername(), execution.getId());
         }
 

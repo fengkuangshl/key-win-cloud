@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.key.win.common.constant.UaaConstant;
 import com.key.win.common.exception.service.ServiceException;
 import com.key.win.common.model.auth.SysClient;
+import com.key.win.common.model.auth.SysService;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
 import com.key.win.uaa.dao.SysClientDao;
@@ -93,7 +94,8 @@ public class SysClientServiceImpl implements SysClientService {
 			PageHelper.startPage(MapUtils.getInteger(params, "page"),MapUtils.getInteger(params, "limit"),true);
 			List<SysClient> list = sysClientDao.findList(params);
 			PageInfo<SysClient> pageInfo = new PageInfo<>(list);
-			return PageResult.<SysClient>builder().data(pageInfo.getList()).code(0).count(pageInfo.getTotal()).build()  ;
+			//return PageResult.<SysClient>builder().data(pageInfo.getList()).code(0).count(pageInfo.getTotal()).build()  ;
+			return  new PageResult<SysClient>((long) list.size(),list);
 		} catch (Exception e) {
 			throw new ServiceException(e);
 		}

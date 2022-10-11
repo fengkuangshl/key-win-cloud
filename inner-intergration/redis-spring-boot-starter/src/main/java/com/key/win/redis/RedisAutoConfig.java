@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.Resource;
+import org.springframework.data.redis.cache.CacheKeyPrefix;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.cache.RedisCacheWriter;
@@ -214,6 +215,7 @@ public class RedisAutoConfig {
 		redisTemplate.setHashKeySerializer(stringSerializer);
 		redisTemplate.setValueSerializer(redisObjectSerializer); // value的序列化类型
 		redisTemplate.setHashValueSerializer(redisObjectSerializer); // value的序列化类型
+		redisTemplate.setDefaultSerializer(new StringRedisSerializer()); //default use String
 		redisTemplate.afterPropertiesSet();
 
 		redisTemplate.opsForValue().set("hello", "wolrd");
@@ -234,6 +236,7 @@ public class RedisAutoConfig {
 		redisTemplate.setKeySerializer(new StringRedisSerializer()); // key的序列化类型
 		redisTemplate.setValueSerializer(redisObjectSerializer); // value的序列化类型
 		redisTemplate.setHashValueSerializer(redisObjectSerializer);
+		redisTemplate.setDefaultSerializer(new StringRedisSerializer()); //default use String
 		redisTemplate.afterPropertiesSet();
 		return redisTemplate;
 	}
@@ -347,6 +350,21 @@ public class RedisAutoConfig {
 		Resource resource = ctx.getResource(redissonProperties.getConfig());
 		InputStream is = resource.getInputStream();
 		return is;
+	}
+
+	/**
+	 * 重写redis缓存名称的的规则
+	 *
+	 * @return
+	 */
+	@Bean
+	public CacheKeyPrefix cacheKeyPrefix() {
+		return cacheName -> {
+			if (!cacheName.endsWith(":")) {
+				cacheName += ":";
+			}
+			return cacheName;
+		};
 	}
 
 }

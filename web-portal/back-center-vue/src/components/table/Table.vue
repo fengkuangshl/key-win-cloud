@@ -1,34 +1,14 @@
 <template>
   <div>
-    <el-table
-      :$ready="false"
-      :border="true"
-      :data="tableDataFilter(pageResult.data)"
-      :highlight-current-row="true"
-      :row-key="rowKey"
-      :default-expand-all="isExpandAll"
-      :tree-props="treeProps"
-      @cell-click="doTableCellClick"
-      @current-change="doChangeTableCurrent"
-      @row-click="doTableRowClick"
-      @selection-change="doChangeTableSelection"
-      @sort-change="doSortChange"
-      ref="tableRef"
-    >
+    <el-table :$ready="false" :border="true" :data="tableDataFilter(pageResult.data)" :highlight-current-row="true"
+      :row-key="rowKey" :default-expand-all="isExpandAll" :tree-props="treeProps" @cell-click="doTableCellClick"
+      @current-change="doChangeTableCurrent" @row-click="doTableRowClick" @selection-change="doChangeTableSelection"
+      @sort-change="doSortChange" ref="tableRef">
       <slot></slot>
     </el-table>
-    <el-pagination
-      :hide-on-single-page="hideOnSinglePage"
-      :current-page="pageResult.pageNo"
-      :layout="pageLayout"
-      :page-count="pageResult.count"
-      :page-size="pageResult.pageSize"
-      :page-sizes="pageSizes"
-      :pager-count="5"
-      :total="pageResult.count"
-      @current-change="doChangePageCurrent"
-      @size-change="doChangePageSize"
-    ></el-pagination>
+    <el-pagination :hide-on-single-page="hideOnSinglePage" :current-page="pageResult.pageNo" :layout="pageLayout"
+      :page-count="pageResult.count" :page-size="pageResult.pageSize" :page-sizes="pageSizes" :pager-count="5"
+      :total="pageResult.count" @current-change="doChangePageCurrent" @size-change="doChangePageSize"></el-pagination>
   </div>
 </template>
 
@@ -66,6 +46,7 @@ export default class KWTable<T, RT> extends Vue {
     count: 0,
     code: 0,
     data: [],
+    msg: '',
     totalPage: 0
   }
 
@@ -105,6 +86,10 @@ export default class KWTable<T, RT> extends Vue {
   // 如果树型结构table，是否需要展开所以树节点，默认是
   @Prop({ default: () => true, type: Boolean })
   private isExpandAll!: boolean
+
+  // 如果树型结构table，是否需要展开所以树节点，默认是
+  @Prop({ default: () => true, type: Boolean })
+  private defaultLoadData!: boolean
 
   // 如果树型结构table，children和hasChildren对应的实体属性的字段名称
   @Prop({
@@ -182,12 +167,16 @@ export default class KWTable<T, RT> extends Vue {
    */
   public async loadDatas(param?: T): Promise<void> {
     this.hideOnSinglePage = true
-    const condition = { params: param || this.param }
+    const condition = { params: param || this.pageRequest.t }
     const res: KWResponse.Result<Array<RT>> = this.method.toUpperCase() === 'POST' ? await request.post(this.url, param || this.param) : await request.get(this.url, condition)
-    // ------------------组装数据开始------------------
-    this.pageResult.data = this.renderPreFn(res.data) // 渲染前的回调函数
-    this.callbackFn(res.data) // 渲染之后的回调函数
-    // ------------------组装数据结束------------------
+    if (res.code === 200) {
+      // ------------------组装数据开始------------------
+      this.pageResult.data = this.renderPreFn(res.data) // 渲染前的回调函数
+      this.callbackFn(res.data) // 渲染之后的回调函数
+      // ------------------组装数据结束------------------
+    } else {
+      this.$message.error(res.msg || '数据查询失败!')
+    }
   }
 
   /**
@@ -198,20 +187,34 @@ export default class KWTable<T, RT> extends Vue {
    */
   public async loadPagination(pageNo?: number, pageSize?: number, param?: T): Promise<void> {
     // 如果传入空就使用之前的值
-    this.pageRequest.pageNo = pageNo || this.pageNo
-    this.pageRequest.pageSize = pageSize || this.pageSize
-    this.pageRequest.t = param || this.param
-    const condition = { params: this.pageRequest }
-    const res: KWResponse.PageResult<RT> = this.method.toUpperCase() === 'POST' ? await request.post(this.url, this.pageRequest) : await request.get(this.url, condition)
-    // ------------------组装数据开始------------------
-    this.pageResult.data = this.renderPreFn(res.data) // 渲染前的回调函数
-    this.pageResult.pageNo = res.pageNo
-    this.pageResult.pageSize = res.pageSize
-    this.pageResult.count = res.count
-    this.pageResult.code = res.code
-    this.pageResult.totalPage = res.totalPage
-    this.callbackFn(res.data) // 渲染之后的回调函数
-    // ------------------组装数据结束------------------
+    this.pageRequest.pageNo = pageNo || this.pageRequest.pageNo
+    this.pageRequest.pageSize = pageSize || this.pageRequest.pageSize
+    this.pageRequest.t = param || this.pageRequest.t
+    const params = {
+      pageNo: this.pageRequest.pageNo,
+      pageSize: this.pageRequest.pageSize,
+      sortName: this.pageRequest.sortName,
+      sortDir: this.pageRequest.sortDir,
+      t: this.pageRequest.t || {}
+    }
+    const condition = {
+      params: params
+    }
+    // 为什么要用params而不是this.pageRequest，因为万恶的T不允许有一个有空对象
+    const res: KWResponse.PageResult<RT> = this.method.toUpperCase() === 'POST' ? await request.post(this.url, params) : await request.get(this.url, condition)
+    if (res.code === 200) {
+      // ------------------组装数据开始------------------
+      this.pageResult.data = this.renderPreFn(res.data) // 渲染前的回调函数
+      this.pageResult.pageNo = res.pageNo
+      this.pageResult.pageSize = res.pageSize
+      this.pageResult.count = res.count
+      this.pageResult.code = res.code
+      this.pageResult.totalPage = res.totalPage
+      this.callbackFn(res.data) // 渲染之后的回调函数
+      // ------------------组装数据结束------------------
+    } else {
+      this.$message.error(res.msg || '数据查询失败!')
+    }
   }
 
   /** 重载数据 */
@@ -307,9 +310,11 @@ export default class KWTable<T, RT> extends Vue {
     cachePageSize = cachePageSize || this.pageSize || 10
     cachePageNum = cachePageNum || this.pageNo || 1
 
-    // 默认第一次加载数据
-    this.load(cachePageNum, cachePageSize, cacheParam)
-    this.$emit('table-page-init', cacheParam)
+    if (this.defaultLoadData) {
+      // 默认第一次加载数据
+      this.load(cachePageNum, cachePageSize, cacheParam)
+      this.$emit('table-page-init', cacheParam)
+    }
   }
 
   /** 组件销毁时：将表单参数、分页信息存入缓存 */
@@ -360,7 +365,7 @@ export default class KWTable<T, RT> extends Vue {
   private doSortChange(column: { column: ElTableColumn; prop: SortOrder; order: string }) {
     this.pageRequest.sortName = column.prop
     this.pageRequest.sortDir = column.order === 'ascending' ? 'ASC' : 'DESC'
-    this.reload()
+    this.load()
     this.$emit('table-sort-change', column.column, column.prop, column.order)
   }
 }
@@ -369,7 +374,7 @@ export default class KWTable<T, RT> extends Vue {
 <style lang="less" scoped>
 .el-pagination {
   margin-top: 15px;
-  float: right;
+  // float: right;
 }
 /* .el-cascader-menu {
   height: 300px;

@@ -1,25 +1,31 @@
-import { PermissionResponse } from '../../permission/interface/sys-permission'
+import { MenuPermissionDetail } from '../../menu-permission/interface/sys-menu-permission'
 import { SysRole } from '../../sys-role/interface/sys-role'
 
 export enum Sex {
-  男 = 0,
-  女 = 1
+  男 = 'MALE',
+  女 = 'FMALE'
+}
+
+export enum Type {
+  普通 = 'NORMAL',
+  ADMIN = 'ADMIN'
 }
 
 export interface UserSearchRequest {
-  nickname: string
+  nickName: string
 }
 
 export interface UserForm extends UserSearchRequest {
-  roleId: Array<string> | string
-  sex: Sex | string
+  roleIds: Array<number>
+  sex: Sex | string | Model.EnumEntity
   phone: string
-  username: string
+  userName: string
+  type: string | Type | Model.EnumEntity
 }
 
 export interface UserPassword {
   newPassword: string | null
-  oldPassword: string | null
+  password: string
 }
 
 export interface ModifyPassword extends Model.Id, UserPassword {
@@ -27,31 +33,32 @@ export interface ModifyPassword extends Model.Id, UserPassword {
 }
 
 export interface Enabled {
-  enabled: boolean
+  isEnabled: boolean
 }
 
-export interface UserInfo extends UserForm, Model.BaseFleid, UserPassword, Enabled {
+export interface UserInfo extends UserForm, Model.BaseField, UserPassword, Enabled {
   headImgUrl: string | null
-  password: string
-  roles: Array<SysRole>
-  type: string
+  avatar: string
+  phone: string
+  email: string
+  isOnLine: boolean
+  sysRoles: Array<SysRole>
 }
 
 export interface UserExt extends UserInfo {
   accountNonExpired: boolean
   accountNonLocked: boolean
   credentialsNonExpired: boolean
-  permissions: Array<PermissionResponse>
-  sysRoles: Array<SysRole>
+  permissions: Array<MenuPermissionDetail>
 }
 
 export interface LoginSuccessUserInfo {
-  permissions: Array<PermissionResponse>
+  permissions: Array<MenuPermissionDetail>
   user: UserExt
 }
 
-export interface UserStatuChange extends Model.Id, Enabled {}
+export interface UserStatusChange extends Model.Id, Enabled {}
 
 export interface UserStatuChangeRequest {
-  params: UserStatuChange
+  params: UserStatusChange
 }

@@ -2,6 +2,7 @@ package com.key.win.uaa.service.impl;
 
 import com.google.common.collect.Lists;
 import com.key.win.common.exception.service.ServiceException;
+import com.key.win.common.model.auth.SysService;
 import com.key.win.common.token.SmsCodeAuthenticationToken;
 import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.web.PageResult;
@@ -227,7 +228,8 @@ public class SysTokenServiceImpl implements SysTokenService {
 				 
 			}
 
-			return PageResult.<Map<String, String>>builder().data(list).code(0).count((long) keys.size()).build();
+			//return PageResult.<Map<String, String>>builder().data(list).code(0).count((long) keys.size()).build();
+			return  new PageResult<Map<String, String>>((long) keys.size(),list);
 		} catch (Exception e) {
 			throw new ServiceException(e);
 		}

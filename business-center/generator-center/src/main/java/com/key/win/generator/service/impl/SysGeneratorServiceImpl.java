@@ -2,6 +2,7 @@ package com.key.win.generator.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.key.win.common.web.CodeEnum;
 import com.key.win.common.web.PageResult;
 import com.key.win.generator.service.SysGeneratorService;
 import com.key.win.generator.dao.SysGeneratorDao;
@@ -37,7 +38,7 @@ public class SysGeneratorServiceImpl implements SysGeneratorService {
 
         List list = sysGeneratorDao.queryList(map);
         PageInfo pageInfo = new PageInfo<>(list);
-        return PageResult.builder().data(pageInfo.getList()).code(0).count(pageInfo.getTotal()).build();
+        return new PageResult(MapUtils.getInteger(map, "page"),MapUtils.getInteger(map, "limit"),pageInfo.getTotal(),pageInfo.getList());
     }
 
     @Override

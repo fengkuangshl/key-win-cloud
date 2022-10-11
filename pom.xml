@@ -204,6 +204,19 @@
 				<artifactId>jmh-generator-annprocess</artifactId>
 				<version>${jmh.version}</version>
 			</dependency>
+			<!--基础模块 -->
+			<dependency>
+				<groupId>com.key.win</groupId>
+				<artifactId>basic-spring-boot-starter</artifactId>
+				<version>${core.version}</version>
+			</dependency>
+
+			<!--数据日志-->
+			<dependency>
+				<groupId>com.key.win</groupId>
+				<artifactId>data-log-spring-boot-starter</artifactId>
+				<version>${core.version}</version>
+			</dependency>
 
 			<!-- 公共实体类模块 -->
 			<dependency>
@@ -263,16 +276,17 @@
 	  			<version>${core.version}</version>
 	  		</dependency>
 
+			<!-- mybatis-plus组件-->
+			<dependency>
+				<groupId>com.key.win</groupId>
+				<artifactId>mybatis-plus-spring-boot-starter</artifactId>
+				<version>${core.version}</version>
+			</dependency>
+
             <!-- jpa组件-->
             <dependency>
                 <groupId>com.key.win</groupId>
                 <artifactId>jpa-spring-boot-starter</artifactId>
-                <version>${core.version}</version>
-            </dependency>
-            <!--mybaties组件-->
-            <dependency>
-                <groupId>com.key.win</groupId>
-                <artifactId>mybaties-spring-boot-starter</artifactId>
                 <version>${core.version}</version>
             </dependency>
 

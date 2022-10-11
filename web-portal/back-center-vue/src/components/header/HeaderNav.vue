@@ -9,12 +9,14 @@
       <el-tooltip class="fullscreen" :content="tipFullScrollContent" effect="dark" placement="bottom" fullscreen>
         <i :class="fullScrollClass" @click="fullScroll" />
       </el-tooltip>
+      <el-tooltip content="站内消息" effect="dark" placement="bottom">
+      </el-tooltip>
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <!-- src="@/assets/404-images/404-cloud.png" -->
         <div class="avatar-wrapper">
-          <img :src="headImgUrl" class="user-avatar" @error="imgerrorfun" />
+          <img v-src="headImgUrl" class="user-avatar" />
           <div>
-            <span>{{ nickname }}</span>
+            <span>{{ nickName }}</span>
             <i class="el-icon-caret-bottom" />
           </div>
         </div>
@@ -29,8 +31,8 @@
     </div>
     <el-dialog title="修改密码" @close="aditUserPasswordClosed" :visible.sync="userPasswordDialogVisble" width="20%">
       <el-form :model="userForm" :rules="userFormRules" ref="userFormRef" label-width="100px">
-        <el-form-item label="原 密 码" prop="oldPassword">
-          <el-input v-model="userForm.oldPassword" type="password" style="max-width: 220px;"></el-input>
+        <el-form-item label="原 密 码" prop="password">
+          <el-input v-model="userForm.password" type="password" style="max-width: 220px;"></el-input>
         </el-form-item>
         <el-form-item label="新 密 码" prop="newPassword">
           <el-input v-model="userForm.newPassword" style="max-width: 220px;"></el-input>
@@ -53,7 +55,7 @@ import { UserModule } from '@/store/user-store'
 import { MenuCollapseModule } from '@/store/menu-collapse-store'
 import { Component, Vue, Ref } from 'vue-property-decorator'
 import { LoginSuccessUserInfo, ModifyPassword } from '@/views/index/system/user/interface/sys-user'
-import { UpdatePasswordApi } from '@/views/index/system/user/user-api'
+import { UpdatePasswordApi, LogoutApi } from '@/views/index/system/user/user-api'
 import { local } from '@/store'
 import settings from '@/settings'
 import { MenuModule } from '@/store/menu-store'
@@ -64,7 +66,7 @@ export default class HeaderNav extends Vue {
   tipFullScrollContent = '全屏浏览'
   collapseMenuIcon = 'el-icon-s-fold'
   userPasswordDialogVisble = false
-  userForm: ModifyPassword = { id: '', oldPassword: '', newPassword: '', rePassword: '' }
+  userForm: ModifyPassword = { id: 0, password: '', newPassword: '', rePassword: '' }
   @Ref('userFormRef')
   readonly userFormRef!: ElForm
 
@@ -92,8 +94,8 @@ export default class HeaderNav extends Vue {
     }
   }
 
-  readonly userFormRules: { oldPassword: Array<KWRule.Rule>; newPassword: Array<KWRule.Rule | KWRule.MixinRule | KWRule.ValidatorRule>; rePassword: Array<KWRule.Rule | KWRule.MixinRule | KWRule.ValidatorRule> } = {
-    oldPassword: [{ required: true, message: '请输入原密码', trigger: 'blur' }],
+  readonly userFormRules: { password: Array<KWRule.Rule>; newPassword: Array<KWRule.Rule | KWRule.MixinRule | KWRule.ValidatorRule>; rePassword: Array<KWRule.Rule | KWRule.MixinRule | KWRule.ValidatorRule> } = {
+    password: [{ required: true, message: '请输入原密码', trigger: 'blur' }],
     newPassword: [
       { required: true, message: '请输入新密码', trigger: 'blur' },
       { min: 6, max: 15, message: '密码的长度6~15个字符之间', trigger: 'blur' },
@@ -106,21 +108,17 @@ export default class HeaderNav extends Vue {
     ]
   }
 
-  get nickname(): string {
+  get nickName(): string {
     const user = (UserModule.loginUser as LoginSuccessUserInfo).user
-    console.log(user)
+    console.log(user && user.nickName)
     if (user !== null) {
-      return user.nickname
+      return user.nickName
     }
     return ''
   }
 
   get headImgUrl(): string | null {
-    const user = (UserModule.loginUser as LoginSuccessUserInfo).user
-    if (user !== null) {
-      return user.headImgUrl
-    }
-    return null
+    return (UserModule.loginUser as LoginSuccessUserInfo).user.headImgUrl as string
   }
 
   mounted(): void {
@@ -155,28 +153,22 @@ export default class HeaderNav extends Vue {
     console.log('userInfoCenter')
   }
 
-  logout(): void {
-    local.clear(settings.accessToken)
-    MenuModule.changeMenu([])
-    PermissionModule.clearRoutes()
-    UserModule.clearUser()
-    this.$router.push('/login')
+  async logout(): Promise<void> {
+    const { code, msg } = await LogoutApi()
+    if (code !== 200) {
+      this.$message.error(msg || '用户登出失败!')
+    } else {
+      local.clear(settings.accessToken)
+      local.clear(settings.refreshToken)
+      MenuModule.changeMenu([])
+      UserModule.clearUser()
+      PermissionModule.clearRoutes()
+      location.reload()
+    }
   }
 
   dropdownClick(): void {
     console.log('dropdownClick')
-  }
-
-  /**
-   * @description: 图片404则会进入图片err事件
-   * @param {*} event
-   * @return {*}
-   */
-  private imgerrorfun(event: PointerEvent): void {
-    // console.log(event);
-    const img: HTMLImageElement = event.target as HTMLImageElement
-    img.src = require('@/assets/head.png')
-    img.onerror = null // 控制不要一直跳动;
   }
 
   // 判断是否全屏
@@ -249,7 +241,7 @@ export default class HeaderNav extends Vue {
   }
 
   modifyPassword(): void {
-    this.$confirm('确定要重置密码, 是否继续?', '提示', {
+    this.$confirm('确定要修改密码, 是否继续?', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning'
@@ -257,7 +249,7 @@ export default class HeaderNav extends Vue {
       .then(async () => {
         this.userForm.id = (UserModule.loginUser as LoginSuccessUserInfo).user.id
         const { code, msg } = await UpdatePasswordApi(this.userForm)
-        if (code !== 0) {
+        if (code !== 200) {
           this.$message.error(msg || '用户密码修改失败!')
         } else {
           this.userPasswordDialogVisble = false

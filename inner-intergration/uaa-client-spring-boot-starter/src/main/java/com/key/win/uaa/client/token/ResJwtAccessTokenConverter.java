@@ -9,11 +9,9 @@ import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConv
 import org.springframework.security.oauth2.provider.token.DefaultUserAuthenticationConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-@SuppressWarnings("all") 
+import java.util.*;
+
+@SuppressWarnings("all")
 public class ResJwtAccessTokenConverter extends JwtAccessTokenConverter{
 	
 	
@@ -41,7 +39,7 @@ public class ResJwtAccessTokenConverter extends JwtAccessTokenConverter{
 
 						loginUser = BeanUtil.mapToBean((Map) principal, LoginAppUser.class, true);
 						 
-						Set<SysRole> roles = new HashSet<>();
+						List<SysRole> roles = new ArrayList<>();
 						
 						for(Iterator<SysRole> it = loginUser.getSysRoles().iterator(); it.hasNext();){
 							SysRole role =  BeanUtil.mapToBean((Map) it.next() , SysRole.class, false);

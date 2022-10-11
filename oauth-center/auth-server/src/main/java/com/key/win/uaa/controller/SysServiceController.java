@@ -17,13 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * @Author: [gitgeek]
- * @Date: [2018-08-23 16:20]
- * @Description: [ ]
- * @Version: [1.0.0]
- * @Copy: [com.zzg]
- */
 @Slf4j
 @RestController
 @Api(tags = "SERVICE API")
@@ -45,7 +38,8 @@ public class SysServiceController {
     public PageResult<SysService> findAlls() {
         try {
 			List<SysService> list = sysServiceService.findAll();
-			return PageResult.<SysService>builder().data(list).code(0).count((long)list.size()).build() ;
+			// return PageResult.<SysService>builder().data(list).code(0).count((long)list.size()).build() ;\
+            return  new PageResult<SysService>((long) list.size(),list);
 		} catch (Exception e) {
 			throw new ControllerException(e);
 		}
@@ -62,7 +56,8 @@ public class SysServiceController {
     public PageResult<SysService> findOnes(){
         try {
 			List<SysService> list = sysServiceService.findOnes();
-			return PageResult.<SysService>builder().data(list).code(0).count((long)list.size()).build() ;
+			// return PageResult.<SysService>builder().data(list).code(0).count((long)list.size()).build() ;
+            return  new PageResult<SysService>((long) list.size(),list);
 		} catch (Exception e) {
 			throw new ControllerException(e);
 		}
@@ -117,7 +112,7 @@ public class SysServiceController {
 			List<SysService> clientService = sysServiceService.findByClient(clientIds);
 			List<SysService> allService = sysServiceService.findAll();
 			List<Map<String, Object>> authTrees = new ArrayList<>();
-			Map<String,SysService> clientServiceMap = clientService.stream().collect(Collectors.toMap(SysService::getId,SysService->SysService));
+			Map<Long,SysService> clientServiceMap = clientService.stream().collect(Collectors.toMap(SysService::getId,SysService->SysService));
 			for (SysService sysService: allService) {
 			    Map<String, Object> authTree = new HashMap<>();
 			    authTree.put("id",sysService.getId());
@@ -141,7 +136,7 @@ public class SysServiceController {
     @LogAnnotation(module="auth-server",recordRequestParam=false)
     public Result setMenuToClient(@RequestBody SysClient sysClient) {
         try {
-			sysServiceService.setMenuToClient(sysClient.getId(), sysClient.getServiceIds());
+			sysServiceService.setMenuToClient(sysClient.getId().toString(), sysClient.getServiceIds());
 			return Result.succeed("操作成功");
 		} catch (Exception e) {
 			throw new ControllerException(e);

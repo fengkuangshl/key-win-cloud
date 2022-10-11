@@ -58,7 +58,7 @@ public class SysParamTreeController {
     @PreAuthorize("hasAnyAuthority('param:post/sysParamTree','param:put/sysParamTree')")
     @LogAnnotation(module = "param-center", recordRequestParam = false)
     public Result saveOrUpdate(@RequestBody SysParamTree param) throws ControllerException {
-        if (StringUtil.isBlank(param.getId())) {
+        if (param.getId() != null) {
             SysParamTree newSysParam = new SysParamTree();
             newSysParam.setCode(param.getCode());
             List<SysParamTree> list = sysParamTreeService.getSysParamTree(newSysParam);

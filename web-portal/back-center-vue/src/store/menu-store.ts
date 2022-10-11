@@ -2,12 +2,12 @@ import { VuexModule, Mutation, Action, getModule, Module } from 'vuex-module-dec
 import store from '@/store'
 import { MenuResponse } from '@/views/index/system/menu/interface/sys-menu'
 
-export interface MenuState {
+export interface IMenuState {
   menus: Array<MenuResponse>
 }
 
 @Module({ dynamic: true, store, name: 'menu' })
-class MenuStore extends VuexModule implements MenuState {
+class MenuStore extends VuexModule implements IMenuState {
   public menus: Array<MenuResponse> = []
 
   get getMenus() {

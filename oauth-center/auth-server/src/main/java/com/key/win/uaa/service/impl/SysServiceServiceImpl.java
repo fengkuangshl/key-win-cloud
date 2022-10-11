@@ -74,7 +74,7 @@ public class SysServiceServiceImpl implements SysServiceService {
     public void delete(String id) {
         try {
 			SysService sysService = sysServiceDao.findById(id);
-			sysServiceDao.deleteByParentId(sysService.getId());
+			sysServiceDao.deleteByParentId(sysService.getId().toString());
 			sysServiceDao.delete(id);
 			log.info("删除服务:{}",sysService);
 		} catch (Exception e) {

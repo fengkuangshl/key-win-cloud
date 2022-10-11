@@ -1,6 +1,7 @@
 package com.key.win.es.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.key.win.common.web.CodeEnum;
 import com.key.win.common.web.PageResult;
 import com.key.win.es.dao.NginxLogDao;
 import com.key.win.es.entity.NinxLogDocument;
@@ -44,7 +45,7 @@ public class NginxLogController {
         NativeSearchQuery build = new NativeSearchQueryBuilder().withQuery(builder).withPageable(pageable).build();
         Page<NinxLogDocument> result = nginxLogDao.search(build);
 
-		return PageResult.<NinxLogDocument>builder().data(result.getContent()).code(0).count(1000L).build();
+		return new PageResult<NinxLogDocument>(1,1000,1000L,result.getContent());
 	}
 
 	// @GetMapping(value="/nginxLog")

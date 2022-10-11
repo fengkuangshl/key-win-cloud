@@ -1,8 +1,10 @@
 package com.key.win.es.controller;
 
 import cn.hutool.core.util.StrUtil;
+import com.key.win.common.web.CodeEnum;
 import com.key.win.common.web.PageResult;
 import com.key.win.es.dao.SqlSlowDao;
+import com.key.win.es.entity.ServiceLogDocument;
 import com.key.win.es.entity.SqlSlowDocument;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -49,7 +51,7 @@ public class SqlSlowController {
                 MapUtils.getInteger(params, "limit")); //// Sort.Direction.DESC,"@timestamp"
         NativeSearchQuery build = new NativeSearchQueryBuilder().withQuery(builder).withPageable(pageable).build();
         Page<SqlSlowDocument> result = sqlSlowDao.search(build);
-        return PageResult.<SqlSlowDocument>builder().data(result.getContent()).code(0).count(result.getTotalElements())
-                .build();
+
+        return new PageResult<SqlSlowDocument>(MapUtils.getInteger(params, "page"), MapUtils.getInteger(params, "limit"),result.getTotalElements(),result.getContent());
     }
 }

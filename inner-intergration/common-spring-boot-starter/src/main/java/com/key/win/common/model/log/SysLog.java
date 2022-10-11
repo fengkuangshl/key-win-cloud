@@ -1,13 +1,14 @@
 package com.key.win.common.model.log;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.key.win.common.model.basic.MybatisID;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 
 /**
-* @author 作者 owen 
-* @version 创建时间：2017年11月12日 上午22:57:51
 * 类说明 日志实体
  */
 @Data
@@ -15,12 +16,19 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("sys_log")
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
+@ApiModel("日志实体")
 public class SysLog extends MybatisID {
 
-	private String username; //	用户名
-	private String module;	//	归属模块
-	private String params;	//	执行方法的参数值
+	@ApiModelProperty("归属模块")
+	private String module;    //	归属模块
+	@ApiModelProperty("执行方法的参数值")
+	private String params;    //	执行方法的参数值
+	@ApiModelProperty("备注")
 	private String remark;  //  备注
-	private Boolean flag;	//	是否执行成功
+	@ApiModelProperty("是否执行成功")
+	private Boolean flag;    //	是否执行成功
+	@TableField(exist = false)
+	@ApiModelProperty("查询的字段")
+	private String searchContent;
 }

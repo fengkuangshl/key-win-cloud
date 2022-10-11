@@ -2,12 +2,12 @@ import { VuexModule, Mutation, Action, getModule, Module } from 'vuex-module-dec
 import store from '@/store'
 import { LoginSuccessUserInfo } from '@/views/index/system/user/interface/sys-user'
 
-export interface UserState {
+export interface IUserState {
   user: LoginSuccessUserInfo | null
 }
 
 @Module({ dynamic: true, store, name: 'user' })
-class UserStore extends VuexModule implements UserState {
+class UserStore extends VuexModule implements IUserState {
   public user: LoginSuccessUserInfo | null = null
 
   get loginUser(): LoginSuccessUserInfo | null {

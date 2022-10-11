@@ -22,6 +22,7 @@
         </el-footer>
       </el-container>
     </el-container>
+    <KWUploader></KWUploader>
   </div>
 </template>
 
@@ -33,11 +34,13 @@ import PageTabs from '@/components/page-tabs/PageTabs.vue'
 import { MenuResponse } from '@/views/index/system/menu/interface/sys-menu'
 // import * as qs from 'qs'
 import { MenuModule } from '@/store/menu-store'
+import KWUploader from '@/components/file-uploader/GlobalUploader.vue'
 @Component({
   components: {
     HeaderNav,
     LeftMenu,
-    PageTabs
+    PageTabs,
+    KWUploader
   }
 })
 export default class Index extends Vue {
@@ -64,8 +67,13 @@ export default class Index extends Vue {
 <style lang="less" scoped>
 .index {
   height: 100%;
+  position: relative;
   .index-container {
     height: 100%;
+    width: 100%;
+    top: 0px;
+    left: 0px;
+    position: absolute;
     .el-header {
       background-color: #fff;
       align-items: center;

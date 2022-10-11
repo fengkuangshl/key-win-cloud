@@ -41,7 +41,7 @@
 
         <dependency>
             <groupId>com.key.win</groupId>
-            <artifactId>mybaties-spring-boot-starter</artifactId>
+            <artifactId>mybatis-plus-spring-boot-starter</artifactId>
         </dependency>
 
         <!-- API文档配置 -->

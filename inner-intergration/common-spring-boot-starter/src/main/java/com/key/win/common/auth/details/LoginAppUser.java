@@ -1,34 +1,29 @@
 package com.key.win.common.auth.details;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.key.win.common.model.system.SysRole;
-import com.key.win.common.model.system.SysUser;
+import com.key.win.common.model.system.*;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
- * @author 作者 owen
- * @version 创建时间：2017年11月12日 上午22:57:51
  * 用户实体绑定spring security
- * blog: https://blog.51cto.com/13005375
- * code: https://gitee.com/owenwangwen/key-win-cloud
  */
 @Data
 public class LoginAppUser extends SysUser implements UserDetails {
 
     private static final long serialVersionUID = -3685249101751401211L;
 
-    private Set<SysRole> sysRoles;
+//    private Set<SysRole> sysRoles;
 
-    private Set<String> permissions;
+    @ApiModelProperty("登录时间")
+    private Date loginTime = new Date();
 
     /***
      * 权限重写
@@ -38,8 +33,8 @@ public class LoginAppUser extends SysUser implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> collection = new HashSet<>();
         Collection<GrantedAuthority> synchronizedCollection = Collections.synchronizedCollection(collection);
-        if (!CollectionUtils.isEmpty(sysRoles)) {
-            sysRoles.parallelStream().forEach(role -> {
+        if (!CollectionUtils.isEmpty(super.getSysRoles())) {
+            super.getSysRoles().parallelStream().forEach(role -> {
                 if (role.getCode().startsWith("ROLE_")) {
                     synchronizedCollection.add(new SimpleGrantedAuthority(role.getCode()));
                 } else {
@@ -48,12 +43,17 @@ public class LoginAppUser extends SysUser implements UserDetails {
             });
         }
 
-        if (!CollectionUtils.isEmpty(permissions)) {
-            permissions.parallelStream().forEach(per -> {
-                synchronizedCollection.add(new SimpleGrantedAuthority(per));
+        if (!CollectionUtils.isEmpty(super.getPermissions())) {
+            super.getPermissions().parallelStream().forEach(per -> {
+                synchronizedCollection.add(new SimpleGrantedAuthority(per.getPermissionCode()));
             });
         }
         return collection;
+    }
+
+    @Override
+    public String getUsername() {
+        return super.getUserName();
     }
 
 

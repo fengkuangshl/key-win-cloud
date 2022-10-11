@@ -2,139 +2,135 @@ package com.key.win.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import com.google.common.collect.Sets;
-import com.key.win.common.exception.service.ServiceException;
-import com.key.win.common.model.system.SysPermission;
-import com.key.win.common.model.system.SysRole;
+import com.key.win.common.exception.business.BizException;
+import com.key.win.common.util.BeanUtils;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
-import com.key.win.page.MybatiesPageServiceTemplate;
+import com.key.win.common.model.system.SysRole;
+import com.key.win.common.model.system.SysRoleMenuPermission;
+import com.key.win.mybatis.page.MybatisPageServiceTemplate;
 import com.key.win.user.dao.SysRoleDao;
-import com.key.win.user.dao.SysRoleMenuDao;
-import com.key.win.user.dao.SysRolePermissionDao;
 import com.key.win.user.dao.SysUserRoleDao;
+import com.key.win.user.service.SysRoleMenuPermissionService;
 import com.key.win.user.service.SysRoleService;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-@Slf4j
 @Service
 public class SysRoleServiceImpl extends ServiceImpl<SysRoleDao, SysRole> implements SysRoleService {
 
-    @Autowired
-    private SysRoleDao sysRoleDao;
-    @Autowired
-    private SysUserRoleDao userRoleDao;
-    @Autowired
-    private SysRolePermissionDao rolePermissionDao;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private SysRoleMenuDao roleMenuDao;
-
-    @Transactional
-    @Override
-    public void deleteRole(String id) throws ServiceException {
-        try {
-            SysRole sysRole = sysRoleDao.findById(id);
-
-            sysRoleDao.deleteByPrimaryKey(id);
-            rolePermissionDao.deleteBySelective(id, null);
-            roleMenuDao.deleteBySelective(id, null);
-            userRoleDao.deleteUserRole(null, id);
-
-            log.info("删除角色：{}", sysRole);
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-
-    }
-
+    private SysUserRoleDao sysUserRoleDao;
+    @Autowired
+    private SysRoleMenuPermissionService sysRoleMenuPermissionService;
 
     @Override
-    public SysRole findById(String id) throws ServiceException {
-        try {
-            return sysRoleDao.findById(id);
-        } catch (Exception e) {
-            throw new ServiceException(e);
+    public List<SysRole> findSysRole(SysRole sysRole) {
+        LambdaQueryWrapper<SysRole> lambdaQueryWrapper = new LambdaQueryWrapper<SysRole>();
+        if (sysRole != null) {
+            if (StringUtils.isNotBlank(sysRole.getName())) {
+                lambdaQueryWrapper.eq(SysRole::getName, sysRole.getName());
+            }
+            if (StringUtils.isNotBlank(sysRole.getCode())) {
+                lambdaQueryWrapper.eq(SysRole::getCode, sysRole.getCode());
+            }
         }
-    }
-
-    @Override
-    public PageResult<SysRole> findRoles(Map<String, Object> params) throws ServiceException {
-        try {
-
-//			BizLog.info("tttt", LogEntry.builder().msg("hello").build());
-            //设置分页信息，分别是当前页数和每页显示的总记录数【记住：必须在mapper接口中的方法执行之前设置该分页信息】
-            if (MapUtils.getInteger(params, "page") != null && MapUtils.getInteger(params, "limit") != null)
-                PageHelper.startPage(MapUtils.getInteger(params, "page"), MapUtils.getInteger(params, "limit"), true);
-            List<SysRole> list = sysRoleDao.findList(params);
-            PageInfo<SysRole> pageInfo = new PageInfo(list);
-
-            return PageResult.<SysRole>builder().data(pageInfo.getList()).code(0).count(pageInfo.getTotal()).build();
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
-
-    @Override
-    public Set<SysPermission> findPermissionsByRoleId(String roleId) throws ServiceException {
-        try {
-            return rolePermissionDao.findByRoleIds(Sets.newHashSet(roleId));
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
+        List<SysRole> list = this.list(lambdaQueryWrapper);
+        return list;
     }
 
     @Override
     public PageResult<SysRole> findSysRoleByPaged(PageRequest<SysRole> t) {
-        MybatiesPageServiceTemplate<SysRole, SysRole> page = new MybatiesPageServiceTemplate<SysRole, SysRole>(sysRoleDao) {
-            @Override
-            protected AbstractWrapper constructWrapper(SysRole role) {
-                LambdaQueryWrapper<SysRole> lqw = new LambdaQueryWrapper<SysRole>();
-                if (role != null && StringUtils.isNotBlank(role.getName())) {
-                    lqw.eq(SysRole::getName, role.getName() == null ? "" : role.getName());
-                }
-                if (role != null && StringUtils.isNotBlank(role.getCode())) {
-                    lqw.eq(SysRole::getCode, role.getCode() == null ? "" : role.getCode());
-                }
-                lqw.orderByDesc(SysRole::getCreateDate);
-                return lqw;
-            }
 
+        MybatisPageServiceTemplate<SysRole, SysRole> mybatiesPageServiceTemplate = new MybatisPageServiceTemplate<SysRole, SysRole>(this.baseMapper) {
             @Override
-            protected List getDefaultQueryOrder(SysRole role, String sortName) {
-                List<SFunction<SysRole, ?>> list = new ArrayList<>();
-                if ("name".equals(sortName)) {
-                    list.add(SysRole::getName);
+            protected AbstractWrapper constructWrapper(SysRole sysRole) {
+                LambdaQueryWrapper<SysRole> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+                if (StringUtils.isNotBlank(sysRole.getName())) {
+                    lambdaQueryWrapper
+                            .like(SysRole::getName, sysRole.getName())
+                            .or()
+                            .like(SysRole::getCode, sysRole.getName());
                 }
-                if ("code".equals(sortName)) {
-                    list.add(SysRole::getCode);
-                }
-                if ("createDate".equals(sortName)) {
-                    list.add(SysRole::getCreateDate);
-                }
-                return list;
+
+                return lambdaQueryWrapper;
             }
         };
-        return page.doPagingQuery(t);
+
+        return mybatiesPageServiceTemplate.doPagingQuery(t);
     }
 
-    public List<SysRole> findAllSysRole() {
-        LambdaQueryWrapper<SysRole> lqw = new LambdaQueryWrapper<SysRole>();
-        return sysRoleDao.selectList(lqw);
+
+    @Override
+    public boolean saveOrUpdateRole(SysRole sysRole) {
+        SysRole po = null;
+        if (sysRole.getId() != null) {
+            po = this.getById(sysRole.getId());
+            if (po == null) {
+                logger.error("角色不存在!");
+                throw new BizException("角色不存在!");
+            }
+            if (!po.getCode().equals(sysRole.getCode())) {
+                logger.error("角色code[{}]已锁定，不允许修改！", sysRole.getCode());
+                throw new BizException("角色code已锁定，不允许修改！!");
+            }
+            BeanUtils.copyPropertiesToPartField(sysRole, po);
+        } else {
+            po = sysRole;
+            List<SysRole> sysRoles = this.findSysRoleByCode(sysRole.getCode());
+            if (!CollectionUtils.isEmpty(sysRoles)) {
+                logger.error("角色code[{}]已存在！", sysRole.getCode());
+                throw new BizException("角色code已存在！");
+            }
+        }
+        boolean b = this.saveOrUpdate(sysRole);
+        if (sysRole.getUserId() != null) {
+//            Set<String> userIds = Arrays.asList(sysRole.getUserId().split(",")).stream().collect(Collectors.toSet());
+//            if (!CollectionUtils.isEmpty(userIds)) {
+//                sysUserRoleDao.deleteUserRole(null, sysRole.getId());
+//                sysUserRoleDao.saveBatchUserIdsAndRoleId(userIds, sysRole.getId());
+//                /*userIds.forEach(userId -> {
+//                    SysUserRole sysUserRole = new SysUserRole();
+//                    sysUserRole.setRoleId(sysRole.getId());
+//                    sysUserRole.setUserId(userId);
+//                    sysUserRoleDao.insert(sysUserRole);
+//                });*/
+//            }
+            if (!CollectionUtils.isEmpty(sysRole.getUserIds())) {
+                sysUserRoleDao.deleteUserRole(null, sysRole.getId());
+                sysUserRoleDao.saveBatchUserIdsAndRoleId(sysRole.getUserIds(), sysRole.getId());
+            }
+        }
+        return b;
     }
 
+    private List<SysRole> findSysRoleByCode(String code) {
+        SysRole sysRole = new SysRole();
+        sysRole.setCode(code);
+        return this.findSysRole(sysRole);
+    }
+
+    @Override
+    public boolean deleteById(Long id) {
+        List<SysRoleMenuPermission> grantMenus = sysRoleMenuPermissionService.findGrantMenus(id);
+        if (!CollectionUtils.isEmpty(grantMenus)) {
+            logger.error("删除角色[{}]时，发现已关联SysMenu信息！", id);
+            throw new BizException("请先解除关联的菜单信息！");
+        }
+        List<SysRoleMenuPermission> grantMenuPermissions = sysRoleMenuPermissionService.findGrantMenuPermissions(id);
+        if (!CollectionUtils.isEmpty(grantMenuPermissions)) {
+            logger.error("删除角色[{}]时，发现已关联SysPermission信息！", id);
+            throw new BizException("请先解除关联的权限信息！");
+        }
+        return this.removeById(id);
+    }
 }

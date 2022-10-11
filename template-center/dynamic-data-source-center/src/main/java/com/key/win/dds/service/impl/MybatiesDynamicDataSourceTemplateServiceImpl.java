@@ -9,7 +9,7 @@ import com.key.win.common.web.PageResult;
 import com.key.win.dds.dao.MybatiesDynamicDataSourceTemplateDao;
 import com.key.win.dds.model.MybatiesDynamicDataSourceTemplate;
 import com.key.win.dds.service.MybatiesDynamicDataSourceTemplateService;
-import com.key.win.page.MybatiesPageServiceTemplate;
+import com.key.win.mybatis.page.MybatisPageServiceTemplate;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ public class MybatiesDynamicDataSourceTemplateServiceImpl extends ServiceImpl<My
     }
 
     public PageResult<MybatiesDynamicDataSourceTemplate> findMybatiesDynamicDataSourceTemplateByPaged(PageRequest<MybatiesDynamicDataSourceTemplate> pageRequest) {
-        MybatiesPageServiceTemplate<MybatiesDynamicDataSourceTemplate, MybatiesDynamicDataSourceTemplate> page = new MybatiesPageServiceTemplate<MybatiesDynamicDataSourceTemplate, MybatiesDynamicDataSourceTemplate>(this.baseMapper) {
+        MybatisPageServiceTemplate<MybatiesDynamicDataSourceTemplate, MybatiesDynamicDataSourceTemplate> page = new MybatisPageServiceTemplate<MybatiesDynamicDataSourceTemplate, MybatiesDynamicDataSourceTemplate>(this.baseMapper) {
             @Override
             protected AbstractWrapper constructWrapper(MybatiesDynamicDataSourceTemplate mybatiesTemplate) {
                 LambdaQueryWrapper<MybatiesDynamicDataSourceTemplate> lqw = new LambdaQueryWrapper<MybatiesDynamicDataSourceTemplate>();

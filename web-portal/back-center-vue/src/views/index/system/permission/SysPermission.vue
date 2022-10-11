@@ -12,34 +12,46 @@
     <el-card>
       <el-row :gutter="20">
         <el-col :span="7">
-          <el-input placeholder="请输入内容" v-model="t.name">
-            <el-button slot="append" icon="el-icon-search" @click="searchPermission"></el-button>
+          <el-input placeholder="请输入内容" v-model="t.name" v-hasPermissionQueryPage="permissionPrefix">
+            <el-button slot="append" class="search-primary" icon="el-icon-search" @click="searchPermission"></el-button>
           </el-input>
         </el-col>
         <el-col :span="4">
-          <el-button type="primary" @click="addPermission">添加权限</el-button>
+          <el-button type="primary" @click="addPermission" v-hasPermissionAdd="permissionPrefix">
+            添加权限</el-button>
         </el-col>
       </el-row>
-      <KWTable url="api-user/permissions/getSysPermissionByPaged" style="width: 100%" ref="kwTableRef">
+      <KWTable url="permission/findSysPermissionByPaged" v-hasPermissionQueryPage="permissionPrefix" style="width: 100%"
+        ref="kwTableRef">
         <el-table-column type="index" width="80" label="序号"></el-table-column>
-        <el-table-column prop="name" sortable="custom" label="角色名称"> </el-table-column>
+        <el-table-column prop="name" sortable="custom" label="权限名称"> </el-table-column>
         <el-table-column prop="permission" sortable="custom" label="权限标识"> </el-table-column>
         <el-table-column label="操作">
           <template v-slot="scope">
-            <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row)"></el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" @click="deletePermission(scope.row.id)"></el-button>
+            <el-button type="primary" icon="el-icon-edit" size="mini" v-hasPermissionUpdate="permissionPrefix"
+              @click="showEditDialog(scope.row)">
+            </el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-hasPermissionDelete="permissionPrefix"
+              @click="deletePermission(scope.row.id)">
+            </el-button>
           </template>
         </el-table-column>
       </KWTable>
     </el-card>
     <el-dialog :title="title" @close="aditPermissionClosed" :visible.sync="permissionDialogVisble" width="20%">
       <el-form :model="sysPermissionForm" :rules="sysPermissionFormRules" ref="sysPermissionFormRef" label-width="90px">
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="sysPermissionForm.name" style="max-width: 220px;"></el-input>
-        </el-form-item>
         <el-form-item label="权限标识" prop="permission">
-          <el-input v-model="sysPermissionForm.permission" style="max-width: 220px;"></el-input>
+          <el-input v-model="sysPermissionForm.permission" style="max-width: 220px;" placeholder="请输入权限Code"></el-input>
         </el-form-item>
+        <el-form-item label="名称" prop="name">
+          <!-- <el-input v-model="sysPermissionForm.name"></el-input> -->
+          <el-select v-model="sysPermissionForm.name" filterable allow-create default-first-option
+            placeholder="请选择或输入权限名称" style="max-width: 220px;" @change="permissionChange">
+            <el-option v-for="item in permissionOptions" :key="item.value" :label="item.text" :value="item.text">
+            </el-option>
+          </el-select>
+        </el-form-item>
+
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="permissionDialogVisble = false">取 消</el-button>
@@ -52,10 +64,10 @@
 <script lang="ts">
 import { ElForm } from 'element-ui/types/form'
 import { Component, Vue, Ref } from 'vue-property-decorator'
-import { Name, PermissionResponse, PermissionForm } from './interface/sys-permission'
+import { Name, PermissionResponse, PermissionForm, PermissionEnum } from './interface/sys-permission'
 import KWTable from '@/components/table/Table.vue'
-import { SysPermissionSaveOrUpdateApi, DeleteSysPermissionApi } from './permission-api'
-
+import { SysPermissionSaveOrUpdateApi, DeleteSysPermissionApi, GetPermissionEnumApi } from './permission-api'
+import PermissionPrefixUtils from '@/common/utils/permission/permission-prefix'
 @Component({
   components: {
     KWTable
@@ -69,6 +81,9 @@ export default class Permission extends Vue {
   sysPermissionForm: PermissionForm = { name: '', permission: '' }
   @Ref('sysPermissionFormRef')
   readonly sysPermissionFormRef!: ElForm
+
+  permissionPrefix = PermissionPrefixUtils.permission
+  permissionOptions: Array<PermissionEnum> | [] = []
 
   @Ref('kwTableRef')
   readonly kwTableRef!: KWTable<Name, PermissionResponse>
@@ -84,7 +99,8 @@ export default class Permission extends Vue {
   // 展示编辑用于的对话框
   async showEditDialog(permission: PermissionResponse): Promise<void> {
     this.title = '编辑权限'
-    this.sysPermissionForm = permission
+    this.getPermissionEnum()
+    this.sysPermissionForm = { id: permission.id, name: permission.name, permission: permission.permission } as PermissionForm
     this.permissionDialogVisble = true
   }
 
@@ -99,7 +115,7 @@ export default class Permission extends Vue {
         return false
       }
       const { code, msg } = await SysPermissionSaveOrUpdateApi(this.sysPermissionForm)
-      if (code !== 0) {
+      if (code !== 200) {
         this.$message.error(msg || '操作权限信息失败!')
       } else {
         this.permissionDialogVisble = false
@@ -110,15 +126,16 @@ export default class Permission extends Vue {
   }
 
   addPermission(): void {
-    this.title = '添加角色'
+    this.title = '添加权限'
     this.permissionDialogVisble = true
     this.$nextTick(() => {
       this.sysPermissionFormRef.resetFields()
       this.sysPermissionForm = { name: '', permission: '' }
+      this.getPermissionEnum()
     })
   }
 
-  deletePermission(id: string): void {
+  deletePermission(id: number): void {
     this.$confirm('确定要重置密码, 是否继续?', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
@@ -126,7 +143,7 @@ export default class Permission extends Vue {
     })
       .then(async () => {
         const { code, msg } = await DeleteSysPermissionApi(id)
-        if (code !== 0) {
+        if (code !== 200) {
           this.$message.error(msg || '删除失败!')
         } else {
           this.searchPermission()
@@ -145,11 +162,43 @@ export default class Permission extends Vue {
   searchPermission(): void {
     this.kwTableRef.loadByCondition(this.t)
   }
+
+  async getPermissionEnum(): Promise<void> {
+    const { data: res } = await GetPermissionEnumApi()
+    this.permissionOptions = res
+  }
+
+  permissionChange(): void {
+    console.log(this.sysPermissionForm.name)
+    for (const key in this.permissionOptions) {
+      if (Object.prototype.hasOwnProperty.call(this.permissionOptions, key)) {
+        const element = this.permissionOptions[key]
+        if (element.text === this.sysPermissionForm.name) {
+          this.sysPermissionForm.permission = element.code
+          this.sysPermissionFormRef.validate()
+          return
+        }
+      }
+    }
+  }
 }
 </script>
 
 <style lang="less" scoped>
 .el-select {
   width: 860px;
+}
+
+.search-primary {
+  background: #409eff !important;
+  border-color: #409eff !important;
+  color: #fff !important;
+}
+
+.search-primary:focus,
+.search-primary:hover {
+  background: #66b1ff !important;
+  border-color: #66b1ff !important;
+  color: #fff !important;
 }
 </style>

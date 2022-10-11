@@ -33,7 +33,14 @@ import {
   DropdownMenu,
   Scrollbar,
   Footer,
-  Tree
+  Tree,
+  Upload,
+  Drawer,
+  DatePicker,
+  Checkbox,
+  Link,
+  Notification,
+  Divider
 } from 'element-ui'
 
 Vue.use(Button)
@@ -68,5 +75,13 @@ Vue.use(DropdownMenu)
 Vue.use(Scrollbar)
 Vue.use(Footer)
 Vue.use(Tree)
+Vue.use(Upload)
+Vue.use(Drawer)
+Vue.use(DatePicker)
+Vue.use(Checkbox)
+Vue.use(Link)
+Vue.component(Notification)
+Vue.use(Divider)
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm
+Vue.prototype.$notify = Notification

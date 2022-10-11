@@ -68,6 +68,11 @@
 			<artifactId>spring-boot-configuration-processor</artifactId>
 			<optional>true</optional>
 		</dependency>
+
+	  <dependency>
+		  <groupId>com.key.win</groupId>
+		  <artifactId>mybatis-plus-spring-boot-starter</artifactId>
+	  </dependency>
   		
   		
   </dependencies>

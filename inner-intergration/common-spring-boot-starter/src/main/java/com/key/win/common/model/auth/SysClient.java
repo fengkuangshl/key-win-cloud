@@ -44,7 +44,7 @@ public class SysClient extends MybatisID {
    
    public DefaultClientDetails map(){
 	   DefaultClientDetails defaultClientDetails = new DefaultClientDetails(this.clientId, this.resourceIds , this.scope,this.authorizedGrantTypes,this.authorities,this.webServerRedirectUri) ;
-	   defaultClientDetails.setId(this.getId());
+	   defaultClientDetails.setId(this.getId().toString());
 	   defaultClientDetails.setClientSecret(this.clientSecret);
 	   defaultClientDetails.setAccessTokenValiditySeconds(this.accessTokenValidity);
 	   defaultClientDetails.setRefreshTokenValiditySeconds(this.refreshTokenValidity);

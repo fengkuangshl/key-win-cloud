@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.key.win.common.web.CodeEnum;
 import com.key.win.common.web.PageResult;
 import com.key.win.client.dao.GatewayRoutesDao;
 import com.key.win.client.dto.GatewayFilterDefinition;
@@ -160,7 +161,13 @@ public class DynamicRouteServiceImpl implements ApplicationEventPublisherAware, 
         PageHelper.startPage(MapUtils.getInteger(params, "page"), MapUtils.getInteger(params, "limit"), true);
         List<GatewayRoutes> alls = gatewayRoutesDao.findAll(new HashMap());
         PageInfo<GatewayRoutesVO> pageInfo = new PageInfo<>(routeVOMapper.mapAsList(alls, GatewayRoutesVO.class));
-        return PageResult.<GatewayRoutesVO>builder().data(pageInfo.getList()).code(0).count(pageInfo.getTotal()).build();
+        PageResult<GatewayRoutesVO> pageResult = new PageResult<>();
+        pageResult.setCode(CodeEnum.SUCCESS.getCode());
+        pageResult.setData(pageInfo.getList());
+        pageResult.setCount(pageInfo.getTotal());
+        pageResult.setPageNo(MapUtils.getInteger(params, "page"));
+        pageResult.setPageSize(MapUtils.getInteger(params, "limit"));
+        return pageResult;
     }
 
     /**

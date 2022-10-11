@@ -1,17 +1,13 @@
-export interface AuthIdsAndRoleId {
-  authIds: Array<string>
-  roleId: string | null
-}
+export type Name = Model.Name
 
-export interface Name {
-  name: string | null
-}
 export interface PermissionForm extends Name {
   permission: string
 }
 
-export interface PermissionResponse extends Model.BaseFleid, AuthIdsAndRoleId, PermissionForm {}
-export interface PermissionRole extends Name, Model.Id {
-  checked: true
-  open: true
+export interface PermissionResponse extends Model.BaseField, PermissionForm {}
+
+export interface PermissionEnum {
+  stringValue: string
+  text: string
+  code: string
 }

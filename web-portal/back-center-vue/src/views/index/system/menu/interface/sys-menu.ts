@@ -9,27 +9,25 @@ export enum IsMenu {
   否 = 2
 }
 
-export interface Name {
-  name: string
-}
+export type Name = Model.Name
 export interface RoleIdAndMenuIds {
-  menuIds: Array<string> | null
-  roleId: string | null
+  menuIds: Array<number> | null
+  roleId: number | null
 }
-export interface MenuForm extends Name {
+export interface MenuForm extends Name, Model.ParentId {
   css: string
-  hidden: IsHiddenMenu | boolean | string
+  isHidden: IsHiddenMenu | boolean | string
   isMenu: IsMenu | number | string
-  parentId: string
   path: string
   sort: number
   url: string
+  title: string
 }
-export interface MenuResponse extends Model.BaseFleid, Name, RoleIdAndMenuIds, MenuForm {
+export interface MenuResponse extends Model.BaseField, Name, RoleIdAndMenuIds, MenuForm {
   subMenus: Array<MenuResponse> | null
 }
 export interface Id extends Name {
-  id: string
+  id: number
 }
 
 export interface IMenuTree extends Name, TreeData {
@@ -38,6 +36,6 @@ export interface IMenuTree extends Name, TreeData {
 
 export interface MenuRole extends Id {
   checked: boolean
-  pId: string
+  pId: number
   open: boolean
 }

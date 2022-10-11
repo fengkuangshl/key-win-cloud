@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.constant.UaaConstant;
 import com.key.win.common.model.system.SysRole;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,10 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author 作者 owen
@@ -47,7 +45,7 @@ public class SysUserUtil {
                 } else if (authenticationToken.getPrincipal() instanceof Map) {
 
                     LoginAppUser loginAppUser = BeanUtil.mapToBean((Map) authenticationToken.getPrincipal(), LoginAppUser.class, true);
-                    Set<SysRole> roles = new HashSet<>();
+                    List<SysRole> roles = new ArrayList<>();
                     if (CollectionUtil.isNotEmpty(loginAppUser.getSysRoles())) {
     					for(Iterator<SysRole> it = loginAppUser.getSysRoles().iterator(); it.hasNext();){
     						SysRole role =  BeanUtil.mapToBean((Map) it.next() , SysRole.class, false);
@@ -74,5 +72,37 @@ public class SysUserUtil {
         }
        
         return null;
+    }
+
+    public static String getUserName() {
+        LoginAppUser loginUser = getLoginAppUser();
+        if (loginUser != null) {
+            return loginUser.getUserName();
+        }
+        return KeyWinConstantUtils.SYSTEM_ANONYMOUS_USER;
+    }
+
+    public static Long getUserId() {
+        LoginAppUser loginUser = getLoginAppUser();
+        if (loginUser != null) {
+            return loginUser.getId();
+        }
+        return KeyWinConstantUtils.SYSTEM_ANONYMOUS_USER_ID;
+    }
+
+    public static String getHeadImgUrl() {
+        LoginAppUser loginUser = getLoginAppUser();
+        if (loginUser != null) {
+            return loginUser.getHeadImgUrl();
+        }
+        return "";
+    }
+
+    public static boolean isAnonymousUser() {
+        LoginAppUser loginUser = getLoginAppUser();
+        if (loginUser == null) {
+            return true;
+        }
+        return false;
     }
 }

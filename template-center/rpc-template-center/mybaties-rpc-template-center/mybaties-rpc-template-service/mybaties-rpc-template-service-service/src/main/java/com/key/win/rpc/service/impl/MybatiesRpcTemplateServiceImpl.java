@@ -1,7 +1,5 @@
 package com.key.win.rpc.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -10,7 +8,7 @@ import com.key.win.common.util.BeanUtils;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
-import com.key.win.page.MybatiesPageServiceTemplate;
+import com.key.win.mybatis.page.MybatisPageServiceTemplate;
 import com.key.win.rpc.dao.MybatiesRpcTemplateDao;
 import com.key.win.rpc.model.MybatiesRpcTemplate;
 import com.key.win.rpc.mybaties.service.MybatiesRpcTemplateService;
@@ -90,7 +88,7 @@ public class MybatiesRpcTemplateServiceImpl extends ServiceImpl<MybatiesRpcTempl
     }
 
     public PageResult<MybatiesRpcTemplateVo> findMybatiesRpcTemplateByPaged(PageRequest<MybatiesRpcTemplateVo> pageRequest) {
-        MybatiesPageServiceTemplate<MybatiesRpcTemplateVo, MybatiesRpcTemplate> page = new MybatiesPageServiceTemplate<MybatiesRpcTemplateVo, MybatiesRpcTemplate>(this.baseMapper) {
+        MybatisPageServiceTemplate<MybatiesRpcTemplateVo, MybatiesRpcTemplate> page = new MybatisPageServiceTemplate<MybatiesRpcTemplateVo, MybatiesRpcTemplate>(this.baseMapper) {
             @Override
             protected LambdaQueryWrapper<MybatiesRpcTemplate> constructWrapper(MybatiesRpcTemplateVo mybatiesTemplate) {
                 LambdaQueryWrapper<MybatiesRpcTemplate> lqw = new LambdaQueryWrapper<MybatiesRpcTemplate>();
@@ -105,14 +103,14 @@ public class MybatiesRpcTemplateServiceImpl extends ServiceImpl<MybatiesRpcTempl
                 return lqw;
             }
         };
-        PageResult<MybatiesRpcTemplate> mybatiesRpcTemplateMybatiesPageResult = page.doPagingQuery(pageRequest);
+        PageResult<MybatiesRpcTemplate> result = page.doPagingQuery(pageRequest);
 
         PageResult<MybatiesRpcTemplateVo> mybatiesPageResultVo = new PageResult<>();
-        mybatiesPageResultVo.setCode(mybatiesRpcTemplateMybatiesPageResult.getCode());
-        mybatiesPageResultVo.setPageNo(mybatiesRpcTemplateMybatiesPageResult.getPageNo());
-        mybatiesPageResultVo.setPageSize(mybatiesRpcTemplateMybatiesPageResult.getPageSize());
-        mybatiesPageResultVo.setCount(mybatiesRpcTemplateMybatiesPageResult.getCount());
-        mybatiesPageResultVo.setData(this.mybatiesRpcTemplateToVos(mybatiesRpcTemplateMybatiesPageResult.getData()));
+        mybatiesPageResultVo.setCode(result.getCode());
+        mybatiesPageResultVo.setPageNo(result.getPageNo());
+        mybatiesPageResultVo.setPageSize(result.getPageSize());
+        mybatiesPageResultVo.setCount(result.getCount());
+        mybatiesPageResultVo.setData(this.mybatiesRpcTemplateToVos(result.getData()));
         return mybatiesPageResultVo;
     }
 }

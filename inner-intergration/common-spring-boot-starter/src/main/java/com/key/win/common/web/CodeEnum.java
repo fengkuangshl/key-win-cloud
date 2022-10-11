@@ -1,18 +1,15 @@
 package com.key.win.common.web;
 
 /**
- * @Author: [gitgeek]
- * @Date: [2018-08-02 08:50]
- * @Description: [ ]
- * @Version: [1.0.0]
- * @Copy: [com.zzg]
+ * 统一的返回状态码
  */
 public enum CodeEnum {
-    SUCCESS(0),
-    ERROR(1);
+    SUCCESS(200),
+    ERROR(-200);
 
     private Integer code;
-    CodeEnum(Integer code){
+
+    CodeEnum(Integer code) {
         this.code = code;
     }
 

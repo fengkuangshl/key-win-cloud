@@ -123,7 +123,8 @@ public abstract class AbstractFileService implements FileService {
 
         List<FileInfo> list = getFileDao().findList(params);
         PageInfo<FileInfo> pageInfo = new PageInfo<>(list);
-		return PageResult.<FileInfo>builder().data(pageInfo.getList()).code(0).count(pageInfo.getTotal()).build();
+		return new PageResult<FileInfo>(MapUtils.getInteger(params, "page"), MapUtils.getInteger(params, "limit"),pageInfo.getTotal(),pageInfo.getList());
+
 	}
 
 	@Override

@@ -2,32 +2,29 @@ package com.key.win.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.key.win.common.auth.details.LoginAppUser;
-import com.key.win.common.constant.UserType;
+import com.key.win.common.exception.business.BizException;
+import com.key.win.common.exception.illegal.UserIllegalException;
 import com.key.win.common.exception.service.ServiceException;
-import com.key.win.common.model.system.SysPermission;
-import com.key.win.common.model.system.SysRole;
-import com.key.win.common.model.system.SysUser;
-import com.key.win.common.model.system.SysUserRole;
-import com.key.win.common.util.PageUtil;
+import com.key.win.common.util.BeanUtils;
+import com.key.win.common.util.KeyWinConstantUtils;
 import com.key.win.common.util.SysUserUtil;
-import com.key.win.common.util.ValidatorUtil;
+import com.key.win.common.util.UUIDUtils;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
-import com.key.win.common.web.Result;
-import com.key.win.page.MybatiesPageServiceTemplate;
+import com.key.win.common.enums.UserTypeEnum;
+import com.key.win.common.model.system.*;
+import com.key.win.mybatis.page.MybatisPageServiceTemplate;
+import com.key.win.user.dao.*;
+import com.key.win.user.service.*;
 import com.key.win.user.dao.SysUserDao;
-import com.key.win.user.dao.SysUserRoleDao;
-import com.key.win.user.model.SysUserExcel;
-import com.key.win.user.service.SysPermissionService;
 import com.key.win.user.service.SysUserService;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.MapUtils;
+import com.key.win.user.vo.SysUserVo;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeansException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -38,89 +35,68 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.security.auth.login.AccountException;
+import javax.security.auth.login.AccountNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * @author 作者 owen
- * @version 创建时间：2017年11月12日 上午22:57:51
- */
-@Slf4j
 @Service
-public class SysUserServiceImpl implements SysUserService {
+public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUser> implements SysUserService {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
 
     @Autowired
-    private SysUserDao sysUserDao;
-    @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private SysUserRoleDao sysUserRoleDao;
+
+    @Autowired
+    private SysUserGroupDao sysUserGroupDao;
+
+    @Autowired
+    private SysRoleMenuPermissionService sysRoleMenuPermissionService;
+
+    @Autowired
+    private SysMenuPermissionService sysMenuPermissionService;
+
+    @Autowired
+    private SysMenuService sysMenuService;
     @Autowired
     private SysPermissionService sysPermissionService;
-    @Autowired
-    private SysUserRoleDao userRoleDao;
 
     @Autowired(required = false)
     private TokenStore redisTokenStore;
 
-
     @Override
-    @Transactional
-    public void addSysUser(SysUser sysUser) throws ServiceException {
-        try {
-            String username = sysUser.getUsername();
-            if (StringUtils.isBlank(username)) {
-                throw new IllegalArgumentException("用户名不能为空");
-            }
-
-            if (ValidatorUtil.checkPhone(username)) {// 防止用手机号直接当用户名，手机号要发短信验证
-                throw new IllegalArgumentException("用户名要包含英文字符");
-            }
-
-            if (username.contains("@")) {// 防止用邮箱直接当用户名，邮箱也要发送验证（暂未开发）
-                throw new IllegalArgumentException("用户名不能包含@");
-            }
-
-            if (username.contains("|")) {
-                throw new IllegalArgumentException("用户名不能包含|字符");
-            }
-
-            if (StringUtils.isBlank(sysUser.getPassword())) {
-                throw new IllegalArgumentException("密码不能为空");
-            }
-
-            if (StringUtils.isBlank(sysUser.getNickname())) {
-                sysUser.setNickname(username);
-            }
-
-            if (StringUtils.isBlank(sysUser.getType())) {
-                sysUser.setType(UserType.APP.name());
-            }
-
-            SysUser persistenceUser = sysUserDao.findByUsername(sysUser.getUsername());
-            if (persistenceUser != null && persistenceUser.getUsername() != null) {
-                throw new IllegalArgumentException("用户名已存在");
-
-            }
-
-            sysUser.setPassword(passwordEncoder.encode(sysUser.getPassword()));
-            sysUser.setEnabled(Boolean.TRUE);
-            sysUserDao.save(sysUser);
-            log.info("添加用户：{}", sysUser);
-        } catch (Exception e) {
-            throw new ServiceException(e);
+    public boolean updateSysUser(SysUserVo sysUser) {
+        if (sysUser.getId() == null) {
+            logger.error("用户id不存在");
+            throw new IllegalArgumentException("用户id不存在!");
         }
-    }
+        SysUser updateUser = this.getById(sysUser.getId());
+        if (updateUser == null) {
+            logger.error("用户不存在");
+            throw new IllegalArgumentException("用户不存在!");
+        }
+        if (StringUtils.isNotBlank(sysUser.getUserName()) && !updateUser.getUserName().equals(sysUser.getUserName())) {
+            logger.error("用户名非法，由{}被必为{}", updateUser.getUserName(), sysUser.getUserName());
+            throw new IllegalArgumentException("用户名非法！");
+        }
+        setRoleToUser(sysUser);
+        setGroupToUser(sysUser);
 
-
-    @Override
-    @Transactional
-    public Result updateSysUser(SysUser sysUser) throws ServiceException {
-        try {
-
+        updateUser.setNickName(sysUser.getNickName());
+        updateUser.setPhone(sysUser.getPhone());
+        updateUser.setType(sysUser.getType());
+        updateUser.setSex(sysUser.getSex());
+        updateUser.setHeadImgUrl(sysUser.getHeadImgUrl());
+        boolean b = this.saveOrUpdate(updateUser);
+        if (b) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
             if (authentication instanceof OAuth2Authentication) {
                 OAuth2Authentication oAuth2Auth = (OAuth2Authentication) authentication;
                 authentication = oAuth2Auth.getUserAuthentication();
@@ -149,8 +125,8 @@ public class SysUserServiceImpl implements SysUserService {
                                 user.setPassword(sysUser.getNewPassword());
                             }
 
-                            if (!StringUtils.isBlank(sysUser.getNickname())) {
-                                user.setNickname(sysUser.getNickname());
+                            if (!StringUtils.isBlank(sysUser.getNickName())) {
+                                user.setNickName(sysUser.getNickName());
                             }
 
                             if (!StringUtils.isBlank(sysUser.getPhone())) {
@@ -174,40 +150,27 @@ public class SysUserServiceImpl implements SysUserService {
 
                 }
             }
-
-            sysUserDao.updateByPrimaryKey(sysUser);
-            log.info("修改用户：{}", sysUser);
-            return Result.succeed(sysUser,"");
-        } catch (Exception e) {
-            throw new ServiceException(e);
         }
+        return b;
     }
 
-
-    @Override
-    @Transactional
     public LoginAppUser findByUsername(String username) throws ServiceException {
         try {
-            SysUser sysUser = sysUserDao.findUserByUsername(username);
+            List<SysUser> list = this.findSysUserByUserName(username);
+            if (list == null || list.size() == 0) {
+                logger.error("{}用户不存在！", username);
+                throw new AccountNotFoundException("用户名或密码有误！");
+            }
+            if (list.size() > 1) {
+                logger.error("{}用户存在{}个", username, list.size());
+                throw new AccountException("帐号不唯一,请联系管理员！");
+            }
+
+            SysUser sysUser = list.get(0);
             if (sysUser != null) {
                 LoginAppUser loginAppUser = new LoginAppUser();
                 BeanUtils.copyProperties(sysUser, loginAppUser);
-
-                Set<SysRole> sysRoles = userRoleDao.findRolesByUserId(sysUser.getId());
-                loginAppUser.setSysRoles(sysRoles);// 设置角色
-
-                if (!CollectionUtils.isEmpty(sysRoles)) {
-                    Set<String> roleIds = sysRoles.parallelStream().map(r -> r.getId()).collect(Collectors.toSet());
-                    Set<SysPermission> sysPermissions = sysPermissionService.findByRoleIds(roleIds);
-                    if (!CollectionUtils.isEmpty(sysPermissions)) {
-                        Set<String> permissions = sysPermissions.parallelStream().map(p -> p.getPermission())
-                                .collect(Collectors.toSet());
-
-                        loginAppUser.setPermissions(permissions);// 设置权限集合
-                    }
-
-                }
-
+                setUserExtInfo( sysUser, loginAppUser);
                 return loginAppUser;
             }
         } catch (Exception e) {
@@ -217,298 +180,195 @@ public class SysUserServiceImpl implements SysUserService {
         return null;
     }
 
-
-    @Override
-    @Transactional
-    public LoginAppUser findByMobile(String mobile) throws ServiceException {
-        try {
-            SysUser sysUser = sysUserDao.findUserByMobile(mobile);
-            if (sysUser != null) {
-                LoginAppUser loginAppUser = new LoginAppUser();
-                BeanUtils.copyProperties(sysUser, loginAppUser);
-
-                Set<SysRole> sysRoles = userRoleDao.findRolesByUserId(sysUser.getId());
-                loginAppUser.setSysRoles(sysRoles);// 设置角色
-
-                if (!CollectionUtils.isEmpty(sysRoles)) {
-                    Set<String> roleIds = sysRoles.parallelStream().map(r -> r.getId()).collect(Collectors.toSet());
-                    Set<SysPermission> sysPermissions = sysPermissionService.findByRoleIds(roleIds);
-                    if (!CollectionUtils.isEmpty(sysPermissions)) {
-                        Set<String> permissions = sysPermissions.parallelStream().map(p -> p.getPermission())
-                                .collect(Collectors.toSet());
-
-                        loginAppUser.setPermissions(permissions);// 设置权限集合
-                    }
-
-                }
-
-                return loginAppUser;
-            }
-
-            return null;
-        } catch (Exception e) {
-            throw new ServiceException(e);
+    private void setGroupToUser(SysUserVo sysUser) {
+        sysUserGroupDao.deleteUserGroup(sysUser.getId(), null);
+        if (!CollectionUtils.isEmpty(sysUser.getGroupIds())) {
+            sysUserGroupDao.saveBatchUserIdAndGroupIds(sysUser.getId(), sysUser.getGroupIds());
         }
     }
 
-    @Override
-    public Result findById(String id) throws ServiceException {
-        try {
-            SysUser byId = sysUserDao.findById(id);
-            if(byId!=null){
-                List<String> userIds = new ArrayList<>();
-                userIds.add(id);
-                byId.setRoles(userRoleDao.findRolesByUserIds(userIds));
-            }
-            return Result.succeed(byId,"");
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
-
-    /**
-     * 给用户设置角色
-     */
-
-    @Override
-    @Transactional
-    public void setRoleToUser(String id, Set<String> roleIds) throws ServiceException {
-        try {
-            SysUser sysUser = sysUserDao.findById(id);
-            if (sysUser == null) {
-
-                throw new IllegalArgumentException("用户不存在");
-            }
-
-            userRoleDao.deleteUserRole(id, null);
-            if (!CollectionUtils.isEmpty(roleIds)) {
-                roleIds.forEach(roleId -> {
-                    SysUserRole ur = new SysUserRole();
-                    ur.setRoleId(roleId);
-                    ur.setUserId(id);
-                    // userRoleDao.saveUserRoles(id, roleId);
-                    userRoleDao.insert(ur);
-                });
-            }
-
-            log.info("修改用户：{}的角色，{}", sysUser.getUsername(), roleIds);
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
-
-
-    @Override
-    @Transactional
-    public Result updatePassword(String id, String oldPassword, String newPassword) throws ServiceException {
-        try {
-            SysUser sysUser = sysUserDao.findById(id);
-            if (StringUtils.isNoneBlank(oldPassword)) {
-                if (!passwordEncoder.matches(oldPassword, sysUser.getPassword())) {
-                    return Result.failed("旧密码错误");
-                }
-            }
-
-            SysUser user = new SysUser();
-            user.setId(id);
-            user.setPassword(passwordEncoder.encode(newPassword));
-
-            updateSysUser(user);
-            log.info("修改密码：{}", user);
-            return Result.succeed("修改成功");
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
-
-    @Override
-    public PageResult<SysUser> findUsers(Map<String, Object> params) throws ServiceException {
-        try {
-            int total = sysUserDao.count(params);
-            List<SysUser> list = Collections.emptyList();
-            if (total > 0) {
-                PageUtil.pageParamConver(params, true);
-                list = sysUserDao.findList(params);
-
-                List<String> userIds = list.stream().map(SysUser::getId).collect(Collectors.toList());
-
-                List<SysRole> sysRoles = userRoleDao.findRolesByUserIds(userIds);
-
-                list.forEach(u -> {
-                    u.setRoles(sysRoles.stream().filter(r -> !ObjectUtils.notEqual(u.getId(), r.getUserId()))
-                            .collect(Collectors.toList()));
-                });
-            }
-            return PageResult.<SysUser>builder().data(list).code(0).count((long) total).build();
-        } catch (Exception e) {
-            throw new ServiceException(e);
+    private void setRoleToUser(SysUserVo sysUser) {
+        sysUserRoleDao.deleteUserRole(sysUser.getId(), null);
+        if (!CollectionUtils.isEmpty(sysUser.getRoleIds())) {
+            sysUserRoleDao.saveBatchUserIdAndRoleIds(sysUser.getId(), sysUser.getRoleIds());
         }
     }
 
     @Override
     public PageResult<SysUser> findSysUserByPaged(PageRequest<SysUser> t) {
-        MybatiesPageServiceTemplate<SysUser, SysUser> page = new MybatiesPageServiceTemplate<SysUser, SysUser>(sysUserDao) {
+        MybatisPageServiceTemplate<SysUser, SysUser> mybatiesPageServiceTemplate = new MybatisPageServiceTemplate<SysUser, SysUser>(this.baseMapper) {
             @Override
-            protected AbstractWrapper constructWrapper(SysUser user) {
+            protected AbstractWrapper constructWrapper(SysUser sysUser) {
                 LambdaQueryWrapper<SysUser> lqw = new LambdaQueryWrapper<SysUser>();
-                if (user != null && StringUtils.isNotBlank(user.getUsername())) {
-                    SFunction<SysUser,String> s = SysUser::getUsername;
-                    lqw.like(s, user.getUsername() == null ? "" : user.getUsername());
+                if (sysUser != null) {
+                    if (StringUtils.isNotBlank(sysUser.getNickName())) {
+                        lqw.like(SysUser::getNickName, sysUser.getNickName());
+                    }
+                    if (StringUtils.isNotBlank(sysUser.getUserName())) {
+                        lqw.like(SysUser::getUserName, sysUser.getUserName());
+                    }
                 }
                 return lqw;
             }
-
-            protected List getDefaultQueryOrder(SysUser user , String sortName){
-                List<SFunction<SysUser,?>> list = new ArrayList<>();
-                if("username".equals(sortName)){
-                    list.add(SysUser::getUsername);
-                }
-                if("nickname".equals(sortName)){
-                    list.add(SysUser::getNickname);
-                }
-                if("phone".equals(sortName)){
-                    list.add(SysUser::getPhone);
-                }
-                if("sex".equals(sortName)){
-                    list.add(SysUser::getSex);
-                }
-                if("createDate".equals(sortName)){
-                    list.add(SysUser::getCreateDate);
-                }
-                if("enabled".equals(sortName)){
-                    list.add(SysUser::getEnabled);
-                }
-                return list;
-            }
         };
-        return page.doPagingQuery(t);
+        return mybatiesPageServiceTemplate.doPagingQuery(t);
     }
 
-    @Override
-    public Set<SysRole> findRolesByUserId(String userId) throws ServiceException {
-        try {
-            return userRoleDao.findRolesByUserId(userId);
-        } catch (Exception e) {
-            throw new ServiceException(e);
+    public List<SysUser> findSysUserByUserName(String userName) {
+        LambdaQueryWrapper<SysUser> lqw = new LambdaQueryWrapper<SysUser>();
+        lqw.eq(SysUser::getUserName, userName);
+        List<SysUser> list = this.list(lqw);
+        return list;
+    }
+
+    private void setUserExtInfo(SysUser dbUser, LoginAppUser loginUser) {
+        BeanUtils.copyProperties(dbUser, loginUser);
+        List<SysGroup> groupByUserId = sysUserGroupDao.findGroupByUserId(dbUser.getId());
+        List<SysRole> rolesByUserId = sysUserRoleDao.findRolesByUserId(dbUser.getId());
+        loginUser.setSysGroups(groupByUserId);
+        loginUser.setSysRoles(rolesByUserId);
+        if (dbUser.getType() == UserTypeEnum.ADMIN) {
+            //List<SysMenuPermission> permissionDaoByRoleIds = sysMenuPermissionService.list();
+            List<SysMenu> menus = sysMenuService.list();
+            List<SysPermission> sysPermissions = sysPermissionService.list();
+            loginUser.setPermissions(getMenuPermissions(menus, sysPermissions));
+            loginUser.setMenus(menus);
+        } else if (!CollectionUtils.isEmpty(rolesByUserId)) {
+            Set<Long> roleIds = rolesByUserId.stream().map(SysRole::getId).collect(Collectors.toSet());
+            List<SysRoleMenuPermission> grantMenus = sysRoleMenuPermissionService.findGrantMenus(roleIds);
+            Set<Long> menuIds = grantMenus.stream().map(SysRoleMenuPermission::getMenuId).collect(Collectors.toSet());
+            List<SysMenu> menus = sysMenuService.findSysMenuByMenuIds(menuIds);
+            List<SysRoleMenuPermission> grantMenuPermissions = sysRoleMenuPermissionService.findGrantMenuPermissions(roleIds);
+            Set<Long> menuPermissionIds = grantMenuPermissions.stream().map(SysRoleMenuPermission::getMenuPermissionId).collect(Collectors.toSet());
+            List<SysMenuPermission> sysMenuPermissionByIds = sysMenuPermissionService.findSysMenuPermissionByIds(menuPermissionIds);
+            loginUser.setPermissions(sysMenuPermissionByIds);
+            loginUser.setMenus(menus);
         }
+        Collections.sort(loginUser.getMenus(), new Comparator<SysMenu>() {
+            @Override
+            public int compare(SysMenu o1, SysMenu o2) {
+                return o1.getSort() - o2.getSort();
+            }
+        });
     }
 
-    @Override
-    public Result updateEnabled(Map<String, Object> params) throws ServiceException {
-        try {
-            String id = MapUtils.getString(params, "id");
-            Boolean enabled = MapUtils.getBoolean(params, "enabled");
-
-            SysUser appUser = sysUserDao.findById(id);
-            if (appUser == null) {
-                return Result.failed("用户不存在");
-                //throw new IllegalArgumentException("用户不存在");
-            }
-            appUser.setEnabled(enabled);
-
-            int i = sysUserDao.updateByPrimaryKey(appUser);
-            log.info("修改用户：{}", appUser);
-
-            return i > 0 ? Result.succeed(appUser, "更新成功") : Result.failed("更新失败");
-        } catch (Exception e) {
-            throw new ServiceException(e);
-        }
-    }
-
-
-    @Override
-    @Transactional
-    public Result saveOrUpdate(SysUser sysUser) throws ServiceException {
-        try {
-            String username = sysUser.getUsername();
-            if (StringUtils.isBlank(username)) {
-                //throw new IllegalArgumentException("用户名不能为空");
-                return Result.failed("用户名不能为空");
-            }
-
-            if (ValidatorUtil.checkPhone(username)) {// 防止用手机号直接当用户名，手机号要发短信验证
-                //throw new IllegalArgumentException("用户名要包含英文字符");
-                return Result.failed("用户名要包含英文字符");
-            }
-            if (username.contains("@")) {// 防止用邮箱直接当用户名，邮箱也要发送验证（暂未开发）
-                //throw new IllegalArgumentException("用户名不能包含@");
-                return Result.failed("用户名不能包含@");
-            }
-
-            if (username.contains("|")) {
-                //throw new IllegalArgumentException("用户名不能包含|字符");
-                return Result.failed("用户名不能包含|字符");
-            }
-
-            if (StringUtils.isBlank(sysUser.getNickname())) {
-                sysUser.setNickname(username);
-            }
-
-            if (StringUtils.isBlank(sysUser.getType())) {
-                sysUser.setType(UserType.BACKEND.name());
-            }
-
-            if (!StringUtils.isBlank(sysUser.getPhone())) {
-
-                if (!ValidatorUtil.checkPhone(sysUser.getPhone())) {// 防止用手机号直接当用户名，手机号要发短信验证
-                    //throw new IllegalArgumentException("用户名要包含英文字符");
-                    return Result.failed("手机号格式不正确");
+    private List<SysMenuPermission> getMenuPermissions(List<SysMenu> menus, List<SysPermission> sysPermissions) {
+        List<SysMenuPermission> sysMenuPermissions = new ArrayList<>();
+        for (SysMenu menu : menus) {
+            if (menu.getParentId() != -1) {
+                for (SysPermission sysPermission : sysPermissions) {
+                    SysMenuPermission sysMenuPermission = new SysMenuPermission();
+                    sysMenuPermission.setChecked(Boolean.TRUE);
+                    sysMenuPermission.setPermissionCode(menu.getPath().replaceAll("/", "::") + "::" + sysPermission.getPermission());
+                    sysMenuPermission.setMenuId(menu.getId());
+                    sysMenuPermission.setPermissionId(sysPermission.getId());
+                    sysMenuPermissions.add(sysMenuPermission);
                 }
-
             }
+        }
+        if (CollectionUtils.isEmpty(sysMenuPermissions)) {
+            SysMenuPermission sysMenuPermission = new SysMenuPermission();
+            sysMenuPermission.setChecked(Boolean.TRUE);
+            sysMenuPermission.setPermissionCode("*::*::*");
+            sysMenuPermissions.add(sysMenuPermission);
+        }
+        return sysMenuPermissions;
+    }
 
+    @Override
+    public boolean saveSysUser(SysUserVo sysUserVo) {
+        List<SysUser> existUsers = this.findSysUserByUserName(sysUserVo.getUserName());
+        if (!CollectionUtils.isEmpty(existUsers)) {
+            logger.error("{}用户已经存在!", sysUserVo.getUserName());
+            throw new BizException("用户已经存在！");
+        }
+        SysUser sysUser = new SysUser();
+        BeanUtils.copyProperties(sysUserVo, sysUser);
+        sysUser.setPassword(passwordEncoder.encode(KeyWinConstantUtils.RESET_PASSWORD));
+        boolean b = this.saveOrUpdate(sysUser);
+        setRoleToUser(sysUserVo);
+        return b;
+    }
 
-            sysUser.setPassword(passwordEncoder.encode("123456"));
-            sysUser.setEnabled(Boolean.TRUE);
+    @Override
+    public boolean modifyPassword(SysUserVo sysUser) {
+        SysUser user = this.getById(sysUser.getId());
+        if (user == null) {
+            logger.error("id为{}的用户不存在数据库中！", sysUser.getId());
+            throw new IllegalArgumentException("用户不存在！");
+        }
+        user.setPassword(passwordEncoder.encode(sysUser.getNewPassword()));
+        return this.saveOrUpdate(user);
+    }
 
-            int i = 0;
+    @Override
+    public boolean resetPassword(Long id) {
+        SysUser user = this.getById(id);
+        if (user == null) {
+            logger.error("id为{}的用户不存在数据库中！", id);
+            throw new BizException("用户不存在！");
+        }
+        user.setPassword(passwordEncoder.encode(KeyWinConstantUtils.RESET_PASSWORD));
+        return this.saveOrUpdate(user);
+    }
 
-            if (sysUser.getId() == null) {
-                SysUser persistenceUser = sysUserDao.findByUsername(sysUser.getUsername());
-                if (persistenceUser != null && persistenceUser.getUsername() != null) {
-                    //throw new IllegalArgumentException("用户名已存在");
-                    return Result.failed("用户名已存在");
-                }
-                i = sysUserDao.insert(sysUser);
-            } else {
-                SysUser byId = sysUserDao.findById(sysUser.getId());
-                sysUser.setPassword(byId.getPassword());
-                i = sysUserDao.updateByPrimaryKey(sysUser);
-            }
-
-            userRoleDao.deleteUserRole(sysUser.getId(), null);
-            List<String> roleIds = Arrays.asList(sysUser.getRoleId().split(","));
-            if (!CollectionUtils.isEmpty(roleIds)) {
-                roleIds.forEach(roleId -> {
-                    SysUserRole sysUserRole = new SysUserRole();
-                    sysUserRole.setUserId(sysUser.getId());
-                    sysUserRole.setRoleId(roleId);
-                    userRoleDao.insert(sysUserRole);
-                });
-            }
-
-            return i > 0 ? Result.succeed(sysUser, "操作成功") : Result.failed("操作失败");
-        } catch (Exception e) {
-            throw new ServiceException(e);
+    @Override
+    public void setUserToGroup(Long groupId, Set<Long> userIds) {
+        sysUserGroupDao.deleteUserGroup(null, groupId);
+        if (!CollectionUtils.isEmpty(userIds)) {
+            sysUserGroupDao.saveBatchUserIdsAndGroupId(userIds, groupId);
         }
     }
 
     @Override
-    public List<SysUserExcel> findAllUsers(Map<String, Object> params) throws ServiceException {
-        try {
-            List<SysUserExcel> sysUserExcels = new ArrayList<>();
-            List<SysUser> list = sysUserDao.findList(params);
+    public SysUserVo getUserFullById(Long id) {
+        SysUserVo sysUserVo = new SysUserVo();
+        SysUser byId = this.getById(id);
+        BeanUtils.copyProperties(byId, sysUserVo);
+        sysUserVo.setSysRoles(sysUserRoleDao.findRolesByUserId(id));
+        sysUserVo.setSysGroups(sysUserGroupDao.findGroupByUserId(id));
 
-            for (SysUser sysUser : list) {
-                SysUserExcel sysUserExcel = new SysUserExcel();
-                BeanUtils.copyProperties(sysUser, sysUserExcel);
-                sysUserExcels.add(sysUserExcel);
-            }
-            return sysUserExcels;
-        } catch (BeansException e) {
-            throw new ServiceException(e);
+        if (!CollectionUtils.isEmpty(byId.getSysGroups())) {
+            Set<Long> collect = byId.getSysGroups().stream().map(SysGroup::getId).collect(Collectors.toSet());
+            sysUserVo.setGroupIds(collect);
+
         }
+        if (!CollectionUtils.isEmpty(byId.getSysRoles())) {
+            Set<Long> collect = byId.getSysRoles().stream().map(SysRole::getId).collect(Collectors.toSet());
+            sysUserVo.setRoleIds(collect);
+        }
+        return sysUserVo;
     }
 
+    @Override
+    public boolean deleteById(Long id) {
+        SysUser userFullById = this.getUserFullById(id);
+        List<SysRole> sysRoles = userFullById.getSysRoles();
+        List<SysGroup> sysGroups = userFullById.getSysGroups();
+        if (!CollectionUtils.isEmpty(sysRoles)) {
+            logger.error("删除用户[{}]时，发现已关联SysRole信息！", id);
+            throw new BizException("请先解除关联的角色信息！");
+        }
+        if (!CollectionUtils.isEmpty(sysGroups)) {
+            logger.error("删除用户[{}]时，发现已关联SysGroup信息！", id);
+            throw new BizException("请先解除关联的用户组信息！");
+        }
+        return this.removeById(id);
+    }
 
+    @Override
+    public boolean updateEnabled(SysUser sysUser) {
+        if (sysUser.getId() == null) {
+            logger.error("用户id不存在");
+            throw new IllegalArgumentException("用户id不存在!");
+        }
+        SysUser appUser = this.getById(sysUser.getId());
+        if (appUser == null) {
+            logger.error("用户不存在！");
+            throw new BizException("用户不存在！");
+        }
+        appUser.setEnabled(sysUser.getEnabled());
+
+        return this.saveOrUpdate(appUser);
+    }
 }

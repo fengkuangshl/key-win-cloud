@@ -1,21 +1,15 @@
 package com.key.win.activiti.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.key.win.activiti.service.ProcessDefinitionService;
 import com.key.win.activiti.util.PageResultUtil;
 import com.key.win.activiti.vo.ProcessDefinitionVo;
 import com.key.win.common.util.BeanUtils;
 import com.key.win.common.util.StringUtil;
-import com.key.win.common.web.CodeEnum;
 import com.key.win.common.web.OrderDir;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
-import com.key.win.page.MybatiesPageServiceTemplate;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.impl.ProcessDefinitionQueryProperty;
-import org.activiti.engine.query.QueryProperty;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -11,7 +11,7 @@ export interface IPermissionState {
 }
 
 @Module({ dynamic: true, store, name: 'permission' })
-class Permission extends VuexModule implements IPermissionState {
+class PermissionStore extends VuexModule implements IPermissionState {
   public routes: Array<RouteConfig> = []
   public dynamicRoutes: Array<RouteConfig> = []
   public indexRoute: RouteConfig = {
@@ -31,14 +31,6 @@ class Permission extends VuexModule implements IPermissionState {
         component: () => import(/* webpackChunkName: "home" */ '@/views/index/home/Home.vue'),
         meta: {
           title: '首页'
-        }
-      },
-      {
-        path: '/test',
-        name: 'Test',
-        component: () => import(/* webpackChunkName: "test" */ '@/views/index/test/Test.vue'),
-        meta: {
-          title: 'Test-DataTable'
         }
       }
     ]
@@ -74,13 +66,17 @@ class Permission extends VuexModule implements IPermissionState {
     this.routes.push(this.defaultRout)
     this.routes.push(this.route404)
     this.dynamicRoutes = [this.indexRoute, this.defaultRout, this.route404]
-    router.addRoutes(this.dynamicRoutes)
+    // router.addRoutes(this.dynamicRoutes)
+    router.addRoute(this.indexRoute)
+    router.addRoute(this.defaultRout)
+    router.addRoute(this.route404)
   }
 
   @Mutation
   public CLEAR_ROUTES(): void {
     this.routes = []
     this.dynamicRoutes = []
+    router.replace({ path: '/login' })
   }
 
   @Action({ commit: 'CLEAR_ROUTES' })
@@ -139,8 +135,8 @@ export const asyncRouter = (menus: Array<MenuResponse>, routes: Array<RouteConfi
 }
 
 export const loadViewsd = (view: string) => {
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  return (resolve: any): void => require([`@/views/index/${view}.vue`], resolve)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (resolve: (...modules: any[]) => void): void => require([`@/views/index/${view}.vue`], resolve)
 }
 
-export const PermissionModule = getModule(Permission)
+export const PermissionModule = getModule(PermissionStore)

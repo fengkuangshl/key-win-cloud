@@ -10,7 +10,7 @@ import com.key.win.mybaties.dao.MybatiesFeignTemplateDao;
 import com.key.win.mybaties.model.MybatiesFeignTemplate;
 import com.key.win.mybaties.service.MybatiesFeignTemplateService;
 import com.key.win.mybaties.vo.MybatiesFeignTemplateVo;
-import com.key.win.page.MybatiesPageServiceTemplate;
+import com.key.win.mybatis.page.MybatisPageServiceTemplate;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import org.apache.commons.lang3.StringUtils;
@@ -88,7 +88,7 @@ public class MybatiesFeignTemplateServiceImpl extends ServiceImpl<MybatiesFeignT
     }
 
     public PageResult<MybatiesFeignTemplateVo> findMybatiesFeignTemplateByPaged(PageRequest<MybatiesFeignTemplateVo> pageRequest) {
-        MybatiesPageServiceTemplate<MybatiesFeignTemplateVo, MybatiesFeignTemplate> page = new MybatiesPageServiceTemplate<MybatiesFeignTemplateVo, MybatiesFeignTemplate>(this.baseMapper) {
+        MybatisPageServiceTemplate<MybatiesFeignTemplateVo, MybatiesFeignTemplate> page = new MybatisPageServiceTemplate<MybatiesFeignTemplateVo, MybatiesFeignTemplate>(this.baseMapper) {
             @Override
             protected AbstractWrapper constructWrapper(MybatiesFeignTemplateVo mybatiesTemplate) {
                 LambdaQueryWrapper<MybatiesFeignTemplate> lqw = new LambdaQueryWrapper<MybatiesFeignTemplate>();
@@ -103,14 +103,14 @@ public class MybatiesFeignTemplateServiceImpl extends ServiceImpl<MybatiesFeignT
                 return lqw;
             }
         };
-        PageResult<MybatiesFeignTemplate> mybatiesFeignTemplateMybatiesPageResult = page.doPagingQuery(pageRequest);
+        PageResult<MybatiesFeignTemplate> result = page.doPagingQuery(pageRequest);
 
         PageResult<MybatiesFeignTemplateVo> mybatiesPageResultVo = new PageResult<>();
-        mybatiesPageResultVo.setCode(mybatiesFeignTemplateMybatiesPageResult.getCode());
-        mybatiesPageResultVo.setPageNo(mybatiesFeignTemplateMybatiesPageResult.getPageNo());
-        mybatiesPageResultVo.setPageSize(mybatiesFeignTemplateMybatiesPageResult.getPageSize());
-        mybatiesPageResultVo.setCount(mybatiesFeignTemplateMybatiesPageResult.getCount());
-        mybatiesPageResultVo.setData(this.mybatiesFeignTemplateToVos(mybatiesFeignTemplateMybatiesPageResult.getData()));
+        mybatiesPageResultVo.setCode(result.getCode());
+        mybatiesPageResultVo.setPageNo(result.getPageNo());
+        mybatiesPageResultVo.setPageSize(result.getPageSize());
+        mybatiesPageResultVo.setCount(result.getCount());
+        mybatiesPageResultVo.setData(this.mybatiesFeignTemplateToVos(result.getData()));
         return mybatiesPageResultVo;
     }
 }

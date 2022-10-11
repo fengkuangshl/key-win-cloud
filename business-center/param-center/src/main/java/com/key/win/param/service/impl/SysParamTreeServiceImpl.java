@@ -7,7 +7,7 @@ import com.key.win.common.model.baseData.SysParam;
 import com.key.win.common.model.baseData.SysParamTree;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
-import com.key.win.page.MybatiesPageServiceTemplate;
+import com.key.win.mybatis.page.MybatisPageServiceTemplate;
 import com.key.win.param.dao.SysParamTreeDao;
 import com.key.win.param.service.SysParamTreeService;
 import org.apache.commons.lang3.StringUtils;
@@ -53,7 +53,7 @@ public class SysParamTreeServiceImpl extends ServiceImpl<SysParamTreeDao, SysPar
     @Override
     public PageResult<SysParamTree> getSysParamTreeByPaged(PageRequest<SysParamTree> t) {
 
-        MybatiesPageServiceTemplate<SysParamTree, SysParamTree> mybatiesPageServiceTemplate = new MybatiesPageServiceTemplate<SysParamTree, SysParamTree>(this.baseMapper) {
+        MybatisPageServiceTemplate<SysParamTree, SysParamTree> mybatisPageServiceTemplate = new MybatisPageServiceTemplate<SysParamTree, SysParamTree>(this.baseMapper) {
             @Override
             protected AbstractWrapper constructWrapper(SysParamTree sysParamTree) {
                 LambdaQueryWrapper<SysParam> lambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -78,6 +78,6 @@ public class SysParamTreeServiceImpl extends ServiceImpl<SysParamTreeDao, SysPar
             }
         };
 
-        return mybatiesPageServiceTemplate.doPagingQuery(t);
+        return mybatisPageServiceTemplate.doPagingQuery(t);
     }
 }

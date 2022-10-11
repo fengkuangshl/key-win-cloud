@@ -58,7 +58,7 @@ public class SysParamController {
     @PreAuthorize("hasAnyAuthority('param:post/sysParam','param:put/sysParam')")
     @LogAnnotation(module = "param-center", recordRequestParam = false)
     public Result saveOrUpdate(@RequestBody SysParam param) throws ControllerException {
-        if (StringUtil.isBlank(param.getId())) {
+        if (param.getId()!=null) {
             SysParam newSysParam = new SysParam();
             newSysParam.setCode(param.getCode());
             List<SysParam> list = sysParamService.getSysParam(newSysParam);

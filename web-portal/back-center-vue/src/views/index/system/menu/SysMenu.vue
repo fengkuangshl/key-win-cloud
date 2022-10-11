@@ -12,42 +12,43 @@
     <el-card>
       <el-row :gutter="20">
         <el-col :span="7">
-          <el-input placeholder="请输入内容" v-model="t.name">
-            <el-button slot="append" icon="el-icon-search" @click="searchMenu"></el-button>
+          <el-input placeholder="请输入内容" v-hasPermissionQueryList="menuPermission" v-model="t.name">
+            <el-button slot="append" class="search-primary" icon="el-icon-search" @click="searchMenu"></el-button>
           </el-input>
         </el-col>
-        <el-col :span="4">
-          <el-button type="primary" @click="addMenu">添加菜单</el-button>
+        <el-col :span="7">
+          <el-button type="primary" @click="addMenu" v-hasPermissionAdd="menuPermission">添加菜单</el-button>
+          <el-button type="primary" @click="setPagePermission" v-hasPermission="menuGrantPagePermission">
+            菜单页面权限设置</el-button>
         </el-col>
       </el-row>
-      <KWTable url="api-user/menus/getAll" method="GET" :tableDataFilter="tableDataFilter" :renderPreFn="menuTreeAssemble" :treeProps="treeProps" :isPagination="isPagination" style="width: 100%" ref="kwTableRef">
+      <KWTable url="menu/getMenuAll" method="GET" v-hasPermissionQueryList="menuPermission"
+        :tableDataFilter="tableDataFilter" :renderPreFn="menuTreeAssemble" :treeProps="treeProps"
+        :isPagination="isPagination" style="width: 100%" ref="kwTableRef">
         <el-table-column prop="name" sortable label="菜单名称"> </el-table-column>
         <el-table-column prop="path" sortable label="菜单路由"> </el-table-column>
         <el-table-column prop="url" sortable label="菜单URL"> </el-table-column>
         <el-table-column prop="css" sortable label="样式"> </el-table-column>
         <el-table-column prop="sort" sortable label="排序"> </el-table-column>
-        <el-table-column
-          prop="isMenu"
-          sortable
-          label="类型"
-          :formatter="
-            row => {
-              if (row.isMenu == 2) {
-                return '按钮'
-              }
-              if (row.parentId == -1) {
-                return '目录'
-              } else {
-                return '菜单'
-              }
+        <el-table-column prop="isMenu" sortable label="类型" :formatter="
+          row => {
+            if (row.isMenu == 2) {
+              return '按钮'
             }
-          "
-        >
+            if (row.parentId == -1) {
+              return '目录'
+            } else {
+              return '菜单'
+            }
+          }
+        ">
         </el-table-column>
         <el-table-column label="操作">
           <template v-slot="scope">
-            <el-button type="primary" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteMenu(scope.row.id)"></el-button>
+            <el-button type="primary" icon="el-icon-edit" v-hasPermissionUpdate="menuPermission" size="mini"
+              @click="showEditDialog(scope.row.id)"></el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-hasPermissionDelete="menuPermission"
+              @click="deleteMenu(scope.row.id)"></el-button>
           </template>
         </el-table-column>
       </KWTable>
@@ -66,8 +67,8 @@
         <el-form-item label="菜单图标" prop="css">
           <el-input v-model="sysMenuForm.css" style="max-width: 220px;"></el-input>
         </el-form-item>
-        <el-form-item label="是否隐藏" prop="css">
-          <el-radio-group v-model="sysMenuForm.hidden">
+        <el-form-item label="是否隐藏" prop="isHidden">
+          <el-radio-group v-model="sysMenuForm.isHidden">
             <el-radio label="否"></el-radio>
             <el-radio label="是"></el-radio>
           </el-radio-group>
@@ -102,7 +103,8 @@ import { Name, MenuResponse, MenuForm } from './interface/sys-menu'
 import { DeleteSysMenuApi, SysMuenSaveOrUpdateApi, GetMenuByIdApi, GetOnesApi } from './menu-api'
 import KWTable from '@/components/table/Table.vue'
 import settings from '@/settings'
-
+import PermissionPrefixUtils from '@/common/utils/permission/permission-prefix'
+import PermissionCodeUtils from '@/common/utils/permission/permission-code'
 @Component({
   components: {
     KWTable
@@ -115,10 +117,13 @@ export default class Menu extends Vue {
   menuDialogVisble = false
   isPagination = false
   treeProps = { children: 'subMenus' }
-  sysMenuForm: MenuForm = { name: '', css: '', hidden: '', isMenu: '', parentId: '', path: '', sort: 0, url: '' }
+  sysMenuForm: MenuForm = { name: '', css: '', isHidden: '', isMenu: '', parentId: -1, path: '', sort: 0, url: '', title: '' }
   sysMenuOptions: Array<MenuResponse> = []
   @Ref('sysMenuFormRef')
   readonly sysMenuFormRef!: ElForm
+
+  menuPermission = PermissionPrefixUtils.menu
+  menuGrantPagePermission = PermissionCodeUtils.menuGrantPagePermission
 
   @Ref('kwTableRef')
   readonly kwTableRef!: KWTable<Name, MenuResponse>
@@ -132,14 +137,14 @@ export default class Menu extends Vue {
   }
 
   // 展示编辑用于的对话框
-  async showEditDialog(id: string): Promise<void> {
-    this.title = '编辑用户'
+  async showEditDialog(id: number): Promise<void> {
+    this.title = '编辑菜单'
     this.getOnes()
     const { code, data, msg } = await GetMenuByIdApi(id)
-    if (code === 0) {
+    if (code === 200) {
       this.menuDialogVisble = true
       this.sysMenuForm = data
-      this.sysMenuForm.hidden = this.sysMenuForm.hidden === 1 ? '是' : '否'
+      this.sysMenuForm.isHidden = this.sysMenuForm.isHidden === true ? '是' : '否'
       this.sysMenuForm.isMenu = this.sysMenuForm.isMenu === 1 ? '是' : '否'
     } else {
       this.$message.error(msg || '获取菜单失败！')
@@ -157,9 +162,9 @@ export default class Menu extends Vue {
         return false
       }
       this.sysMenuForm.isMenu = this.sysMenuForm.isMenu === '是' ? '1' : '2'
-      this.sysMenuForm.hidden = this.sysMenuForm.hidden === '是'
+      this.sysMenuForm.isHidden = this.sysMenuForm.isHidden === '是'
       const { code, msg } = await SysMuenSaveOrUpdateApi(this.sysMenuForm)
-      if (code !== 0) {
+      if (code !== 200) {
         this.$message.error(msg || '操作用户信息失败!')
       } else {
         this.menuDialogVisble = false
@@ -175,19 +180,19 @@ export default class Menu extends Vue {
     this.getOnes()
     this.$nextTick(() => {
       this.sysMenuFormRef.resetFields()
-      this.sysMenuForm = { name: '', css: '', hidden: '否', isMenu: '是', parentId: '-1', path: '', sort: 0, url: '' }
+      this.sysMenuForm = { name: '', css: '', isHidden: '否', isMenu: '是', parentId: -1, path: '', sort: 0, url: '', title: '' }
     })
   }
 
-  deleteMenu(id: string): void {
-    this.$confirm('确定要重置密码, 是否继续?', '提示', {
+  deleteMenu(id: number): void {
+    this.$confirm('确定要删除菜单, 是否继续?', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning'
     })
       .then(async () => {
         const { code, msg } = await DeleteSysMenuApi(id)
-        if (code !== 0) {
+        if (code !== 200) {
           this.$message.error(msg || '删除失败!')
         } else {
           this.searchMenu()
@@ -209,10 +214,10 @@ export default class Menu extends Vue {
 
   async getOnes(): Promise<void> {
     const { code, msg, data } = await GetOnesApi()
-    if (code === 0) {
+    if (code === 200) {
       this.sysMenuOptions = []
       const rootMenus: MenuResponse = {
-        id: '-1',
+        id: -1,
         createDate: 0,
         updateDate: 0,
         createUserId: '',
@@ -221,17 +226,18 @@ export default class Menu extends Vue {
         createUserName: '',
         updateUserName: '',
         version: 0,
-        parentId: '-1',
+        parentId: -1,
         name: '顶级目录',
         url: 'javascript:;',
         path: '',
         css: '',
         sort: 9999,
         isMenu: 1,
-        hidden: false,
+        isHidden: false,
         subMenus: null,
         roleId: null,
-        menuIds: null
+        menuIds: null,
+        title: ''
       }
       this.sysMenuOptions.push(rootMenus)
       this.sysMenuOptions.push(...data)
@@ -245,14 +251,7 @@ export default class Menu extends Vue {
       if (this.t.name === '') {
         return true
       }
-      if (
-        data.name.toLowerCase().includes(this.t.name.toLowerCase()) ||
-        data.path.toLowerCase().includes(this.t.name.toLowerCase()) ||
-        data.url.toLowerCase().includes(this.t.name.toLowerCase()) ||
-        data.css.toLowerCase().includes(this.t.name.toLowerCase()) ||
-        (data.sort + '').toLowerCase().includes(this.t.name.toLowerCase()) ||
-        settings.menuTypeDirectory.toLowerCase().includes(this.t.name.toLowerCase())
-      ) {
+      if (data.name.toLowerCase().includes(this.t.name.toLowerCase()) || data.path.toLowerCase().includes(this.t.name.toLowerCase()) || data.url.toLowerCase().includes(this.t.name.toLowerCase()) || data.css.toLowerCase().includes(this.t.name.toLowerCase()) || (data.sort + '').toLowerCase().includes(this.t.name.toLowerCase()) || settings.menuTypeDirectory.toLowerCase().includes(this.t.name.toLowerCase())) {
         return true
       }
       const subMenus = data.subMenus
@@ -260,14 +259,7 @@ export default class Menu extends Vue {
         for (const key in subMenus) {
           if (Object.prototype.hasOwnProperty.call(subMenus, key)) {
             const subMenu = subMenus[key]
-            if (
-              subMenu.name.toLowerCase().includes(this.t.name.toLowerCase()) ||
-              subMenu.path.toLowerCase().includes(this.t.name.toLowerCase()) ||
-              subMenu.url.toLowerCase().includes(this.t.name.toLowerCase()) ||
-              subMenu.css.toLowerCase().includes(this.t.name.toLowerCase()) ||
-              (subMenu.sort + '').toLowerCase().includes(this.t.name.toLowerCase()) ||
-              settings.menuTypeItem.toLowerCase().includes(this.t.name.toLowerCase())
-            ) {
+            if (subMenu.name.toLowerCase().includes(this.t.name.toLowerCase()) || subMenu.path.toLowerCase().includes(this.t.name.toLowerCase()) || subMenu.url.toLowerCase().includes(this.t.name.toLowerCase()) || subMenu.css.toLowerCase().includes(this.t.name.toLowerCase()) || (subMenu.sort + '').toLowerCase().includes(this.t.name.toLowerCase()) || settings.menuTypeItem.toLowerCase().includes(this.t.name.toLowerCase())) {
               return true
             }
           }
@@ -279,11 +271,11 @@ export default class Menu extends Vue {
   menuTreeAssemble(datas: Array<MenuResponse>): Array<MenuResponse> {
     console.log(datas)
     const menus: Array<MenuResponse> = new Array<MenuResponse>()
-    const subMenuMap: Map<string, Array<MenuResponse>> = new Map<string, Array<MenuResponse>>()
+    const subMenuMap: Map<number, Array<MenuResponse>> = new Map<number, Array<MenuResponse>>()
     for (const key in datas) {
       if (Object.prototype.hasOwnProperty.call(datas, key)) {
         const element = datas[key]
-        if (element.parentId === '-1') {
+        if (element.parentId === -1) {
           menus.push(element)
         } else {
           let subMenus: Array<MenuResponse> = subMenuMap.get(element.parentId) as Array<MenuResponse>
@@ -309,7 +301,24 @@ export default class Menu extends Vue {
     }
     return menus
   }
+
+  setPagePermission(): void {
+    this.$router.push('/sysmenpermission')
+  }
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.search-primary {
+  background: #409eff !important;
+  border-color: #409eff !important;
+  color: #fff !important;
+}
+
+.search-primary:focus,
+.search-primary:hover {
+  background: #66b1ff !important;
+  border-color: #66b1ff !important;
+  color: #fff !important;
+}
+</style>

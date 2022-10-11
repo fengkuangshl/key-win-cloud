@@ -2,28 +2,29 @@ declare module '*.vue' {
   import Vue from 'vue'
   global {
     namespace KWResponse {
-      interface Result<T = undefined> {
+      interface BaseResult {
         code: number
         msg: string
+      }
+      interface Result<T = undefined> extends BaseResult {
         data: T
       }
-      interface PageResult<T = undefined> {
+      interface PageResult<T = undefined> extends BaseResult {
         pageNo: number
         pageSize: number
         count: number
-        code: number
         data: T[]
         totalPage: number
       }
     }
     namespace Model {
       interface Id {
-        id: string
+        id: number
       }
       interface Version extends Id {
         version: number
       }
-      interface BaseFleid extends Version {
+      interface BaseField extends Version {
         createDate: number
         updateDate: number | null
         createUserId: string
@@ -31,6 +32,20 @@ declare module '*.vue' {
         enableFlag: boolean
         createUserName: string
         updateUserName: string | null
+      }
+      interface Name {
+        name: string
+      }
+      interface CodeField extends Name {
+        code: string
+      }
+      interface ParentId {
+        parentId: number
+      }
+      interface EnumEntity {
+        code: string
+        stringValue: string
+        text: string
       }
     }
     namespace KWRequest {
@@ -57,7 +72,13 @@ declare module '*.vue' {
       interface Rule extends MessageRule {
         required: boolean
       }
-      interface MixinRule extends BaseRule {
+      interface DateRule extends MessageRule {
+        type: string
+      }
+      interface ArrayRule extends MessageRule {
+        type: string
+      }
+      interface MixinRule extends MessageRule {
         min: number
         max: number
       }
@@ -68,8 +89,18 @@ declare module '*.vue' {
       interface ValidatorRule extends TriggerRule {
         validator: ValidatorFunction
       }
+      interface TransformFunction {
+        (value: string): number
+      }
+      interface NumberRule extends MessageRule {
+        type: string
+        transform: TransformFunction
+      }
     }
   }
   export default Vue
 }
 declare module 'nprogress'
+declare module 'viewerjs'
+declare module 'spark-md5'
+declare module 'vue-simple-uploader'

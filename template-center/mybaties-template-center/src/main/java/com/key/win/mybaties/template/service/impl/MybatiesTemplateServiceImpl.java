@@ -4,12 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.AbstractWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.key.win.common.web.PageRequest;
+import com.key.win.common.web.PageResult;
 import com.key.win.mybaties.template.dao.MybatiesTemplateDao;
 import com.key.win.mybaties.template.model.MybatiesTemplate;
 import com.key.win.mybaties.template.service.MybatiesTemplateService;
-import com.key.win.page.MybatiesPageServiceTemplate;
-import com.key.win.common.web.PageRequest;
-import com.key.win.common.web.PageResult;
+import com.key.win.mybatis.page.MybatisPageServiceTemplate;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +50,7 @@ public class MybatiesTemplateServiceImpl extends ServiceImpl<MybatiesTemplateDao
     }
 
     public PageResult<MybatiesTemplate> findMybatiesTemplateByPaged(PageRequest<MybatiesTemplate> pageRequest) {
-        MybatiesPageServiceTemplate<MybatiesTemplate, MybatiesTemplate> page = new MybatiesPageServiceTemplate<MybatiesTemplate, MybatiesTemplate>(this.baseMapper) {
+        MybatisPageServiceTemplate<MybatiesTemplate, MybatiesTemplate> page = new MybatisPageServiceTemplate<MybatiesTemplate, MybatiesTemplate>(this.baseMapper) {
             @Override
             protected AbstractWrapper constructWrapper(MybatiesTemplate mybatiesTemplate) {
                 LambdaQueryWrapper<MybatiesTemplate> lqw = new LambdaQueryWrapper<MybatiesTemplate>();

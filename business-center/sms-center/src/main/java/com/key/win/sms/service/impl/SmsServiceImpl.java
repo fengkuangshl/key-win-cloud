@@ -7,6 +7,7 @@ import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.http.MethodType;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.key.win.common.web.CodeEnum;
 import com.key.win.common.web.PageResult;
 import com.key.win.sms.service.SmsService;
 import com.key.win.sms.dao.SmsDao;
@@ -123,7 +124,13 @@ public class SmsServiceImpl implements SmsService {
 
         List<Sms> list = smsDao.findList(params);
         PageInfo<Sms> pageInfo = new PageInfo<>(list);
-		return PageResult.<Sms>builder().data(pageInfo.getList()).code(0).count(pageInfo.getTotal()).build();
+        PageResult<Sms> pageResult = new PageResult<>();
+        pageResult.setCount(pageInfo.getTotal());
+        pageResult.setData(pageInfo.getList());
+        pageResult.setCode(CodeEnum.SUCCESS.getCode());
+		pageResult.setPageNo(MapUtils.getInteger(params, "page"));
+		pageResult.setPageSize(MapUtils.getInteger(params, "limit"));
+		return pageResult;
 	}
 
 }

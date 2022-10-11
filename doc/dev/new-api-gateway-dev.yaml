@@ -36,8 +36,8 @@ spring:
             data-type: json
         degrade:
           nacos:
-            server-addr: ${spring.cloud.nacos.discovery.server-addr}
-            data-id: ${spring.application.name}-degrade-rules
+            server-addr: ${spring.cloud..discovery.server-addr}
+            data-id: ${spring.application.nanacosme}-degrade-rules
             group-id: SENTINEL_GROUP
             namespace: ${spring.cloud.nacos.discovery.namespace}
             # 规则类型，取值见：

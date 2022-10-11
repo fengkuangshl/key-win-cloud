@@ -2,8 +2,10 @@ package com.key.win.es.controller;
 
 import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.key.win.common.web.CodeEnum;
 import com.key.win.common.web.PageResult;
 import com.key.win.es.dao.ServiceLogDao;
+import com.key.win.es.entity.NinxLogDocument;
 import com.key.win.es.entity.ServiceLogDocument;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -106,7 +108,7 @@ public class ServiceLogController {
 				MapUtils.getInteger(params, "limit"), Sort.Direction.DESC, "timestamp");
         NativeSearchQuery build = new NativeSearchQueryBuilder().withQuery(builder).withPageable(pageable).build();
         Page<ServiceLogDocument> result = serviceLogDao.search(build);
-		return PageResult.<ServiceLogDocument>builder().data(result.getContent()).code(0)
-				.count(result.getTotalElements()).build();
+
+		return new PageResult<ServiceLogDocument>(MapUtils.getInteger(params, "page"),MapUtils.getInteger(params, "limit"),result.getTotalElements(),result.getContent());
 	}
 }

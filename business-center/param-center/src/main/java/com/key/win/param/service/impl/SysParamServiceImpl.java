@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.key.win.common.model.baseData.SysParam;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
-import com.key.win.page.MybatiesPageServiceTemplate;
+import com.key.win.mybatis.page.MybatisPageServiceTemplate;
 import com.key.win.param.dao.SysParamDao;
 import com.key.win.param.service.SysParamService;
 import org.apache.commons.lang3.StringUtils;
@@ -49,7 +49,7 @@ public class SysParamServiceImpl extends ServiceImpl<SysParamDao, SysParam> impl
     @Override
     public PageResult<SysParam> getSysParamByPaged(PageRequest<SysParam> t) {
 
-        MybatiesPageServiceTemplate<SysParam,SysParam> mybatiesPageServiceTemplate = new MybatiesPageServiceTemplate<SysParam,SysParam>(this.baseMapper) {
+        MybatisPageServiceTemplate<SysParam,SysParam> mybatisPageServiceTemplate = new MybatisPageServiceTemplate<SysParam,SysParam>(this.baseMapper) {
             @Override
             protected AbstractWrapper constructWrapper(SysParam sysParam) {
                 LambdaQueryWrapper<SysParam> lambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -74,6 +74,6 @@ public class SysParamServiceImpl extends ServiceImpl<SysParamDao, SysParam> impl
             }
         };
 
-        return mybatiesPageServiceTemplate.doPagingQuery(t);
+        return mybatisPageServiceTemplate.doPagingQuery(t);
     }
 }

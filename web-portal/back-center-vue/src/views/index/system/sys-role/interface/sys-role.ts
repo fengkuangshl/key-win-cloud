@@ -1,10 +1,5 @@
-export interface SysRoleSearchRequest {
-  name: string
-}
-export interface SysRoleForm extends SysRoleSearchRequest {
-  code: string
-  name: string
-}
-export interface SysRole extends Model.BaseFleid, SysRoleForm {
+export type SysRoleSearchRequest = Model.Name
+export type SysRoleForm = Model.CodeField
+export interface SysRole extends Model.BaseField, SysRoleForm {
   userId: string | null
 }

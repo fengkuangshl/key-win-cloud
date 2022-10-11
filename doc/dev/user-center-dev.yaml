@@ -17,7 +17,7 @@ spring:
             rule-type: flow
   datasource:
     # JDBC 配置(驱动类自动从url的mysql识别,数据源类型自动识别)
-    url: jdbc:mysql://127.0.0.1:3307/user-center?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://127.0.0.1:3307/user-center-long?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai
     username: root
     password: key-win123
     driver-class-name:  com.mysql.cj.jdbc.Driver
