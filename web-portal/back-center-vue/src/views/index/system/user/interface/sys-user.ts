@@ -12,14 +12,14 @@ export enum Type {
 }
 
 export interface UserSearchRequest {
-  nickName: string
+  nickname: string
 }
 
 export interface UserForm extends UserSearchRequest {
   roleIds: Array<number>
   sex: Sex | string | Model.EnumEntity
   phone: string
-  userName: string
+  username: string
   type: string | Type | Model.EnumEntity
 }
 

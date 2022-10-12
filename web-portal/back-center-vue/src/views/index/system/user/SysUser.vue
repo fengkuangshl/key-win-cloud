@@ -12,7 +12,7 @@
     <el-card>
       <el-row :gutter="20">
         <el-col :span="7">
-          <el-input placeholder="请输入内容" v-model="t.nickName" v-hasPermissionQueryPage="userPermission">
+          <el-input placeholder="请输入内容" v-model="t.nickname" v-hasPermissionQueryPage="userPermission">
             <el-button slot="append" class="search-primary" icon="el-icon-search" @click="searchUser"></el-button>
           </el-input>
         </el-col>
@@ -53,11 +53,11 @@
     </el-card>
     <el-dialog :title="title" @close="aditUserClosed" :visible.sync="userDialogVisble" width="20%">
       <el-form :model="userForm" :rules="userFormRules" ref="userFormRef" label-width="70px">
-        <el-form-item label="帐号" prop="userName">
-          <el-input v-model="userForm.userName" style="max-width: 220px;" :disabled="userNameDisabled"></el-input>
+        <el-form-item label="帐号" prop="username">
+          <el-input v-model="userForm.username" style="max-width: 220px;" :disabled="usernameDisabled"></el-input>
         </el-form-item>
-        <el-form-item label="用户名" prop="nickName">
-          <el-input v-model="userForm.nickName" style="max-width: 220px;"></el-input>
+        <el-form-item label="用户名" prop="nickname">
+          <el-input v-model="userForm.nickname" style="max-width: 220px;"></el-input>
         </el-form-item>
         <el-form-item label="手机" prop="phone">
           <el-input v-model="userForm.phone" style="max-width: 220px;"></el-input>
@@ -101,12 +101,12 @@ import PermissionUtil from '@/common/utils/permission/permission-util'
   }
 })
 export default class User extends Vue {
-  t: UserSearchRequest = { nickName: '' }
+  t: UserSearchRequest = { nickname: '' }
 
   title = ''
   userDialogVisble = false
-  userNameDisabled = true
-  userForm: UserForm = { nickName: '', phone: '', sex: '男', userName: '', roleIds: new Array<number>(), type: Type.普通 }
+  usernameDisabled = true
+  userForm: UserForm = { nickname: '', phone: '', sex: '男', username: '', roleIds: new Array<number>(), type: Type.普通 }
   @Ref('userFormRef')
   readonly userFormRef!: ElForm
 
@@ -116,12 +116,12 @@ export default class User extends Vue {
   @Ref('kwTableRef')
   readonly kwTableRef!: KWTable<UserSearchRequest, UserInfo>
 
-  readonly userFormRules: { userName: Array<KWRule.Rule | KWRule.MixinRule>; nickName: Array<KWRule.Rule | KWRule.MixinRule>; phone: Array<KWRule.Rule | KWRule.ValidatorRule>; roleIds: Array<KWRule.Rule> } = {
-    userName: [
+  readonly userFormRules: { username: Array<KWRule.Rule | KWRule.MixinRule>; nickname: Array<KWRule.Rule | KWRule.MixinRule>; phone: Array<KWRule.Rule | KWRule.ValidatorRule>; roleIds: Array<KWRule.Rule> } = {
+    username: [
       { required: true, message: '请输入帐号', trigger: 'blur' },
       { min: 3, max: 10, message: '用户名的长度3~10个字符之间', trigger: 'blur' }
     ],
-    nickName: [
+    nickname: [
       { required: true, message: '请输入用户名', trigger: 'blur' },
       { min: 3, max: 10, message: '用户名的长度3~10个字符之间', trigger: 'blur' }
     ],
@@ -158,7 +158,7 @@ export default class User extends Vue {
   // 展示编辑用于的对话框
   async showEditDialog(id: number): Promise<void> {
     this.title = '编辑用户'
-    this.userNameDisabled = true
+    this.usernameDisabled = true
     const res = await UserGetApi(id)
     this.userForm = res.data
     const sex = res.data.sex as Model.EnumEntity
@@ -215,12 +215,12 @@ export default class User extends Vue {
 
   addUser(): void {
     this.title = '添加用户'
-    this.userNameDisabled = false
+    this.usernameDisabled = false
     this.userDialogVisble = true
     this.getUserRole()
     this.$nextTick(() => {
       this.userFormRef.resetFields()
-      this.userForm = { nickName: '', phone: '', sex: '男', userName: '', roleIds: new Array<number>(), type: Type.普通 }
+      this.userForm = { nickname: '', phone: '', sex: '男', username: '', roleIds: new Array<number>(), type: Type.普通 }
     })
   }
 

@@ -10,9 +10,7 @@
     <el-card>
       <el-row :gutter="20">
         <el-col :span="4">
-          <el-tree :data="treeData" v-hasPermissionQueryList="sysDictTreePermissionPrefix" show-checkbox
-            default-expand-all check-strictly :props="defaultProps" ref="treeLeft" highlight-current node-key="id"
-            @node-click="handleNodeClick" @check-change="handleCheckChange">
+          <el-tree :data="treeData" v-hasPermissionQueryList="sysDictTreePermissionPrefix" show-checkbox default-expand-all check-strictly :props="defaultProps" ref="treeLeft" highlight-current node-key="id" @node-click="handleNodeClick" @check-change="handleCheckChange">
           </el-tree>
         </el-col>
         <el-col :span="20">
@@ -28,8 +26,7 @@
               </el-button>
             </el-col>
           </el-row>
-          <KWTable url="sysDictTree/findSysDictTreeByPaged" v-hasPermissionQueryPage="sysDictTreePermissionPrefix"
-            :defaultLoadData="false" style="width: 100%" ref="kwTableRef">
+          <KWTable url="/api-param/sysDictTree/findSysDictTreeByPaged" v-hasPermissionQueryPage="sysDictTreePermissionPrefix" :defaultLoadData="false" style="width: 100%" ref="kwTableRef">
             <el-table-column type="index" width="80" label="序号"></el-table-column>
             <el-table-column prop="label" sortable="custom" label="标签"> </el-table-column>
             <el-table-column prop="value" sortable="custom" label="键值"> </el-table-column>
@@ -39,18 +36,15 @@
             </el-table-column>
             <el-table-column prop="status" label="状态" sortable="custom" v-if="hasPermissionEnabled()">
               <template v-slot="scope">
-                <el-switch v-model="scope.row.status" active-color="#13ce66" inactive-color="#ff4949"
-                  @change="sysDictTreeStatusChanged(scope.row, scope.row.status)">
+                <el-switch v-model="scope.row.status" active-color="#13ce66" inactive-color="#ff4949" @change="sysDictTreeStatusChanged(scope.row, scope.row.status)">
                 </el-switch>
               </template>
             </el-table-column>
             <el-table-column label="操作">
               <template v-slot="scope">
-                <el-button type="primary" icon="el-icon-edit" v-hasPermissionUpdate="sysDictTreePermissionPrefix"
-                  size="mini" @click="showEditDialog(scope.row.id)">
+                <el-button type="primary" icon="el-icon-edit" v-hasPermissionUpdate="sysDictTreePermissionPrefix" size="mini" @click="showEditDialog(scope.row.id)">
                 </el-button>
-                <el-button type="danger" icon="el-icon-delete" v-hasPermissionDelete="sysDictTreePermissionPrefix"
-                  size="mini" @click="deleteSysDictTree(scope.row.id)">
+                <el-button type="danger" icon="el-icon-delete" v-hasPermissionDelete="sysDictTreePermissionPrefix" size="mini" @click="deleteSysDictTree(scope.row.id)">
                 </el-button>
               </template>
             </el-table-column>
@@ -61,8 +55,7 @@
     <el-dialog :title="title" @close="aditDictTreeClosed" :visible.sync="sysDictTreeDialogVisble" width="23%">
       <el-form :model="sysDictTreeForm" :rules="sysDictTreeFormRules" ref="sysDictTreeFormRef" label-width="100px">
         <el-form-item label="父节点" prop="parentId">
-          <KWTreeSelect v-model="sysDictTreeForm.parentId" filterable :data="treeData" v-on:input="input"
-            :props="defaultProps" />
+          <KWTreeSelect v-model="sysDictTreeForm.parentId" filterable :data="treeData" v-on:input="input" :props="defaultProps" />
         </el-form-item>
         <el-form-item label="字典键值" prop="value">
           <el-input v-model="sysDictTreeForm.value" style="max-width: 220px;" :disabled="sysDictTreeValueDisabled">

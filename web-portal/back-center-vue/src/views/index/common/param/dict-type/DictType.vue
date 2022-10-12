@@ -18,8 +18,7 @@
           <el-button type="primary" v-hasPermissionAdd="dicTypePermissionPrefix" @click="addDictType">添加字典</el-button>
         </el-col>
       </el-row>
-      <KWTable url="sysDictType/getSysDictTypeByPaged" v-hasPermissionQueryPage="dicTypePermissionPrefix"
-        style="width: 100%" ref="kwTableRef">
+      <KWTable url="/api-param/sysDictType/getSysDictTypeByPaged" v-hasPermissionQueryPage="dicTypePermissionPrefix" style="width: 100%" ref="kwTableRef">
         <el-table-column type="index" width="80" label="序号"></el-table-column>
         <el-table-column prop="name" sortable="custom" label="字典名称"> </el-table-column>
         <el-table-column prop="code" sortable="custom" label="字典code"> </el-table-column>
@@ -34,20 +33,16 @@
         </el-table-column>
         <el-table-column prop="status" label="状态" sortable="custom" v-if="hasPermissionEnabled()">
           <template v-slot="scope">
-            <el-switch v-model="scope.row.status" active-color="#13ce66" inactive-color="#ff4949"
-              @change="sysDictTypeStatusChanged(scope.row, scope.row.status)">
+            <el-switch v-model="scope.row.status" active-color="#13ce66" inactive-color="#ff4949" @change="sysDictTypeStatusChanged(scope.row, scope.row.status)">
             </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作">
           <template v-slot="scope">
-            <el-button type="primary" icon="el-icon-edit" v-hasPermissionUpdate="dicTypePermissionPrefix" size="mini"
-              @click="showEditDialog(scope.row.id)"></el-button>
-            <el-button type="danger" icon="el-icon-delete" v-hasPermissionDelete="dicTypePermissionPrefix" size="mini"
-              @click="deleteSysDictType(scope.row.id)">
+            <el-button type="primary" icon="el-icon-edit" v-hasPermissionUpdate="dicTypePermissionPrefix" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
+            <el-button type="danger" icon="el-icon-delete" v-hasPermissionDelete="dicTypePermissionPrefix" size="mini" @click="deleteSysDictType(scope.row.id)">
             </el-button>
-            <el-tooltip effect="dark" content="字典数据管理" v-if="hasPermission(scope.row)" placement="top"
-              :enterable="false">
+            <el-tooltip effect="dark" content="字典数据管理" v-if="hasPermission(scope.row)" placement="top" :enterable="false">
               <el-button type="warning" icon="el-icon-s-tools" size="mini" @click="dataManagement(scope.row)">
               </el-button>
             </el-tooltip>

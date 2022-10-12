@@ -24,10 +24,10 @@ public class MybatisCommonField extends MybatisVersion {
     private Date updateDate = new Date();
     @ApiModelProperty("创建人Id")
     @TableField(fill = FieldFill.INSERT)
-    private String createUserId;
+    private Long createUserId;
     @ApiModelProperty("更新人Id")
     @TableField(fill = FieldFill.UPDATE)
-    private String updateUserId;
+    private Long updateUserId;
     @ApiModelProperty("逻辑删除：1-正常,0-删除")
     @TableLogic(value = "1", delval = "0")
     private Boolean enableFlag = Boolean.TRUE;

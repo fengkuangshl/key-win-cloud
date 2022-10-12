@@ -17,7 +17,7 @@ public class KeyWinConstantUtils {
     public static final String MODEL_ID_MONGO = "_id";
     public static final String MODEL_ID_TO_UPPER_CASE = "ID";
 
-    public static final String REDIS_ROOT_KEY_PREFIX = "individual_soldier_auth:";
+    public static final String REDIS_ROOT_KEY_PREFIX = "key_win_cloud:";
     public static final String TOKEN = "token";
     public static final String REFRESH_TOKEN = "refresh:" + TOKEN;
     public static final String REDIS_TOKEN_KEY_PREFIX = REDIS_ROOT_KEY_PREFIX + TOKEN + ":";

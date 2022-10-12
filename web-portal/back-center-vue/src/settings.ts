@@ -16,6 +16,8 @@ interface ISettings {
   isEnableWebSocket: boolean
   apiAuth: string
   apiUser: string
+  apiFile: string
+  apiParam: string
 }
 
 // You can customize below settings :)
@@ -24,7 +26,7 @@ const settings: ISettings = {
   activePath: 'activePath',
   accessToken: 'access_token',
   refreshToken: 'refresh_token',
-  developmentHttpDomain: 'http://127.0.0.1:9200/',
+  developmentHttpDomain: 'http://127.0.0.1:9200',
   userAcceptanceTestHttpDomain: 'http://localhost:9200',
   productionHttpDomain: 'http://127.0.0.1:9200',
   menuTypeItem: '菜单',
@@ -36,7 +38,9 @@ const settings: ISettings = {
   productionWsDomain: 'ws://127.0.0.1:9902/ws/',
   isEnableWebSocket: false,
   apiAuth: '/api-auth/',
-  apiUser: '/api-user/'
+  apiUser: '/api-user/',
+  apiFile: 'api-file/',
+  apiParam: '/api-param/'
 }
 
 export default settings

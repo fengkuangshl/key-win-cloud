@@ -19,12 +19,10 @@
           </el-button>
         </el-col>
       </el-row>
-      <KWTable url="file/getFileInfoByPaged" method="POST" v-hasPermissionQueryPage="permissionPrefix"
-        style="width: 100%" ref="kwTableRef">
+      <KWTable url="/api-file/file/getFileInfoByPaged" method="POST" v-hasPermissionQueryPage="permissionPrefix" style="width: 100%" ref="kwTableRef">
         <el-table-column prop="name" sortable label="文件名称">
           <template slot-scope="scope">
-            <el-link type="primary" v-hasPermissionDownload="permissionPrefix" :href="scope.row.accessPath"
-              target="_blank">{{ scope.row.name}}</el-link>
+            <el-link type="primary" v-hasPermissionDownload="permissionPrefix" :href="scope.row.accessPath" target="_blank">{{ scope.row.name}}</el-link>
             <span v-if="hasPermission()">{{ scope.row.name}}</span>
           </template>
         </el-table-column>
@@ -35,15 +33,13 @@
         </el-table-column>
         <el-table-column label="操作">
           <template v-slot="scope">
-            <el-button type="danger" icon="el-icon-delete" size="mini" v-hasPermissionDelete="permissionPrefix"
-              @click="deleteFile(scope.row.id)"></el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-hasPermissionDelete="permissionPrefix" @click="deleteFile(scope.row.id)"></el-button>
           </template>
         </el-table-column>
       </KWTable>
     </el-card>
     <el-dialog :title="title" @close="aditFileClosed" :visible.sync="fileDialogVisble" width="20%">
-      <el-upload class="upload-demo" ref="upload" action="" :on-preview="handlePreview" :on-remove="handleRemove"
-        :on-success="uploadSuccess" :http-request="httpRequest" :file-list="fileList" :auto-upload="false">
+      <el-upload class="upload-demo" ref="upload" action="" :on-preview="handlePreview" :on-remove="handleRemove" :on-success="uploadSuccess" :http-request="httpRequest" :file-list="fileList" :auto-upload="false">
         <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
       </el-upload>
       <span slot="footer" class="dialog-footer">

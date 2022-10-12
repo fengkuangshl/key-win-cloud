@@ -1,9 +1,7 @@
 <template>
   <div id="global-uploader" :class="{'global-uploader-single': !global}">
     <!-- 上传 -->
-    <uploader ref="uploader" :options="initOptions" :fileStatusText="fileStatusText" :autoStart="false"
-      @file-added="onFileAdded" @file-success="onFileSuccess" @file-progress="onFileProgress" @file-error="onFileError"
-      class="uploader-app">
+    <uploader ref="uploader" :options="initOptions" :fileStatusText="fileStatusText" :autoStart="false" @file-added="onFileAdded" @file-success="onFileSuccess" @file-progress="onFileProgress" @file-error="onFileError" class="uploader-app">
       <uploader-unsupport></uploader-unsupport>
 
       <uploader-btn id="global-uploader-btn" ref="uploadBtn">选择文件</uploader-btn>
@@ -56,10 +54,11 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import { IOption, CheckFile, IFileStatusText, IChunk, IUploaderFile, IUPloader } from './config/file-option'
 import { getHttpDomain } from '@/common/utils/get-env'
 import { FileInfoBase } from '@/views/index/common/file/interface/file'
+import settings from '@/settings'
 @Component
 export default class KWUploader extends Vue {
   initOptions = {
-    target: getHttpDomain() + 'chunk',
+    target: getHttpDomain() + settings.apiFile + 'chunk',
     headers: {
       Authorization: 'Bearer ' + localStorage.getItem('access_token')
     },

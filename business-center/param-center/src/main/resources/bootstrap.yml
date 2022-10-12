@@ -12,4 +12,4 @@ spring:
         group: @spring.cloud.nacos.config.group@ ###DEV_GROUP
         name: ${spring.application.name}
   application:
-    name: user-center
+    name: param-center

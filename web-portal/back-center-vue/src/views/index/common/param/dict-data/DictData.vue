@@ -19,7 +19,7 @@
           </el-button>
         </el-col>
       </el-row>
-      <KWTable url="sysDictData/getSysDictDataByPaged" v-hasPermissionQueryPage="sysDictDataPermissionPrefix"
+      <KWTable url="/api-param/sysDictData/getSysDictDataByPaged" v-hasPermissionQueryPage="sysDictDataPermissionPrefix"
         :defaultLoadData="false" style="width: 100%" ref="kwTableRef">
         <el-table-column type="index" width="80" label="序号"></el-table-column>
         <el-table-column prop="label" sortable="custom" label="标签"> </el-table-column>
