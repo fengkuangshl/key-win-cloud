@@ -113,9 +113,10 @@ if ("invalid_client"===errorCode) {
 } else {
     return (OAuth2Exception)("access_denied"===errorCode ? new UserDeniedAuthorizationException(errorMessage) : new OAuth2Exception(errorMessage));
 } */
-  const response = err.response as any
+  // eslint-disable-next-line camelcase
+  const response = err.response as AxiosResponse<{ code: string; error: string; error_description: string; msg: string }>
   const errorCode = response.data.error
-  let message = 'Token失败，请重新登录'
+  let message = 'Token失效，请重新登录'
   if (errorCode === 'invalid_client') {
     // return new InvalidClientException(errorMessage)
   } else if (errorCode === 'unauthorized_client') {

@@ -58,7 +58,6 @@ import { LoginSuccessUserInfo, ModifyPassword } from '@/views/index/system/user/
 import { UpdatePasswordApi, LogoutApi } from '@/views/index/system/user/user-api'
 import { local } from '@/store'
 import settings from '@/settings'
-import * as qs from 'qs'
 import { MenuModule } from '@/store/menu-store'
 import { PermissionModule } from '@/store/permission-store'
 @Component

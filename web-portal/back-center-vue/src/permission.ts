@@ -54,6 +54,7 @@ export const getUserInfo = async (to: Route, from: Route, next: NavigationGuardN
     UserModule.changeUser(data)
     getMenus(to, from, next)
   } else {
+    console.log(msg)
     // Message.error(msg || '获取用户失败！')
   }
 }
