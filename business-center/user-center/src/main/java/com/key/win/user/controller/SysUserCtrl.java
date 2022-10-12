@@ -3,6 +3,8 @@ package com.key.win.user.controller;
 
 import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.exception.business.BizException;
+import com.key.win.common.exception.controller.ControllerException;
+import com.key.win.common.exception.service.ServiceException;
 import com.key.win.common.model.system.SysUser;
 import com.key.win.common.util.SysUserUtil;
 import com.key.win.common.util.ValidatorUtil;
@@ -37,6 +39,28 @@ public class SysUserCtrl {
     @Autowired
     private SysUserService sysUserService;
 
+    @GetMapping(value = "/login", params = "username")
+    @ApiOperation(value = "根据用户名查询用户")
+    @LogAnnotation(module = "user-center", recordRequestParam = false)
+    public LoginAppUser findByUsername(String username) throws ControllerException {
+        try {
+            return sysUserService.findByUsername(username);
+        } catch (ServiceException e) {
+            throw new ControllerException(e);
+        }
+    }
+
+    @GetMapping(value = "/mobile", params = "mobile")
+    @ApiOperation(value = "根据用户名查询手机号")
+    @LogAnnotation(module = "user-center", recordRequestParam = false)
+    public LoginAppUser findByMobile(String mobile) throws ControllerException {
+        try {
+            return sysUserService.findByMobile(mobile);
+        } catch (ServiceException e) {
+            throw new ControllerException(e);
+        }
+    }
+
 
     @PostMapping("/findSysUserByPaged")
     @ApiOperation(value = "User分页")
@@ -61,20 +85,20 @@ public class SysUserCtrl {
     @LogAnnotation(module = "system", recordRequestParam = true)
     @PreAuthorize("hasAuthority('" + AUTHORITY_PREFIX + "ADD')")
     public Result saveSysUser(@RequestBody SysUserVo sysUser) {
-        if (StringUtils.isBlank(sysUser.getUserName())) {
+        if (StringUtils.isBlank(sysUser.getNickname())) {
             logger.error("用户名为空!");
             throw new BizException("用户名为空!");
         }
 
-        if (ValidatorUtil.checkPhone(sysUser.getUserName())) {// 防止用手机号直接当用户名，手机号要发短信验证
+        if (ValidatorUtil.checkPhone(sysUser.getNickname())) {// 防止用手机号直接当用户名，手机号要发短信验证
             throw new BizException("用户名要包含英文字符");
         }
 
-        if (sysUser.getUserName().contains("@")) {// 防止用邮箱直接当用户名，邮箱也要发送验证（暂未开发）
+        if (sysUser.getNickname().contains("@")) {// 防止用邮箱直接当用户名，邮箱也要发送验证（暂未开发）
             throw new BizException("用户名不能包含@");
         }
 
-        if (sysUser.getUserName().contains("|")) {
+        if (sysUser.getNickname().contains("|")) {
             throw new BizException("用户名不能包含|字符");
         }
 

@@ -47,9 +47,10 @@ export default class Login extends Vue {
       }
       console.log(valid)
       const { code, data, msg }: KWResponse.Result<LoginResponse> = await LoginApi(qs.stringify(this.loginForm))
-      if (code === 0) {
+      if (code === 200) {
         // 登录成功
         local.save(settings.accessToken, data.access_token)
+        local.save(settings.refreshToken, data.refresh_token)
         local.clear(settings.activePath)
         this.$router.push('/index')
       } else {

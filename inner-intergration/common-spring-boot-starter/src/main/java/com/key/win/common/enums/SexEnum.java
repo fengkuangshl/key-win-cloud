@@ -1,11 +1,16 @@
 package com.key.win.common.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.key.win.common.jsonEnum.JsonEnum;
 import com.key.win.common.jsonEnum.TextureEnumSerializerCode;
+import com.key.win.common.jsonEnum.TextureEnumDeserializer;
+import org.apache.commons.lang3.StringUtils;
 
 @JsonSerialize(using = TextureEnumSerializerCode.class)
-public enum SexEnum {
+@JsonDeserialize(using = TextureEnumDeserializer.class)
+public enum SexEnum implements JsonEnum {
 
 
     MALE(0, "男"),
@@ -26,5 +31,17 @@ public enum SexEnum {
 
     public String getText() {
         return text;
+    }
+
+    @Override
+    public Object selectEnumByName(String value) {
+        if(StringUtils.isNotBlank(value)){
+            for (SexEnum sexEnum : SexEnum.values()) {
+                if(sexEnum.name().equals(value)){
+                    return sexEnum;
+                }
+            }
+        }
+        return null;
     }
 }

@@ -29,11 +29,11 @@ public class UserFeignClientFallbackFactory implements FallbackFactory<UserFeign
 				return new LoginAppUser();
 			}
 
-			@Override
-			public PageResult<SysUser> findUsers(Map<String, Object> params) {
-				log.error("查询用户列表异常:{}");
-				return null;
-			}
+//			@Override
+//			public PageResult<SysUser> findUsers(Map<String, Object> params) {
+//				log.error("查询用户列表异常:{}");
+//				return null;
+//			}
 
 		};
 	}

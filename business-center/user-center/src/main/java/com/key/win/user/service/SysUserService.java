@@ -1,12 +1,14 @@
 package com.key.win.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.key.win.common.web.*;
+import com.key.win.common.auth.details.LoginAppUser;
+import com.key.win.common.exception.service.ServiceException;
 import com.key.win.common.model.system.SysUser;
+import com.key.win.common.web.PageRequest;
+import com.key.win.common.web.PageResult;
 import com.key.win.user.vo.SysUserVo;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public interface SysUserService extends IService<SysUser> {
@@ -30,4 +32,8 @@ public interface SysUserService extends IService<SysUser> {
     boolean deleteById(Long id);
 
     boolean updateEnabled(SysUser sysUser);
+
+    LoginAppUser findByUsername(String username) throws ServiceException;
+
+    LoginAppUser findByMobile(String mobile) throws ServiceException;
 }

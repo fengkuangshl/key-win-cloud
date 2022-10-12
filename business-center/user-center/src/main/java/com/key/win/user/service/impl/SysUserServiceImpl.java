@@ -82,14 +82,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUser> impleme
             logger.error("用户不存在");
             throw new IllegalArgumentException("用户不存在!");
         }
-        if (StringUtils.isNotBlank(sysUser.getUserName()) && !updateUser.getUserName().equals(sysUser.getUserName())) {
-            logger.error("用户名非法，由{}被必为{}", updateUser.getUserName(), sysUser.getUserName());
+        if (StringUtils.isNotBlank(sysUser.getNickname()) && !updateUser.getNickname().equals(sysUser.getNickname())) {
+            logger.error("用户名非法，由{}被必为{}", updateUser.getNickname(), sysUser.getNickname());
             throw new IllegalArgumentException("用户名非法！");
         }
         setRoleToUser(sysUser);
         setGroupToUser(sysUser);
 
-        updateUser.setNickName(sysUser.getNickName());
+        updateUser.setNickname(sysUser.getNickname());
         updateUser.setPhone(sysUser.getPhone());
         updateUser.setType(sysUser.getType());
         updateUser.setSex(sysUser.getSex());
@@ -125,8 +125,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUser> impleme
                                 user.setPassword(sysUser.getNewPassword());
                             }
 
-                            if (!StringUtils.isBlank(sysUser.getNickName())) {
-                                user.setNickName(sysUser.getNickName());
+                            if (!StringUtils.isBlank(sysUser.getNickname())) {
+                                user.setNickname(sysUser.getNickname());
                             }
 
                             if (!StringUtils.isBlank(sysUser.getPhone())) {
@@ -157,26 +157,40 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUser> impleme
     public LoginAppUser findByUsername(String username) throws ServiceException {
         try {
             List<SysUser> list = this.findSysUserByUserName(username);
-            if (list == null || list.size() == 0) {
-                logger.error("{}用户不存在！", username);
-                throw new AccountNotFoundException("用户名或密码有误！");
-            }
-            if (list.size() > 1) {
-                logger.error("{}用户存在{}个", username, list.size());
-                throw new AccountException("帐号不唯一,请联系管理员！");
-            }
-
-            SysUser sysUser = list.get(0);
-            if (sysUser != null) {
-                LoginAppUser loginAppUser = new LoginAppUser();
-                BeanUtils.copyProperties(sysUser, loginAppUser);
-                setUserExtInfo( sysUser, loginAppUser);
-                return loginAppUser;
-            }
+            return getLoginAppUser(username, list);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
+    }
 
+    @Override
+    public LoginAppUser findByMobile(String mobile) throws ServiceException {
+        try {
+            SysUser u = new SysUser();
+            u.setPhone(mobile);
+            List<SysUser> list = this.findSysUsers(u);
+            return getLoginAppUser(mobile, list);
+        } catch (Exception e) {
+            throw new ServiceException(e);
+        }
+    }
+
+    private LoginAppUser getLoginAppUser(String mobile, List<SysUser> list) throws AccountException {
+        if (list == null || list.size() == 0) {
+            logger.error("{}用户不存在！", mobile);
+            throw new AccountNotFoundException("用户名或密码有误！");
+        }
+        if (list.size() > 1) {
+            logger.error("{}用户存在{}个", mobile, list.size());
+            throw new AccountException("帐号不唯一,请联系管理员！");
+        }
+        SysUser sysUser = list.get(0);
+        if (sysUser != null) {
+            LoginAppUser loginAppUser = new LoginAppUser();
+            BeanUtils.copyProperties(sysUser, loginAppUser);
+            setUserExtInfo(sysUser, loginAppUser);
+            return loginAppUser;
+        }
         return null;
     }
 
@@ -199,24 +213,35 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUser> impleme
         MybatisPageServiceTemplate<SysUser, SysUser> mybatiesPageServiceTemplate = new MybatisPageServiceTemplate<SysUser, SysUser>(this.baseMapper) {
             @Override
             protected AbstractWrapper constructWrapper(SysUser sysUser) {
-                LambdaQueryWrapper<SysUser> lqw = new LambdaQueryWrapper<SysUser>();
-                if (sysUser != null) {
-                    if (StringUtils.isNotBlank(sysUser.getNickName())) {
-                        lqw.like(SysUser::getNickName, sysUser.getNickName());
-                    }
-                    if (StringUtils.isNotBlank(sysUser.getUserName())) {
-                        lqw.like(SysUser::getUserName, sysUser.getUserName());
-                    }
-                }
-                return lqw;
+                return buildLambdaQueryWrapper(sysUser);
             }
         };
         return mybatiesPageServiceTemplate.doPagingQuery(t);
     }
 
+    private AbstractWrapper buildLambdaQueryWrapper(SysUser sysUser) {
+        LambdaQueryWrapper<SysUser> lqw = new LambdaQueryWrapper<SysUser>();
+        if (sysUser != null) {
+            if (StringUtils.isNotBlank(sysUser.getNickname())) {
+                lqw.like(SysUser::getNickname, sysUser.getNickname());
+            }
+            if (StringUtils.isNotBlank(sysUser.getUsername())) {
+                lqw.like(SysUser::getUsername, sysUser.getUsername());
+            }
+            if (StringUtils.isNotBlank(sysUser.getPhone())) {
+                lqw.eq(SysUser::getPhone, sysUser.getPhone());
+            }
+        }
+        return lqw;
+    }
+
+    public List<SysUser> findSysUsers(SysUser sysUser) {
+        return super.list(this.buildLambdaQueryWrapper(sysUser));
+    }
+
     public List<SysUser> findSysUserByUserName(String userName) {
         LambdaQueryWrapper<SysUser> lqw = new LambdaQueryWrapper<SysUser>();
-        lqw.eq(SysUser::getUserName, userName);
+        lqw.eq(SysUser::getUsername, userName);
         List<SysUser> list = this.list(lqw);
         return list;
     }
@@ -277,9 +302,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUser> impleme
 
     @Override
     public boolean saveSysUser(SysUserVo sysUserVo) {
-        List<SysUser> existUsers = this.findSysUserByUserName(sysUserVo.getUserName());
+        List<SysUser> existUsers = this.findSysUserByUserName(sysUserVo.getUsername());
         if (!CollectionUtils.isEmpty(existUsers)) {
-            logger.error("{}用户已经存在!", sysUserVo.getUserName());
+            logger.error("{}用户已经存在!", sysUserVo.getUsername());
             throw new BizException("用户已经存在！");
         }
         SysUser sysUser = new SysUser();

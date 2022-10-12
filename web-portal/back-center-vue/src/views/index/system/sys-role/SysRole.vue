@@ -20,7 +20,7 @@
           <el-button type="primary" @click="addRole" v-hasPermissionAdd="rolePermission">添加角色</el-button>
         </el-col>
       </el-row>
-      <KWTable url="role/findSysRoleByPaged" style="width: 100%" ref="kwTableRef"
+      <KWTable url="api-user/role/findSysRoleByPaged" style="width: 100%" ref="kwTableRef"
         v-hasPermissionQueryPage="rolePermission">
         <el-table-column type="index" width="80" label="序号"></el-table-column>
         <el-table-column prop="name" sortable="custom" label="角色名称"> </el-table-column>

@@ -26,15 +26,15 @@ public interface UserFeignClient {
 	 * @param username
 	 * @return
 	 */
-    @GetMapping(value = "/users-anon/login", params = "username")
+    @GetMapping(value = "/user/login", params = "username")
     LoginAppUser findByUsername(@RequestParam("username") String username);
 
 
-	@GetMapping(value = "/users-anon/mobile", params = "mobile")
+	@GetMapping(value = "/user/mobile", params = "mobile")
 	LoginAppUser findByMobile(@RequestParam("mobile") String mobile);
 
 	
-	@GetMapping(value = "/users", params = "params")
-    PageResult<SysUser> findUsers(@RequestParam  Map<String, Object> params);
+//	@GetMapping(value = "/users", params = "params")
+//    PageResult<SysUser> findUsers(@RequestParam  Map<String, Object> params);
     
 }

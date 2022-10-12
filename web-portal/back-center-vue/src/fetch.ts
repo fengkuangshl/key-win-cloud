@@ -62,12 +62,14 @@ instance.interceptors.request.use(
   (config: AxiosRequestConfig): AxiosRequestConfig => {
     config.headers = config.headers || {}
     config.headers['x-requested-with'] = 'XMLHttpRequest'
-    if (!config.headers['Content-Type']) {
+    if (config.url === '/api-auth/oauth/token') {
+      config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
+    } else {
       config.headers['Content-Type'] = 'application/json;charset=UTF-8'
-    }
-    const token: string | null = localStorage.getItem('access_token')
-    if (token) {
-      config.headers.Authorization = 'Bearer ' + token
+      const token: string | null = localStorage.getItem('access_token')
+      if (token) {
+        config.headers.Authorization = 'Bearer ' + token
+      }
     }
     return config
   },

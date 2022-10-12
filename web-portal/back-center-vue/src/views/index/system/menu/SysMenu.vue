@@ -22,9 +22,7 @@
             菜单页面权限设置</el-button>
         </el-col>
       </el-row>
-      <KWTable url="menu/getMenuAll" method="GET" v-hasPermissionQueryList="menuPermission"
-        :tableDataFilter="tableDataFilter" :renderPreFn="menuTreeAssemble" :treeProps="treeProps"
-        :isPagination="isPagination" style="width: 100%" ref="kwTableRef">
+      <KWTable url="api-user/menu/getMenuAll" method="GET" v-hasPermissionQueryList="menuPermission" :tableDataFilter="tableDataFilter" :renderPreFn="menuTreeAssemble" :treeProps="treeProps" :isPagination="isPagination" style="width: 100%" ref="kwTableRef">
         <el-table-column prop="name" sortable label="菜单名称"> </el-table-column>
         <el-table-column prop="path" sortable label="菜单路由"> </el-table-column>
         <el-table-column prop="url" sortable label="菜单URL"> </el-table-column>
@@ -45,10 +43,8 @@
         </el-table-column>
         <el-table-column label="操作">
           <template v-slot="scope">
-            <el-button type="primary" icon="el-icon-edit" v-hasPermissionUpdate="menuPermission" size="mini"
-              @click="showEditDialog(scope.row.id)"></el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" v-hasPermissionDelete="menuPermission"
-              @click="deleteMenu(scope.row.id)"></el-button>
+            <el-button type="primary" icon="el-icon-edit" v-hasPermissionUpdate="menuPermission" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-hasPermissionDelete="menuPermission" @click="deleteMenu(scope.row.id)"></el-button>
           </template>
         </el-table-column>
       </KWTable>

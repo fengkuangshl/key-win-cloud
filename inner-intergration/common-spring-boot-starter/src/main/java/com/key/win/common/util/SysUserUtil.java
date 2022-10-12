@@ -77,7 +77,7 @@ public class SysUserUtil {
     public static String getUserName() {
         LoginAppUser loginUser = getLoginAppUser();
         if (loginUser != null) {
-            return loginUser.getUserName();
+            return loginUser.getUsername();
         }
         return KeyWinConstantUtils.SYSTEM_ANONYMOUS_USER;
     }

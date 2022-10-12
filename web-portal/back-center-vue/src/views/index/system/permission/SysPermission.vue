@@ -21,7 +21,7 @@
             添加权限</el-button>
         </el-col>
       </el-row>
-      <KWTable url="permission/findSysPermissionByPaged" v-hasPermissionQueryPage="permissionPrefix" style="width: 100%"
+      <KWTable url="api-user/permission/findSysPermissionByPaged" v-hasPermissionQueryPage="permissionPrefix" style="width: 100%"
         ref="kwTableRef">
         <el-table-column type="index" width="80" label="序号"></el-table-column>
         <el-table-column prop="name" sortable="custom" label="权限名称"> </el-table-column>

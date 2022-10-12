@@ -51,11 +51,6 @@ public class LoginAppUser extends SysUser implements UserDetails {
         return collection;
     }
 
-    @Override
-    public String getUsername() {
-        return super.getUserName();
-    }
-
 
     @JsonIgnore
     public Collection<? extends GrantedAuthority> putAll(Collection<GrantedAuthority> collections) {

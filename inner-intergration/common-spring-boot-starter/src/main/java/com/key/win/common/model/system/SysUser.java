@@ -21,11 +21,13 @@ import java.util.Set;
 public class SysUser  extends MybatisID {
 
 	@ApiModelProperty("用户名")
-	private String userName;
+	@TableField(value="user_name")
+	private String username;
 	@ApiModelProperty("密码")
 	private String password;
 	@ApiModelProperty("昵称")
-	private String nickName;
+	@TableField(value="nick_name")
+	private String nickname;
 	@ApiModelProperty("状态：true-启用，false-禁用")
 	private Boolean enabled = Boolean.TRUE;
 	@ApiModelProperty("性别:[男:0, 女:1],默认：0")
@@ -45,10 +47,13 @@ public class SysUser  extends MybatisID {
 	@TableField(exist = false)
 	private List<SysRole> sysRoles;
 	@ApiModelProperty("权限列表")
+	@TableField(exist = false)
 	private List<SysMenuPermission> permissions;
 	@ApiModelProperty("组列表")
+	@TableField(exist = false)
 	private List<SysGroup> sysGroups;
 	@ApiModelProperty("菜单")
+	@TableField(exist = false)
 	private List<SysMenu> menus;
 
 	public String getAvatar() {

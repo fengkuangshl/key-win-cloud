@@ -36,7 +36,7 @@ const settings: ISettings = {
   productionWsDomain: 'ws://127.0.0.1:9902/ws/',
   isEnableWebSocket: false,
   apiAuth: '/api-auth/',
-  apiUser: '/apiUser/'
+  apiUser: '/api-user/'
 }
 
 export default settings

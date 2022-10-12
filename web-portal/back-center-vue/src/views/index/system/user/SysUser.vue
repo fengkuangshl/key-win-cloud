@@ -20,11 +20,10 @@
           <el-button type="primary" @click="addUser" v-hasPermissionAdd="userPermission">添加用户</el-button>
         </el-col>
       </el-row>
-      <KWTable url="user/findSysUserByPaged" style="width: 100%" v-hasPermissionQueryPage="userPermission"
-        ref="kwTableRef">
+      <KWTable url="api-user/user/findSysUserByPaged" style="width: 100%" v-hasPermissionQueryPage="userPermission" ref="kwTableRef">
         <el-table-column type="index" width="80" label="序号"></el-table-column>
-        <el-table-column prop="userName" sortable="custom" label="帐号"> </el-table-column>
-        <el-table-column prop="nickName" sortable="custom" label="昵称"> </el-table-column>
+        <el-table-column prop="username" sortable="custom" label="帐号"> </el-table-column>
+        <el-table-column prop="nickname" sortable="custom" label="昵称"> </el-table-column>
         <el-table-column prop="phone" sortable="custom" label="手机"> </el-table-column>
         <el-table-column prop="sex" label="性别" sortable="custom" :formatter="
             row => {
@@ -37,17 +36,14 @@
         </el-table-column>
         <el-table-column prop="isEnabled" label="状态" v-if="hasPermissionEnabled()" sortable="custom">
           <template v-slot="scope">
-            <el-switch v-model="scope.row.enabled" active-color="#13ce66" inactive-color="#ff4949"
-              @change="userStatusChanged(scope.row, scope.row.enabled)">
+            <el-switch v-model="scope.row.enabled" active-color="#13ce66" inactive-color="#ff4949" @change="userStatusChanged(scope.row, scope.row.enabled)">
             </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作">
           <template v-slot="scope">
-            <el-button type="primary" icon="el-icon-edit" v-hasPermissionUpdate="userPermission" size="mini"
-              @click="showEditDialog(scope.row.id)"></el-button>
-            <el-tooltip effect="dark" content="重置密码" v-hasPermission="userResetPasswrodPermission" placement="top"
-              :enterable="false">
+            <el-button type="primary" icon="el-icon-edit" v-hasPermissionUpdate="userPermission" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
+            <el-tooltip effect="dark" content="重置密码" v-hasPermission="userResetPasswrodPermission" placement="top" :enterable="false">
               <el-button type="warning" icon="el-icon-setting" size="mini" @click="passwordReset(scope.row.id)">
               </el-button>
             </el-tooltip>
