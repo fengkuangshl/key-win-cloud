@@ -1,8 +1,10 @@
 package com.key.win.uaa.server.handle;
 
+import com.key.win.common.exception.business.BizException;
 import com.key.win.common.exception.controller.ControllerException;
 import com.key.win.common.exception.dao.DataAccessException;
 import com.key.win.common.exception.hystrix.HystrixException;
+import com.key.win.common.exception.illegal.UserIllegalException;
 import com.key.win.common.exception.service.ServiceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -175,6 +177,28 @@ public class ExceptionHandlerAdvice {
         return data;
     }
 
+    @ExceptionHandler({BizException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Map<String, Object> businessException(ServiceException exception) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        data.put("msg", exception.getMessage());
+
+        return data;
+    }
+
+
+
+    @ExceptionHandler({UserIllegalException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Map<String, Object> userIllegalException(ServiceException exception) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        data.put("msg", exception.getMessage());
+
+        return data;
+    }
+
     @ExceptionHandler({ControllerException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, Object> controllerException(ControllerException exception) {
@@ -187,7 +211,7 @@ public class ExceptionHandlerAdvice {
 
     @ExceptionHandler({HystrixException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, Object> hytrixException(HystrixException exception) {
+    public Map<String, Object> hystrixException(HystrixException exception) {
         Map<String, Object> data = new HashMap<>();
         data.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
         data.put("msg", exception.getMessage());
