@@ -1,6 +1,30 @@
 declare module '*.vue' {
   import Vue from 'vue'
   global {
+    namespace Token {
+      /* eslint-disable camelcase */
+      export interface BaseToken {
+        grant_type: string
+        client_id: string
+        client_secret: string
+      }
+      export interface Scope {
+        scope: string
+      }
+      export interface TokenRequest extends Scope, BaseToken {
+        username: string
+        password: string
+      }
+      export interface RefreshToken {
+        refresh_token: string
+      }
+      export interface RefreshTokenRequest extends BaseToken, RefreshToken {}
+      export interface TokenResponse extends Scope, RefreshToken {
+        access_token: string
+        token_type: string
+        expires_in: string
+      }
+    }
     namespace KWResponse {
       interface BaseResult {
         code: number

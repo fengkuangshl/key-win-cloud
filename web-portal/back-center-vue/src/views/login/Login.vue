@@ -54,7 +54,8 @@ export default class Login extends Vue {
         local.clear(settings.activePath)
         this.$router.push('/index')
       } else {
-        this.$message.error(msg)
+        console.log(msg)
+        // this.$message.error(msg)
       }
     })
   }

@@ -177,7 +177,6 @@ public class OAuth2Controller {
 	@PostMapping(value = "/oauth/get/token", params = "access_token")
 	@LogAnnotation(module = "auth-server", recordRequestParam = false)
 	public OAuth2AccessToken getTokenInfo(String access_token) {
-
 		try {
 			return sysTokenService.getTokenInfo(access_token);
 		} catch (Exception e) {

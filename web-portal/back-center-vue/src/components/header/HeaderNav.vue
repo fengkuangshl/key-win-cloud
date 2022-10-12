@@ -58,6 +58,7 @@ import { LoginSuccessUserInfo, ModifyPassword } from '@/views/index/system/user/
 import { UpdatePasswordApi, LogoutApi } from '@/views/index/system/user/user-api'
 import { local } from '@/store'
 import settings from '@/settings'
+import * as qs from 'qs'
 import { MenuModule } from '@/store/menu-store'
 import { PermissionModule } from '@/store/permission-store'
 @Component
@@ -154,17 +155,14 @@ export default class HeaderNav extends Vue {
   }
 
   async logout(): Promise<void> {
-    const { code, msg } = await LogoutApi()
-    if (code !== 200) {
-      this.$message.error(msg || '用户登出失败!')
-    } else {
-      local.clear(settings.accessToken)
-      local.clear(settings.refreshToken)
-      MenuModule.changeMenu([])
-      UserModule.clearUser()
-      PermissionModule.clearRoutes()
-      location.reload()
-    }
+    const token = local.getStr(settings.accessToken)
+    await LogoutApi(token)
+    local.clear(settings.accessToken)
+    local.clear(settings.refreshToken)
+    MenuModule.changeMenu([])
+    UserModule.clearUser()
+    PermissionModule.clearRoutes()
+    location.reload()
   }
 
   dropdownClick(): void {

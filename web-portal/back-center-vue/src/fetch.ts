@@ -5,6 +5,7 @@ import { local } from './store'
 import { LoginResponse } from './views/login/interface/response'
 import router from './router'
 import { getHttpDomain } from './common/utils/get-env'
+import * as qs from 'qs'
 
 const instance: AxiosInstance = axios.create({
   baseURL: getHttpDomain(),
@@ -20,10 +21,9 @@ function errorHandle(err: AxiosError): Promise<unknown> {
   let message = ''
   switch (err.response?.status) {
     case 400:
-      message = '请求错误'
-      break
+      return oAuth2Error(err)
     case 401:
-      break // onAuthenticationError(err)
+      return onAuthenticationError(err)
     case 403:
       message = '拒绝访问'
       break
@@ -54,7 +54,7 @@ function errorHandle(err: AxiosError): Promise<unknown> {
     default:
       message = '其他情况'
   }
-  Message.error((err.response.data as string) || message)
+  Message.error(message)
   return Promise.reject(err)
 }
 
@@ -87,6 +87,76 @@ instance.interceptors.response.use(
   }
 )
 
+async function oAuth2Error(err: AxiosError) {
+  /* if (errorMessage == null) {
+    errorMessage = errorCode == null ? "OAuth Error" : errorCode;
+}
+
+if ("invalid_client"===errorCode) {
+    return new InvalidClientException(errorMessage);
+} else if ("unauthorized_client"===errorCode) {
+    return new UnauthorizedClientException(errorMessage);
+} else if ("invalid_grant"===errorCode) {
+    return new InvalidGrantException(errorMessage);
+} else if ("invalid_scope"===errorCode) {
+    return new InvalidScopeException(errorMessage);
+} else if ("invalid_token"===errorCode) {
+    return new InvalidTokenException(errorMessage);
+} else if ("invalid_request"===errorCode) {
+    return new InvalidRequestException(errorMessage);
+} else if ("redirect_uri_mismatch"===errorCode) {
+    return new RedirectMismatchException(errorMessage);
+} else if ("unsupported_grant_type"===errorCode) {
+    return new UnsupportedGrantTypeException(errorMessage);
+} else if ("unsupported_response_type"===errorCode) {
+    return new UnsupportedResponseTypeException(errorMessage);
+} else {
+    return (OAuth2Exception)("access_denied"===errorCode ? new UserDeniedAuthorizationException(errorMessage) : new OAuth2Exception(errorMessage));
+} */
+  const response = err.response as any
+  const errorCode = response.data.error
+  let message = 'Token失败，请重新登录'
+  if (errorCode === 'invalid_client') {
+    // return new InvalidClientException(errorMessage)
+  } else if (errorCode === 'unauthorized_client') {
+    // return new UnauthorizedClientException(errorMessage)
+  } else if (errorCode === 'invalid_grant') {
+    const msg = response.data.msg
+    if (msg.indexOf('Invalid refresh token') === -1) {
+      message = response.data.msg
+    }
+
+    // return new InvalidGrantException(errorMessage)
+  } else if (errorCode === 'invalid_scope') {
+    // return new InvalidScopeException(errorMessage)
+  } else if (errorCode === 'invalid_token') {
+    // return new InvalidTokenException(errorMessage)
+  } else if (errorCode === 'invalid_request') {
+    // return new InvalidRequestException(errorMessage)
+  } else if (errorCode === 'redirect_uri_mismatch') {
+    // return new RedirectMismatchException(errorMessage)
+  } else if (errorCode === 'unsupported_grant_type') {
+    // return new UnsupportedGrantTypeException(errorMessage)
+  } else if (errorCode === 'unsupported_response_type') {
+    // return new UnsupportedResponseTypeException(errorMessage)
+  } else if (errorCode === 'access_denied') {
+    // return OAuth2Exception(errorCode === 'access_denied' ? new UserDeniedAuthorizationException(errorMessage) : new OAuth2Exception(errorMessage))
+  } else {
+    //  s
+  }
+  Message.error(message)
+  return goLogin(err)
+}
+
+async function goLogin(error: AxiosError) {
+  local.clear(settings.accessToken)
+  local.clear(settings.refreshToken)
+  router.replace({
+    path: '/login'
+  })
+  return error
+}
+
 async function onAuthenticationError(error: AxiosError) {
   local.clear(settings.activePath)
   const { code, data }: KWResponse.Result<LoginResponse> = await getNewToken()
@@ -95,13 +165,7 @@ async function onAuthenticationError(error: AxiosError) {
     local.save(settings.refreshToken, data.refresh_token)
     return await instance.request(error.config)
   } else {
-    Message.error('用户失效，请重新登录！')
-    local.clear(settings.accessToken)
-    local.clear(settings.refreshToken)
-    router.replace({
-      path: '/login'
-    })
-    return error
+    return goLogin(error)
   }
 }
 
@@ -122,8 +186,13 @@ function onNetWorkError(err: AxiosError) {
 }
 
 async function getNewToken(): Promise<KWResponse.Result<LoginResponse>> {
-  const refreshToken = local.getStr(settings.refreshToken)
-  return await instance.get('user/refresh/' + refreshToken, {})
+  const requestRefreshToken: Token.RefreshTokenRequest = {
+    grant_type: 'refresh_token',
+    client_id: 'webApp',
+    client_secret: 'webApp',
+    refresh_token: local.getStr(settings.refreshToken)
+  }
+  return await instance.post(settings.apiAuth + 'oauth/token', qs.stringify(requestRefreshToken))
 }
 
 export default instance

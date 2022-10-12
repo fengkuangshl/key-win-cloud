@@ -408,8 +408,10 @@ public class RedisTemplateTokenStore implements TokenStore {
 				byte[] clientId = serializeKey(CLIENT_ID_TO_ACCESS + authentication.getOAuth2Request().getClientId());
 				conn.openPipeline();
 				conn.del(authToAccessKey);
-				conn.sRem(unameKey, access);
-				conn.sRem(clientId, access);
+				if(access!=null){
+					conn.sRem(unameKey, access);
+					conn.sRem(clientId, access);
+				}
 				conn.del(serialize(ACCESS + key));
 				conn.closePipeline();
 			}
