@@ -1,7 +1,0 @@
-# 注册中心 
-config:
-  code: 12ddddd
-  value: lllllllllll
-server:
-  #  port: 5000    #固定端口
-  port: 60010 #随机端口
