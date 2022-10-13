@@ -24,12 +24,6 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author 作者 owen 
- * @version 创建时间：2017年11月12日 上午22:57:51 异常通用处理 服务于oauth 服务端于客户端
- * blog: https://blog.51cto.com/13005375 
- * code: https://gitee.com/owenwangwen/key-win-cloud
- */
 @RestControllerAdvice
 public class ExceptionHandlerAdvice {
 
@@ -181,7 +175,7 @@ public class ExceptionHandlerAdvice {
 
 	@ExceptionHandler({BizException.class})
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public Map<String, Object> businessException(ServiceException exception) {
+	public Map<String, Object> businessException(BizException exception) {
 		Map<String, Object> data = new HashMap<>();
 		data.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
 		data.put("msg", exception.getMessage());
@@ -193,7 +187,7 @@ public class ExceptionHandlerAdvice {
 
 	@ExceptionHandler({UserIllegalException.class})
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	public Map<String, Object> userIllegalException(ServiceException exception) {
+	public Map<String, Object> userIllegalException(UserIllegalException exception) {
 		Map<String, Object> data = new HashMap<>();
 		data.put("code", HttpStatus.INTERNAL_SERVER_ERROR.value());
 		data.put("msg", exception.getMessage());

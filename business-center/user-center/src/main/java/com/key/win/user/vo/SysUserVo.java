@@ -9,7 +9,7 @@ import lombok.Data;
 
 import java.util.Set;
 
-@ApiModel("电子围栏VO")
+@ApiModel("用户VO")
 @Data
 public class SysUserVo extends SysUser {
     @ApiModelProperty("角色Id")

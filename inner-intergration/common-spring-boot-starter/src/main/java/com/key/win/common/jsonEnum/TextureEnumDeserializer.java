@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import com.key.win.common.util.StringUtil;
 
 import java.io.IOException;
 
@@ -16,12 +17,19 @@ import java.io.IOException;
  */
 public class TextureEnumDeserializer extends JsonDeserializer<Object> implements ContextualDeserializer {
 
-    private JsonEnum        target;
+    private JsonEnum target;
 
     @Override
     public Object deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
         JsonNode node = jp.getCodec().readTree(jp);
-        String enumName = node.get("stringValue").asText();
+        JsonNode jn = node.get("stringValue");
+        String enumName = "";
+        if (jn != null){
+            enumName= jn.asText();
+        }
+        if (StringUtil.isBlank(enumName)) {
+            enumName = node.asText();
+        }
         return target.selectEnumByName(enumName);
     }
 

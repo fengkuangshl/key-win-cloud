@@ -197,11 +197,15 @@ export default class User extends Vue {
       }
       // const roleIds = this.userForm.roleId as Array<number>
       // this.userForm.roleId = roleIds.join(',')
-      this.userForm.sex = this.userForm.sex === '男' ? Sex.男 : Sex.女
+      const sex = this.userForm.sex === '男' ? Sex.男 : Sex.女
+      this.userForm.sex = { code: sex, stringValue: sex, text: this.userForm.sex as string }
       if (this.userForm.type != null) {
         const t = this.userForm.type as Model.EnumEntity
-        this.userForm.type = t.stringValue
+        this.userForm.type = t
       }
+      setTimeout(() => {
+        this.userForm.sex = (this.userForm.sex as Model.EnumEntity).stringValue === 'MALE' ? '男' : '女'
+      }, 100)
       const { code, msg } = await UserSaveOrUpdateApi(this.userForm)
       if (code !== 200) {
         this.$message.error(msg || '操作用户信息失败!')

@@ -34,7 +34,7 @@ function errorHandle(err: AxiosError): Promise<unknown> {
       message = '请求超时'
       break
     case 500:
-      message = '服务器内部错误'
+      message = (err.response as AxiosResponse<{ code: string; msg: string }>).data.msg || '服务器内部错误'
       break
     case 501:
       message = '服务未实现'

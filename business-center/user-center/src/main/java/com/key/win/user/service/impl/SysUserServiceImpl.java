@@ -269,12 +269,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUser> impleme
             loginUser.setPermissions(sysMenuPermissionByIds);
             loginUser.setMenus(menus);
         }
-        Collections.sort(loginUser.getMenus(), new Comparator<SysMenu>() {
-            @Override
-            public int compare(SysMenu o1, SysMenu o2) {
-                return o1.getSort() - o2.getSort();
-            }
-        });
+        if(!CollectionUtils.isEmpty(loginUser.getMenus())){
+            Collections.sort(loginUser.getMenus(), new Comparator<SysMenu>() {
+                @Override
+                public int compare(SysMenu o1, SysMenu o2) {
+                    return o1.getSort() - o2.getSort();
+                }
+            });
+        }
     }
 
     private List<SysMenuPermission> getMenuPermissions(List<SysMenu> menus, List<SysPermission> sysPermissions) {
@@ -311,7 +313,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUser> impleme
         BeanUtils.copyProperties(sysUserVo, sysUser);
         sysUser.setPassword(passwordEncoder.encode(KeyWinConstantUtils.RESET_PASSWORD));
         boolean b = this.saveOrUpdate(sysUser);
-        setRoleToUser(sysUserVo);
+        if(b){
+            sysUserVo.setId(sysUser.getId());
+            setRoleToUser(sysUserVo);
+        }
         return b;
     }
 

@@ -12,10 +12,10 @@
     <el-card>
       <el-form :model="userForm" :rules="userFormRules" ref="userFormRef" label-width="70px">
         <el-form-item label="帐号">
-          <el-input v-model="userForm.userName" style="max-width: 220px;" :disabled="userNameDisabled"></el-input>
+          <el-input v-model="userForm.username" style="max-width: 220px;" :disabled="userNameDisabled"></el-input>
         </el-form-item>
         <el-form-item label="用户名" prop="nickName">
-          <el-input v-model="userForm.nickName" style="max-width: 220px;" :disabled="userNameDisabled"></el-input>
+          <el-input v-model="userForm.nickname" style="max-width: 220px;" :disabled="userNameDisabled"></el-input>
         </el-form-item>
         <el-form-item label="手机" prop="phone">
           <el-input v-model="userForm.phone" style="max-width: 220px;" :disabled="userNameDisabled"></el-input>
@@ -43,7 +43,7 @@ import { UserModule } from '@/store/user-store'
 
 @Component
 export default class MyInfo extends Vue {
-  userForm: UserForm = { nickName: '', phone: '', sex: Sex.男, userName: '', roleIds: new Array<number>(), type: Type.普通 }
+  userForm: UserForm = { nickname: '', phone: '', sex: Sex.男, username: '', roleIds: new Array<number>(), type: Type.普通 }
   @Ref('userFormRef')
   readonly userFormRef!: ElForm
 
