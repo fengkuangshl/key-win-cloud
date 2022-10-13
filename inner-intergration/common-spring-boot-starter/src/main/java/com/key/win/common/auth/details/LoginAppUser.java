@@ -25,6 +25,9 @@ public class LoginAppUser extends SysUser implements UserDetails {
     @ApiModelProperty("登录时间")
     private Date loginTime = new Date();
 
+    @ApiModelProperty("token")
+    private String token;
+
     /***
      * 权限重写
      */

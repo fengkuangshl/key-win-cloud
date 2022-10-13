@@ -183,15 +183,25 @@ public class RedisTemplateTokenStore implements TokenStore {
 		byte[] clientId = serializeKey(CLIENT_ID_TO_ACCESS + authentication.getOAuth2Request().getClientId());
 		byte[] tokenKey = serializeKey(TOKEN + token.getValue());
 
-		byte[] serializedToken = (authentication.getUserAuthentication() instanceof UsernamePasswordAuthenticationToken)
-				? serialize(
-						(LoginAppUser) ((UsernamePasswordAuthenticationToken) authentication.getUserAuthentication())
-								.getPrincipal())
-				: ((authentication.getUserAuthentication() instanceof PreAuthenticatedAuthenticationToken ) ? 
+		byte[] serializedToken = null; /*(authentication.getUserAuthentication() instanceof UsernamePasswordAuthenticationToken)
+				? serialize( (LoginAppUser) ((UsernamePasswordAuthenticationToken) authentication.getUserAuthentication())
+						.getPrincipal()
+						)
+				: ((authentication.getUserAuthentication() instanceof PreAuthenticatedAuthenticationToken ) ?
 						serialize(
 								(LoginAppUser) ((PreAuthenticatedAuthenticationToken) authentication.getUserAuthentication())
 										.getPrincipal())
-						: null );
+						: null );*/
+		if(authentication.getUserAuthentication() instanceof UsernamePasswordAuthenticationToken){
+			LoginAppUser principal = (LoginAppUser) ((UsernamePasswordAuthenticationToken) authentication.getUserAuthentication())
+					.getPrincipal();
+			principal.setToken(token.getValue());
+		}
+		if(authentication.getUserAuthentication() instanceof PreAuthenticatedAuthenticationToken ){
+			LoginAppUser principal = (LoginAppUser) ((PreAuthenticatedAuthenticationToken) authentication.getUserAuthentication())
+					.getPrincipal();
+			principal.setToken(token.getValue());
+		}
 
 		RedisConnection conn = getConnection();
 		try {

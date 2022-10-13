@@ -105,4 +105,12 @@ public class SysUserUtil {
         }
         return false;
     }
+
+    public static String getToken() {
+        LoginAppUser loginUser = getLoginAppUser();
+        if (loginUser != null) {
+            return loginUser.getToken();
+        }
+        return "";
+    }
 }

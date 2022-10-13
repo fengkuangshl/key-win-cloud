@@ -30,12 +30,14 @@
         <!-- 自定义负载均衡策略-->
         <module>ribbon-spring-boot-starter</module>
         <module>sentinel-spring-boot-starter</module>
+        <module>rsa-spring-boot-starter</module>
 
         <!-- 分布式任务调度-->
         <module>elastic-job-spring-boot-starter</module>
         <module>jpa-spring-boot-starter</module>
         <module>mybatis-plus-spring-boot-starter</module>
         <module>data-log-spring-boot-starter</module>
+        <module>websocket-spring-boot-starter</module>
 
     </modules>
 </project>

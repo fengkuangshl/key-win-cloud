@@ -276,12 +276,19 @@
 	  			<version>${core.version}</version>
 	  		</dependency>
 
+			<!-- rsa-spring-boot-starter组件-->
+			<dependency>
+				<groupId>com.key.win</groupId>
+				<artifactId>rsa-spring-boot-starter</artifactId>
+				<version>${core.version}</version>
+			</dependency>
 			<!-- mybatis-plus组件-->
 			<dependency>
 				<groupId>com.key.win</groupId>
 				<artifactId>mybatis-plus-spring-boot-starter</artifactId>
 				<version>${core.version}</version>
 			</dependency>
+
 
             <!-- jpa组件-->
             <dependency>
