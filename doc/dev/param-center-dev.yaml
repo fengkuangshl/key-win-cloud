@@ -1,6 +1,6 @@
 #端口配置
 server:
-  port: 5000   #固定端口
+  port: 5001   #固定端口
 #  port: ${randomServerPort.value[7000,7005]}  #随机端口
 
 spring:
