@@ -14,6 +14,7 @@ import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.http.codec.support.DefaultServerCodecConfigurer;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -103,7 +104,6 @@ public class CorsConfig implements GlobalFilter, Ordered {
                             add(kv.getValue().get(0));
                         }});
                     });
-
             return chain.filter(exchange);
         }));
     }

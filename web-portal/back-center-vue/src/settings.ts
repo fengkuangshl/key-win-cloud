@@ -26,7 +26,7 @@ const settings: ISettings = {
   activePath: 'activePath',
   accessToken: 'access_token',
   refreshToken: 'refresh_token',
-  developmentHttpDomain: 'http://127.0.0.1:9200',
+  developmentHttpDomain: '/api',
   userAcceptanceTestHttpDomain: 'http://localhost:9200',
   productionHttpDomain: 'http://127.0.0.1:9200',
   menuTypeItem: '菜单',

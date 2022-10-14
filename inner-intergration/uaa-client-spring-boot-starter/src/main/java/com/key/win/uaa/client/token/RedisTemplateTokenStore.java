@@ -174,6 +174,10 @@ public class RedisTemplateTokenStore implements TokenStore {
 
 	@Override
 	public void storeAccessToken(OAuth2AccessToken token, OAuth2Authentication authentication) {
+		if (authentication != null) {
+			LoginAppUser principal = (LoginAppUser) authentication.getUserAuthentication().getPrincipal();
+			principal.setToken(token.getValue());
+		}
 		byte[] serializedAccessToken = serialize(token);
 		byte[] serializedAuth = serialize(authentication);
 		byte[] accessKey = serializeKey(ACCESS + token.getValue());
@@ -183,7 +187,7 @@ public class RedisTemplateTokenStore implements TokenStore {
 		byte[] clientId = serializeKey(CLIENT_ID_TO_ACCESS + authentication.getOAuth2Request().getClientId());
 		byte[] tokenKey = serializeKey(TOKEN + token.getValue());
 
-		byte[] serializedToken = null; /*(authentication.getUserAuthentication() instanceof UsernamePasswordAuthenticationToken)
+		byte[] serializedToken = (authentication.getUserAuthentication() instanceof UsernamePasswordAuthenticationToken)
 				? serialize( (LoginAppUser) ((UsernamePasswordAuthenticationToken) authentication.getUserAuthentication())
 						.getPrincipal()
 						)
@@ -191,17 +195,7 @@ public class RedisTemplateTokenStore implements TokenStore {
 						serialize(
 								(LoginAppUser) ((PreAuthenticatedAuthenticationToken) authentication.getUserAuthentication())
 										.getPrincipal())
-						: null );*/
-		if(authentication.getUserAuthentication() instanceof UsernamePasswordAuthenticationToken){
-			LoginAppUser principal = (LoginAppUser) ((UsernamePasswordAuthenticationToken) authentication.getUserAuthentication())
-					.getPrincipal();
-			principal.setToken(token.getValue());
-		}
-		if(authentication.getUserAuthentication() instanceof PreAuthenticatedAuthenticationToken ){
-			LoginAppUser principal = (LoginAppUser) ((PreAuthenticatedAuthenticationToken) authentication.getUserAuthentication())
-					.getPrincipal();
-			principal.setToken(token.getValue());
-		}
+						: null );
 
 		RedisConnection conn = getConnection();
 		try {

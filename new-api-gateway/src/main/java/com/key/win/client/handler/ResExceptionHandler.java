@@ -4,9 +4,11 @@ import com.key.win.common.util.StringUtil;
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.reactive.error.DefaultErrorWebExceptionHandler;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.common.exceptions.InvalidTokenException;
 import org.springframework.web.reactive.function.server.*;
 
 import java.util.HashMap;
@@ -31,9 +33,9 @@ public class ResExceptionHandler extends DefaultErrorWebExceptionHandler {
 		super(errorAttributes, resourceProperties, errorProperties, applicationContext);
 	}
 
-	/**
+/*	*//**
 	 * 获取异常属性
-	 */
+	 *//*
 	@Override
 	protected Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
 		int code = 500;
@@ -41,6 +43,20 @@ public class ResExceptionHandler extends DefaultErrorWebExceptionHandler {
 		if (error instanceof org.springframework.cloud.gateway.support.NotFoundException) {
 			code = 404;
 		}
+		return response(code, this.buildMessage(request, error));
+	}*/
+
+
+	protected Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
+		int code = 500;
+		Throwable error = super.getError(request);
+		if (error instanceof org.springframework.cloud.gateway.support.NotFoundException) {
+			code = 404;
+		}
+		if (error instanceof InvalidTokenException) {
+			code = ((InvalidTokenException)error).getHttpErrorCode();
+		}
+
 		return response(code, this.buildMessage(request, error));
 	}
 
