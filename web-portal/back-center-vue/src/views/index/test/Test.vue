@@ -34,8 +34,7 @@
         <el-table-column prop="createDate" label="创建时间" :formatter="formatterDate" width="180"> </el-table-column>
         <el-table-column prop="enabled" label="状态" width="100">
           <template v-slot="scope">
-            <el-switch v-model="scope.row.enabled" active-color="#13ce66" inactive-color="#ff4949"
-              @change="userStatusChanged(scope.row)"> </el-switch>
+            <el-switch v-model="scope.row.enabled" active-color="#13ce66" inactive-color="#ff4949" @change="userStatusChanged(scope.row)"> </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作">
@@ -49,9 +48,7 @@
         </el-table-column>
       </el-table>
       <!-- 分页 -->
-      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="page.pageNo"
-        :page-sizes="[10, 20, 50, 100]" :page-size="page.pageSize" layout="total, sizes, prev, pager, next, jumper"
-        :total="tableData.count"> </el-pagination>
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="page.pageNo" :page-sizes="[10, 20, 50, 100]" :page-size="page.pageSize" layout="total, sizes, prev, pager, next, jumper" :total="tableData.count"> </el-pagination>
     </el-card>
     <el-dialog title="修改用户" @close="aditUserClosed" :visible.sync="userDialogVisble" width="20%">
       <el-form :model="userForm" :rules="userFormRules" ref="userFormRef" label-width="70px">
@@ -98,7 +95,7 @@ export default class User extends Vue {
     pageSize: 10, // 每页的数据条数
     pageNo: 1, // 默认开始页面
     t: {
-      nickName: ''
+      nickname: ''
     }
   }
 
@@ -114,7 +111,7 @@ export default class User extends Vue {
 
   userDialogVisble = false
   userNameDisabled = true
-  userForm: UserForm = { nickName: '', phone: '', sex: Sex.男, userName: '', roleIds: new Array<number>(), type: Type.普通 }
+  userForm: UserForm = { nickname: '', phone: '', sex: Sex.男, username: '', roleIds: new Array<number>(), type: Type.普通 }
   @Ref('userFormRef')
   readonly userFormRef!: ElForm
 
@@ -229,7 +226,7 @@ export default class User extends Vue {
   }
 
   addUser(): void {
-    this.userForm = { nickName: '', phone: '', sex: Sex.男, userName: '', roleIds: new Array<number>(), type: Type.普通 }
+    this.userForm = { nickname: '', phone: '', sex: Sex.男, username: '', roleIds: new Array<number>(), type: Type.普通 }
     this.userNameDisabled = false
     this.userDialogVisble = true
     this.getUserRole()

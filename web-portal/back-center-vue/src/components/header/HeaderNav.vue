@@ -110,9 +110,9 @@ export default class HeaderNav extends Vue {
 
   get nickName(): string {
     const user = (UserModule.loginUser as LoginSuccessUserInfo).user
-    console.log(user && user.nickName)
+    console.log(user && user.nickname)
     if (user !== null) {
-      return user.nickName
+      return user.nickname
     }
     return ''
   }
