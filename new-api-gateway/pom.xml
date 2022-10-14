@@ -50,6 +50,10 @@
 					<groupId>de.codecentric</groupId>
 					<artifactId>chaos-monkey-spring-boot</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>com.key.win</groupId>
+					<artifactId>swagger-spring-boot-starter</artifactId>
+				</exclusion>
 				<!-- 
 					<exclusion>
 					<groupId>org.apache.commons</groupId>
@@ -87,12 +91,30 @@
 			<groupId>org.springframework.security.oauth</groupId>
 			<artifactId>spring-security-oauth2</artifactId>
 		</dependency>
-		
+
  		<!-- API文档配置 -->
+		<!-- swagger -->
 		<dependency>
-  			<groupId>com.key.win</groupId>
-  			<artifactId>swagger-spring-boot-starter</artifactId>
-  		</dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>${swagger.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-bean-validators</artifactId>
+			<version>${swagger.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>${swagger.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.xiaoymin</groupId>
+			<artifactId>swagger-bootstrap-ui</artifactId>
+			<version>1.9.1</version>
+		</dependency>
 
 
 		
@@ -107,12 +129,6 @@
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-alibaba-sentinel-gateway</artifactId>
         </dependency>
-
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>${swagger.version}</version>
-		</dependency>
 		 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
