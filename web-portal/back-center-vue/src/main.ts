@@ -20,3 +20,4 @@ new Vue({
 Vue.use(plugins)
 Vue.use(uploader)
 Vue.config.productionTip = false
+Vue.prototype.$env = process.env
