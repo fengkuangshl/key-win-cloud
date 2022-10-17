@@ -23,5 +23,6 @@
         <module>workflow-center</module>
         <module>activiti-workfolw-center</module>
         <module>param-center</module>
+        <module>websocket-center</module>
     </modules>
 </project>

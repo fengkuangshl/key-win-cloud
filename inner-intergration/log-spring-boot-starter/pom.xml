@@ -72,6 +72,7 @@
 	  <dependency>
 		  <groupId>com.key.win</groupId>
 		  <artifactId>mybatis-plus-spring-boot-starter</artifactId>
+		  <optional>true</optional>
 	  </dependency>
   		
   		

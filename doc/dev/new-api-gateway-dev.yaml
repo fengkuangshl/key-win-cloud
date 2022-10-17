@@ -171,6 +171,13 @@ spring:
             - Path=/api-param/**
           filters:
             - StripPrefix=1
+        - id: api-wesocket
+          uri: lb://wesocket-center
+          order: 8015
+          predicates:
+            - Path=/api-wesocket/**
+          filters:
+            - StripPrefix=1
   datasource:
     druid:
       # JDBC 配置(驱动类自动从url的mysql识别,数据源类型自动识别)

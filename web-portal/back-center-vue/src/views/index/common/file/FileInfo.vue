@@ -55,7 +55,7 @@ import { Component, Vue, Ref } from 'vue-property-decorator'
 import { FileInfo, Name } from './interface/file'
 import { FileDeleteApi, FileUploadApi } from './file-api'
 import KWTable from '@/components/table/Table.vue'
-import { ElUpload, ElUploadInternalFileDetail, HttpRequestOptions } from 'node_modules/_element-ui@2.15.9@element-ui/types/upload'
+import { ElUpload, ElUploadInternalFileDetail, HttpRequestOptions } from 'element-ui/types/upload'
 import PermissionUtil from '@/common/utils/permission/permission-util'
 import PermissionPrefixUtils from '@/common/utils/permission/permission-prefix'
 @Component({
