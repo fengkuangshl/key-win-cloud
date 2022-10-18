@@ -9,7 +9,7 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 @Component
-@ServerEndpoint(value = "/ws/{token}", configurator = GetHttpSessionConfigurator.class)
+@ServerEndpoint(value = "/ws/{token}", configurator = GetHttpSessionConfigurator.class,subprotocols = {"protocol"})
 public class WebSocketEndpoint extends BaseWebSocketEndpoint {
 
     @OnOpen

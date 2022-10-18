@@ -82,8 +82,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUser> impleme
             logger.error("用户不存在");
             throw new IllegalArgumentException("用户不存在!");
         }
-        if (StringUtils.isNotBlank(sysUser.getNickname()) && !updateUser.getNickname().equals(sysUser.getNickname())) {
-            logger.error("用户名非法，由{}被必为{}", updateUser.getNickname(), sysUser.getNickname());
+        if (StringUtils.isNotBlank(sysUser.getUsername()) && !updateUser.getUsername().equals(sysUser.getUsername())) {
+            logger.error("用户名非法，由{}被必为{}", updateUser.getUsername(), sysUser.getUsername());
             throw new IllegalArgumentException("用户名非法！");
         }
         setRoleToUser(sysUser);

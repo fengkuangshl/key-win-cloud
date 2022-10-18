@@ -29,7 +29,7 @@ public class ResAuthenticationEntryPoint implements ServerAuthenticationEntryPoi
     	JSONObject message = new JSONObject();
 		message.put("code", HttpStatus.UNAUTHORIZED.value());
 		message.put("msg",  e.getMessage());
-		
+		log.error(exchange.getRequest().getURI()+"被鉴权:{}",message);
         ServerHttpResponse response = exchange.getResponse();
         response.getHeaders().setAccessControlAllowCredentials(true);
         response.getHeaders().setAccessControlAllowOrigin("*");
