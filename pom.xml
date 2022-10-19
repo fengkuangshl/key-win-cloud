@@ -359,18 +359,18 @@
             </properties>
             <activation>
                 <!-- 默认情况下使用dev开发配置 如 打包时不包含 -p 参数-->
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>fase</activeByDefault>
             </activation>
         </profile>
         <profile>
             <id>dev-1</id>
             <properties>
-                <spring.profiles.active>dev</spring.profiles.active>
+                <spring.profiles.active>ds</spring.profiles.active>
                 <!--192.168.1.27:30153-->
-                <spring.cloud.nacos.config.server-addr>192.168.1.27:30153</spring.cloud.nacos.config.server-addr>
+                <spring.cloud.nacos.config.server-addr>127.0.0.1:8848</spring.cloud.nacos.config.server-addr>
                 <spring.cloud.nacos.config.file-extension>yaml</spring.cloud.nacos.config.file-extension>
-                <spring.cloud.nacos.config.namespace>key-win-dev-k8s</spring.cloud.nacos.config.namespace>
-                <spring.cloud.nacos.config.shared-configs.data-id>common-dev.yaml
+                <spring.cloud.nacos.config.namespace>key-win-ds</spring.cloud.nacos.config.namespace>
+                <spring.cloud.nacos.config.shared-configs.data-id>common-ds.yaml
                 </spring.cloud.nacos.config.shared-configs.data-id>
                 <spring.cloud.nacos.config.shared-configs.refresh>true
                 </spring.cloud.nacos.config.shared-configs.refresh>
@@ -378,7 +378,7 @@
             </properties>
             <activation>
                 <!-- 默认情况下使用dev开发配置 如 打包时不包含 -p 参数-->
-                <activeByDefault>false</activeByDefault>
+                <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
         <!-- 打包命令package -P test -->
