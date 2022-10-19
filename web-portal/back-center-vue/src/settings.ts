@@ -12,6 +12,7 @@ interface ISettings {
   apiUser: string
   apiFile: string
   apiParam: string
+  apiLog: string
 }
 
 // You can customize below settings :)
@@ -28,7 +29,8 @@ const settings: ISettings = {
   apiAuth: '/api-auth/',
   apiUser: '/api-user/',
   apiFile: 'api-file/',
-  apiParam: '/api-param/'
+  apiParam: '/api-param/',
+  apiLog: '/api-log'
 }
 
 export default settings

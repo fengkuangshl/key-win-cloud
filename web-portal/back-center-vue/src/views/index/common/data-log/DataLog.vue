@@ -19,8 +19,7 @@
 
         </el-col>
       </el-row>
-      <KWTable url="data/log/findDataLogByPaged" v-hasPermissionQueryPage="dataLogPermissionPrefix" style="width: 100%"
-        ref="kwTableRef">
+      <KWTable url="/api-log/data/log/findDataLogByPaged" v-hasPermissionQueryPage="dataLogPermissionPrefix" style="width: 100%" ref="kwTableRef">
         <el-table-column type="index" width="80" label="序号"></el-table-column>
         <el-table-column prop="createUserName" sortable="custom" label="操作人员">
         </el-table-column>
@@ -36,8 +35,7 @@
         </el-table-column>
         <el-table-column label="操作">
           <template v-slot="scope">
-            <el-button type="danger" v-hasPermissionDelete="dataLogPermissionPrefix" icon="el-icon-delete" size="mini"
-              @click="deleteDataLog(scope.row.id)">
+            <el-button type="danger" v-hasPermissionDelete="dataLogPermissionPrefix" icon="el-icon-delete" size="mini" @click="deleteDataLog(scope.row.id)">
             </el-button>
           </template>
         </el-table-column>
