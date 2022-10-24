@@ -3,6 +3,7 @@ package com.key.win.param.ctrl;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
+import com.key.win.datalog.annotation.DataLog;
 import com.key.win.log.annotation.LogAnnotation;
 import com.key.win.param.model.SysDictType;
 import com.key.win.param.service.SysDictTypeService;
@@ -56,6 +57,7 @@ public class SysDictTypeCtrl {
     @ApiOperation(value = "新增")
     @LogAnnotation(module = "param-center", recordRequestParam = false)
     @PreAuthorize("hasAnyAuthority('" + AUTHORITY_PREFIX + "MODIFY','" + AUTHORITY_PREFIX + "ADD')")
+    @DataLog
     public Result saveOrUpdate(@RequestBody SysDictType param) {
         boolean b = sysDictTypeService.saveOrUpdateSysDictType(param);
         return b ? Result.succeed("保存成功！") : Result.failed("保存失败");
