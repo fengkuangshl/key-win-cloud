@@ -42,5 +42,5 @@ Thumbs.db
 .idea/
 jdk-11.0.9_linux-x64.rpm
 node_modules/
-nacos/data/
+register-center/nacos-server/data/
 logs/
