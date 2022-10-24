@@ -1,11 +1,11 @@
 FROM centos:centos7.1.1503
 
 #拷贝jdk
-ADD jdk-8u261-linux-x64.rpm jdk-8u261-linux-x64.rpm
-RUN rpm -ivh jdk-8u261-linux-x64.rpm
-RUN rm jdk-8u261-linux-x64.rpm
+ADD jdk-11.0.9_linux-x64.rpm jdk-11.0.9_linux-x64.rpm
+RUN rpm -ivh jdk-11.0.9_linux-x64.rpm
+RUN rm jdk-11.0.9_linux-x64.rpm
 #设置环境变量
-ENV JAVA_HOME=/usr/java/jdk1.8.0_261-amd64
+ENV JAVA_HOME=/usr/java/jdk-11.0.9
 ENV JRE_HOME=$JAVA_HOME/jre
 ENV CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib:$CLASSPATH
 ENV PATH=/sbin:$JAVA_HOME/bin:$PATH

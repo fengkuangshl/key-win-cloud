@@ -5,7 +5,7 @@
     <import file="../../build-base.xml"/>
     <property name="project.jar.filename" value="xxl-job-admin.jar"/>
     <property name="project.filePath" value="xxl-job-admin" />
-    <property name="docker.java.jdk.filePath" value="../../jdk-8u261-linux-x64.rpm" />
+    <property name="docker.java.jdk.filePath" value="../../jdk-11.0.9_linux-x64.rpm" />
 
 
     <target name="mvn-package-test-deploy" depends="mvn-package-dev">

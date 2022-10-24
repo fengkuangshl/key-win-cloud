@@ -468,7 +468,7 @@
                                 <targetPath>/</targetPath>
                                 <directory>${project.build.directory}</directory>
                                 <include>${project.build.finalName}.jar</include>
-                                <include>jdk-8u261-linux-x64.rpm</include>
+                                <include>jdk-11.0.9_linux-x64.rpm</include>
                             </resource>
                         </resources>
                     </configuration>

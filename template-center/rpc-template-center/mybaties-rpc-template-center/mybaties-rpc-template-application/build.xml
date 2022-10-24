@@ -5,7 +5,7 @@
 	<import file="../../../../build-base.xml" />
 	<property name="project.jar.filename" value="mybaties-rpc-template-application.jar" />
 	<property name="project.filePath" value="mybaties-rpc-template-application" />
-    <property name="docker.java.jdk.filePath" value="../../../../jdk-8u261-linux-x64.rpm" />
+    <property name="docker.java.jdk.filePath" value="../../../../jdk-11.0.9_linux-x64.rpm" />
 
 	<target name="mvn-package-sztest-deploy" depends="mvn-package-dev">
 		<property name="project.active" value="test"/>

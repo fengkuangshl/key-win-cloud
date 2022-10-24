@@ -40,7 +40,7 @@ Thumbs.db
 
 .svn/
 .idea/
-jdk-8u261-linux-x64.rpm
+jdk-11.0.9_linux-x64.rpm
 node_modules/
 nacos/data/
 logs/
