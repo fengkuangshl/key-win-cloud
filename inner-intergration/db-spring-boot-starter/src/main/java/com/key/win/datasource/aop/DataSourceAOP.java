@@ -45,17 +45,17 @@ public class DataSourceAOP {
 
     @After("@within(ds)")
     public void restoreDataSourceClass(JoinPoint point, DataSource ds) {
-        restroeDataSource(point, ds);
+        restoreDataSource(point, ds);
     }
 
-    private void restroeDataSource(JoinPoint point, DataSource ds) {
+    private void restoreDataSource(JoinPoint point, DataSource ds) {
         logger.debug("Revert DataSource : {transIdo} > {}", ds.name(), point.getSignature());
         DataSourceHolder.clearDataSourceKey();
     }
 
     @After("@annotation(ds)")
     public void restoreDataSourceMethod(JoinPoint point, DataSource ds) {
-        restroeDataSource(point, ds);
+        restoreDataSource(point, ds);
     }
 
 }
