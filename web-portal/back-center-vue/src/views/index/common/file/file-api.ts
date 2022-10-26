@@ -11,5 +11,5 @@ export const FileUploadApi = (formData: FormData, bizType: string): Promise<KWRe
   }
   return request.post(settings.apiFile + 'upload/' + bizType + '/file', formData, config)
 }
-export const FileDeleteApi = (id: number): Promise<KWResponse.Result> => request.delete(settings.apiFile + 'files/' + id)
-export const FileGetApi = (id: number): Promise<KWResponse.Result> => request.delete(settings.apiFile + 'files/' + id)
+export const FileDeleteApi = (id: string): Promise<KWResponse.Result> => request.delete(settings.apiFile + 'files/' + id)
+export const FileGetApi = (id: string): Promise<KWResponse.Result> => request.delete(settings.apiFile + 'files/' + id)

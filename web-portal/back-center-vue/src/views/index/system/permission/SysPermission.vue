@@ -21,18 +21,15 @@
             添加权限</el-button>
         </el-col>
       </el-row>
-      <KWTable url="api-user/permission/findSysPermissionByPaged" v-hasPermissionQueryPage="permissionPrefix" style="width: 100%"
-        ref="kwTableRef">
+      <KWTable url="api-user/permission/findSysPermissionByPaged" v-hasPermissionQueryPage="permissionPrefix" style="width: 100%" ref="kwTableRef">
         <el-table-column type="index" width="80" label="序号"></el-table-column>
         <el-table-column prop="name" sortable="custom" label="权限名称"> </el-table-column>
         <el-table-column prop="permission" sortable="custom" label="权限标识"> </el-table-column>
         <el-table-column label="操作">
           <template v-slot="scope">
-            <el-button type="primary" icon="el-icon-edit" size="mini" v-hasPermissionUpdate="permissionPrefix"
-              @click="showEditDialog(scope.row)">
+            <el-button type="primary" icon="el-icon-edit" size="mini" v-hasPermissionUpdate="permissionPrefix" @click="showEditDialog(scope.row)">
             </el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" v-hasPermissionDelete="permissionPrefix"
-              @click="deletePermission(scope.row.id)">
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-hasPermissionDelete="permissionPrefix" @click="deletePermission(scope.row.id)">
             </el-button>
           </template>
         </el-table-column>
@@ -45,8 +42,7 @@
         </el-form-item>
         <el-form-item label="名称" prop="name">
           <!-- <el-input v-model="sysPermissionForm.name"></el-input> -->
-          <el-select v-model="sysPermissionForm.name" filterable allow-create default-first-option
-            placeholder="请选择或输入权限名称" style="max-width: 220px;" @change="permissionChange">
+          <el-select v-model="sysPermissionForm.name" filterable allow-create default-first-option placeholder="请选择或输入权限名称" style="max-width: 220px;" @change="permissionChange">
             <el-option v-for="item in permissionOptions" :key="item.value" :label="item.text" :value="item.text">
             </el-option>
           </el-select>
@@ -135,7 +131,7 @@ export default class Permission extends Vue {
     })
   }
 
-  deletePermission(id: number): void {
+  deletePermission(id: string): void {
     this.$confirm('确定要重置密码, 是否继续?', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',

@@ -10,35 +10,22 @@
     <el-card>
       <el-row :gutter="20">
         <el-col :span="12" class="col-rigth">
-          <el-button type="primary" v-hasPermissionAdd="roleMenuPermissionPrefix" :disabled="roleMenuPermissionVisble"
-            @click="saveData()">保存
+          <el-button type="primary" v-hasPermissionAdd="roleMenuPermissionPrefix" :disabled="roleMenuPermissionVisble" @click="saveData()">保存
           </el-button>
           <el-button @click="resetTableData()">重置</el-button>
         </el-col>
       </el-row>
-      <el-table :data="tableDatas" row-key="key" border default-expand-all
-        v-hasPermissionQueryList="roleMenuPermissionPrefix" height="610"
-        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" style="margin-top:20px;width: 100%">
+      <el-table :data="tableDatas" row-key="key" border default-expand-all v-hasPermissionQueryList="roleMenuPermissionPrefix" height="610" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" style="margin-top:20px;width: 100%">
         <template v-for="(item,index) in tableTiles">
-          <el-table-column fixed v-if="index == 0" width="200" :key="item.propertyName" :prop="item.propertyName"
-            align='left' :label="item.permissionName">
+          <el-table-column fixed v-if="index == 0" width="200" :key="item.propertyName" :prop="item.propertyName" align='left' :label="item.permissionName">
             <template v-slot="scope">
-              <el-checkbox
-                v-on:change="checked => onChane(checked, scope.row, scope.row[item.propertyName].permissionId)"
-                :disabled="scope.row[item.propertyName].enable"
-                v-if="scope.row[item.propertyName].permissionId > 0 || scope.row[item.propertyName].menuId > 0"
-                v-model="scope.row[item.propertyName].checked">
+              <el-checkbox v-on:change="checked => onChane(checked, scope.row, scope.row[item.propertyName].permissionId)" :disabled="scope.row[item.propertyName].enable" v-if="scope.row[item.propertyName].permissionId > 0 || scope.row[item.propertyName].menuId > 0" v-model="scope.row[item.propertyName].checked">
               </el-checkbox>&nbsp;&nbsp;{{  scope.row[item.propertyName].permissionName  }}
             </template>
           </el-table-column>
-          <el-table-column v-if="index > 0" width="200" :key="item.propertyName" :prop="item.propertyName"
-            align='center' :label="item.permissionName">
+          <el-table-column v-if="index > 0" width="200" :key="item.propertyName" :prop="item.propertyName" align='center' :label="item.permissionName">
             <template v-slot="scope">
-              <el-checkbox
-                v-on:change="checked => onChane(checked, scope.row, scope.row[item.propertyName].permissionId)"
-                :disabled="scope.row[item.propertyName].enable"
-                v-if="scope.row[item.propertyName].permissionId > 0 || scope.row[item.propertyName].menuId > 0"
-                v-model="scope.row[item.propertyName].checked">
+              <el-checkbox v-on:change="checked => onChane(checked, scope.row, scope.row[item.propertyName].permissionId)" :disabled="scope.row[item.propertyName].enable" v-if="scope.row[item.propertyName].permissionId > 0 || scope.row[item.propertyName].menuId > 0" v-model="scope.row[item.propertyName].checked">
               </el-checkbox>&nbsp;&nbsp;{{  scope.row[item.propertyName].permissionName  }}
             </template>
           </el-table-column>
@@ -60,13 +47,13 @@ export default class RoleMenuPermission extends Vue {
   tableOriginalDatas: Array<SysRoleMenuPermissionTableDataType> = new Array<SysRoleMenuPermissionTableDataType>()
   tableTiles: Array<RoleMenuPermissionDetail> = new Array<RoleMenuPermissionDetail>()
   roleMenuPermissionVisble = true
-  roleId = -1
+  roleId = '-1'
   title = '权限管理'
   roleMenuPermissionPrefix = PermissionPrefixUtils.roleMenuPermission
 
   created(): void {
     if (this.$route.query.id != null) {
-      this.roleId = Number.parseInt(this.$route.query.id as string)
+      this.roleId = this.$route.query.id as string
     }
     if (this.$route.query.roleName != null) {
       this.title = (this.$route.query.roleName as string) + '角色授权管理'
@@ -176,7 +163,7 @@ export default class RoleMenuPermission extends Vue {
     }
   }
 
-  onChane(checked: boolean, item: SysRoleMenuPermissionTableDataType, permissionId: number): void {
+  onChane(checked: boolean, item: SysRoleMenuPermissionTableDataType, permissionId: string): void {
     this.setRowCheckBox(checked, item, permissionId)
     if (item.children && (item.children as Array<SysRoleMenuPermissionTableDataType>).length > 0) {
       const SysRoleMenuPermissions = item.children as Array<SysRoleMenuPermissionTableDataType>
@@ -196,7 +183,7 @@ export default class RoleMenuPermission extends Vue {
     this.checkTableBodyChange()
   }
 
-  setRowCheckBox(checked: boolean, item: SysRoleMenuPermissionTableDataType, permissionId: number): void {
+  setRowCheckBox(checked: boolean, item: SysRoleMenuPermissionTableDataType, permissionId: string): void {
     if (!permissionId) {
       this.tableTiles.forEach(title => {
         const entity = item[title.propertyName] as RoleMenuPermissionDetail

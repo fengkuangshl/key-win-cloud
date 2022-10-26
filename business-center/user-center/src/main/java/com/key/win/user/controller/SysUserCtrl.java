@@ -82,7 +82,7 @@ public class SysUserCtrl {
 
     @PostMapping("/register")
     @ApiOperation(value = "用户注册")
-    @LogAnnotation(module = "system", recordRequestParam = true)
+    @LogAnnotation(module = "system", recordRequestParam = false)
     @PreAuthorize("hasAuthority('" + AUTHORITY_PREFIX + "ADD')")
     public Result saveSysUser(@RequestBody SysUserVo sysUser) {
         if (StringUtils.isBlank(sysUser.getNickname())) {
@@ -115,7 +115,7 @@ public class SysUserCtrl {
 
     @PostMapping("/updateSysUser")
     @ApiOperation(value = "用户更新")
-    @LogAnnotation(module = "system", recordRequestParam = true)
+    @LogAnnotation(module = "system", recordRequestParam = false)
     @PreAuthorize("hasAuthority('" + AUTHORITY_PREFIX + "MODIFY')")
     public Result updateSysUser(@RequestBody SysUserVo sysUser) {
         boolean b = sysUserService.updateSysUser(sysUser);
@@ -124,7 +124,7 @@ public class SysUserCtrl {
 
     @GetMapping("/get/{id}")
     @ApiOperation(value = "获取用户")
-    @LogAnnotation(module = "system", recordRequestParam = true)
+    @LogAnnotation(module = "system", recordRequestParam = false)
     @PreAuthorize("hasAuthority('" + AUTHORITY_PREFIX + "QUERY::ID')")
     public Result get(@PathVariable Long id) {
         SysUser byId = sysUserService.getById(id);
@@ -142,7 +142,7 @@ public class SysUserCtrl {
 
     @DeleteMapping("/delete/{id}")
     @ApiOperation(value = "删除")
-    @LogAnnotation(module = "system", recordRequestParam = true)
+    @LogAnnotation(module = "system", recordRequestParam = false)
     @PreAuthorize("hasAuthority('" + AUTHORITY_PREFIX + "DELETE')")
     public Result delete(@PathVariable Long id) {
         boolean b = sysUserService.deleteById(id);
@@ -158,7 +158,7 @@ public class SysUserCtrl {
 
     @GetMapping("/resetPassword/{id}")
     @ApiOperation(value = "重置登录用户密码")
-    @LogAnnotation(module = "system", recordRequestParam = true)
+    @LogAnnotation(module = "system", recordRequestParam = false)
     @PreAuthorize("hasAuthority('" + AUTHORITY_PREFIX + "USER::RESET::PASSWORD')")
     public Result resetPassword(@PathVariable Long id) {
         if (id == null) {
@@ -171,7 +171,7 @@ public class SysUserCtrl {
 
     @PostMapping("/modifyMyPassword")
     @ApiOperation(value = "修改自己的密码")
-    @LogAnnotation(module = "system", recordRequestParam = true)
+    @LogAnnotation(module = "system", recordRequestParam = false)
     public Result modifyMyPassword(@RequestBody SysUserVo sysUser) {
         LoginAppUser loginApp = SysUserUtil.getLoginAppUser();
         if (sysUser.getId() == null || sysUser.getId() != loginApp.getId()) {
@@ -197,7 +197,7 @@ public class SysUserCtrl {
 
     @PostMapping("/granted")
     @ApiOperation(value = "组分配用户")
-    @LogAnnotation(module = "system", recordRequestParam = true)
+    @LogAnnotation(module = "system", recordRequestParam = false)
     @PreAuthorize("hasAuthority('" + AUTHORITY_PREFIX + "USER::GRANTED::ROLE')")
     public Result setUserToGroup(@RequestBody SysUserVo sysUser) {
         if (CollectionUtils.isEmpty(sysUser.getUserIds())) {

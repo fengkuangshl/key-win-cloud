@@ -106,7 +106,7 @@ export default class User extends Vue {
   title = ''
   userDialogVisble = false
   usernameDisabled = true
-  userForm: UserForm = { nickname: '', phone: '', sex: '男', username: '', roleIds: new Array<number>(), type: Type.普通 }
+  userForm: UserForm = { nickname: '', phone: '', sex: '男', username: '', roleIds: new Array<string>(), type: Type.普通 }
   @Ref('userFormRef')
   readonly userFormRef!: ElForm
 
@@ -156,7 +156,7 @@ export default class User extends Vue {
   }
 
   // 展示编辑用于的对话框
-  async showEditDialog(id: number): Promise<void> {
+  async showEditDialog(id: string): Promise<void> {
     this.title = '编辑用户'
     this.usernameDisabled = true
     const res = await UserGetApi(id)
@@ -165,7 +165,7 @@ export default class User extends Vue {
     this.userForm.sex = sex.text
     const roleDatas = res.data.sysRoles
     console.log(roleDatas)
-    this.userForm.roleIds = new Array<number>()
+    this.userForm.roleIds = new Array<string>()
     if (roleDatas && roleDatas.length > 0) {
       for (const key in roleDatas) {
         if (Object.hasOwnProperty.call(roleDatas, key)) {
@@ -224,11 +224,11 @@ export default class User extends Vue {
     this.getUserRole()
     this.$nextTick(() => {
       this.userFormRef.resetFields()
-      this.userForm = { nickname: '', phone: '', sex: '男', username: '', roleIds: new Array<number>(), type: Type.普通 }
+      this.userForm = { nickname: '', phone: '', sex: '男', username: '', roleIds: new Array<string>(), type: Type.普通 }
     })
   }
 
-  passwordReset(id: number): void {
+  passwordReset(id: string): void {
     this.$confirm('确定要重置密码, 是否继续?', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',

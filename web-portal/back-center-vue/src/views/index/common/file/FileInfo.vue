@@ -91,7 +91,7 @@ export default class File extends Vue {
     createUserName: '',
     updateUserName: null,
     version: 0,
-    id: 0,
+    id: '0',
     name: ''
   }
 
@@ -114,7 +114,7 @@ export default class File extends Vue {
     return !PermissionUtil.hasPermissionForDownload(this.permissionPrefix)
   }
 
-  deleteFile(id: number): void {
+  deleteFile(id: string): void {
     this.$confirm('确定要删除文件, 是否继续?', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',

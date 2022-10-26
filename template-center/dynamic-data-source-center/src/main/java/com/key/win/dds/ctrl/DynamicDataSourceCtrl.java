@@ -18,14 +18,14 @@ public class DynamicDataSourceCtrl {
     private MybatiesDynamicDataSourceTemplateService mybatiesDynamicDataSourceTemplateService;
 
     @ApiOperation("分页")
-    @LogAnnotation(module = "dynamic-data-source-center", recordRequestParam = true)
+    @LogAnnotation(module = "dynamic-data-source-center", recordRequestParam = false)
     @PostMapping("/getMybatiesDynamicDataSourceTemplateByPaged")
     public PageResult<MybatiesDynamicDataSourceTemplate> getMybatiesDynamicDataSourceTemplateByPaged(@RequestBody PageRequest<MybatiesDynamicDataSourceTemplate> t) {
         return mybatiesDynamicDataSourceTemplateService.findMybatiesDynamicDataSourceTemplateByPaged(t);
     }
 
     @ApiOperation("保存或更新数据")
-    @LogAnnotation(module = "dynamic-data-source-center", recordRequestParam = true)
+    @LogAnnotation(module = "dynamic-data-source-center", recordRequestParam = false)
     @PostMapping("/saveOrUpdateMybatiesDynamicDataSourceTemplate")
     public Result saveOrUpdateMybatiesDynamicDataSourceTemplate(@RequestBody MybatiesDynamicDataSourceTemplate mybatiesTemplate){
         boolean b = mybatiesDynamicDataSourceTemplateService.saveOrUpdate(mybatiesTemplate);
@@ -33,14 +33,14 @@ public class DynamicDataSourceCtrl {
     }
 
     @ApiOperation("根据Id获取信息")
-    @LogAnnotation(module = "dynamic-data-source-center", recordRequestParam = true)
+    @LogAnnotation(module = "dynamic-data-source-center", recordRequestParam = false)
     @GetMapping("/get/{id}")
     public MybatiesDynamicDataSourceTemplate get(@PathVariable String id) {
         return mybatiesDynamicDataSourceTemplateService.getById(id);
     }
 
     @ApiOperation("根据Id信息")
-    @LogAnnotation(module = "dynamic-data-source-center", recordRequestParam = true)
+    @LogAnnotation(module = "dynamic-data-source-center", recordRequestParam = false)
     @DeleteMapping("/delete/{id}")
     public Result delete(@PathVariable String id) {
         boolean b = mybatiesDynamicDataSourceTemplateService.removeById(id);

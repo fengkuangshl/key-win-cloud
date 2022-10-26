@@ -10,33 +10,26 @@
     <el-card>
       <el-row :gutter="20">
         <el-col :span="12" class="col-rigth">
-          <el-button type="primary" :disabled="menuPermissionVisble" v-hasPermissionAdd="menuPermissionPrefix"
-            @click="saveData()">保存</el-button>
+          <el-button type="primary" :disabled="menuPermissionVisble" v-hasPermissionAdd="menuPermissionPrefix" @click="saveData()">保存</el-button>
           <el-button @click="resetTableData()">重置</el-button>
         </el-col>
       </el-row>
-      <el-table :data="tableDatas" row-key="key" border default-expand-all
-        v-hasPermissionQueryList="menuPermissionPrefix" height="610"
-        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" style="margin-top:20px;width: 100%">
+      <el-table :data="tableDatas" row-key="key" border default-expand-all v-hasPermissionQueryList="menuPermissionPrefix" height="610" :tree-props="{ children: 'children', hasChildren: 'hasChildren' }" style="margin-top:20px;width: 100%">
         <template v-for="(item,index) in tableTiles">
-          <el-table-column width="150" fixed v-if="index==0" :key="item.propertyName" :prop="item.propertyName"
-            align='left'>
+          <el-table-column width="150" fixed v-if="index==0" :key="item.propertyName" :prop="item.propertyName" align='left'>
             <template slot="header">{{ item.permissionName }}</template>
             <template slot-scope="scope">
               {{ scope.row[item.propertyName].permissionName }}
             </template>
           </el-table-column>
-          <el-table-column width="200" v-if=" index > 0" :key="item.propertyName" :prop="item.propertyName"
-            align='center'>
+          <el-table-column width="200" v-if=" index > 0" :key="item.propertyName" :prop="item.propertyName" align='center'>
             <template slot="header">
               <el-checkbox v-if="item.permissionId > 0" v-on:change="checked => onTitleChane(checked, item)">
               </el-checkbox>&nbsp;&nbsp;{{ item.permissionName }}
             </template>
             <template slot-scope="scope">
               {{ scope.row[item.propertyName].permissionName }}
-              <el-checkbox v-on:change="onChane()"
-                v-if="!(scope.row.children && scope.row.children.length > 0) && scope.row[item.propertyName].permissionId > 0"
-                v-model="scope.row[item.propertyName].checked">
+              <el-checkbox v-on:change="onChane()" v-if="!(scope.row.children && scope.row.children.length > 0) && scope.row[item.propertyName].permissionId > 0" v-model="scope.row[item.propertyName].checked">
               </el-checkbox>
             </template>
           </el-table-column>

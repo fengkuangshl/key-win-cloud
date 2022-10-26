@@ -2,6 +2,9 @@ package com.key.win.common.model.system;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.impl.StringArraySerializer;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.key.win.common.model.basic.MybatisID;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -22,6 +25,7 @@ import java.util.Set;
 public class SysMenu  extends MybatisID {
 
 	@ApiModelProperty("父节点Id")
+	@JsonSerialize(using = ToStringSerializer.class)
 	private Long parentId;
 	@ApiModelProperty("名称")
 	private String name;
@@ -44,6 +48,7 @@ public class SysMenu  extends MybatisID {
 	private List<SysMenu> subMenus = new ArrayList<>();
 	@ApiModelProperty("菜单Id集合")
 	@TableField(exist = false)
+	@JsonSerialize(using = StringArraySerializer.class)
 	private Set<Long> menuIds;
 
 	public void addSubMenu(SysMenu sysMenu) {

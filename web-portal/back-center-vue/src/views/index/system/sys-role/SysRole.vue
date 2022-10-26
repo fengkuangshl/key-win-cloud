@@ -20,19 +20,15 @@
           <el-button type="primary" @click="addRole" v-hasPermissionAdd="rolePermission">添加角色</el-button>
         </el-col>
       </el-row>
-      <KWTable url="api-user/role/findSysRoleByPaged" style="width: 100%" ref="kwTableRef"
-        v-hasPermissionQueryPage="rolePermission">
+      <KWTable url="api-user/role/findSysRoleByPaged" style="width: 100%" ref="kwTableRef" v-hasPermissionQueryPage="rolePermission">
         <el-table-column type="index" width="80" label="序号"></el-table-column>
         <el-table-column prop="name" sortable="custom" label="角色名称"> </el-table-column>
         <el-table-column prop="code" sortable="custom" label="code"> </el-table-column>
         <el-table-column label="操作">
           <template v-slot="scope">
-            <el-button type="primary" icon="el-icon-edit" v-hasPermissionUpdate="rolePermission" size="mini"
-              @click="showEditDialog(scope.row)"></el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini" v-hasPermissionDelete="rolePermission"
-              @click="deleteRole(scope.row.id)"></el-button>
-            <el-tooltip effect="dark" content="菜单权限管理" placement="top" v-hasPermission="roleGrantPermission"
-              :enterable="false">
+            <el-button type="primary" icon="el-icon-edit" v-hasPermissionUpdate="rolePermission" size="mini" @click="showEditDialog(scope.row)"></el-button>
+            <el-button type="danger" icon="el-icon-delete" size="mini" v-hasPermissionDelete="rolePermission" @click="deleteRole(scope.row.id)"></el-button>
+            <el-tooltip effect="dark" content="菜单权限管理" placement="top" v-hasPermission="roleGrantPermission" :enterable="false">
               <el-button type="warning" icon="el-icon-s-tools" size="mini" @click="grantPermission(scope.row)">
               </el-button>
             </el-tooltip>
@@ -91,8 +87,6 @@ export default class Role extends Vue {
   readonly kwTableRef!: KWTable<SysRoleSearchRequest, SysRole>
 
   defaultProps: { children: string; label: string } = { children: 'children', label: 'name' }
-  checkedKeys: Array<number> = []
-  defaultCheckedKeys: Array<number> = []
 
   readonly sysRoleFormRules: { name: Array<KWRule.Rule | KWRule.MixinRule>; code: Array<KWRule.Rule | KWRule.MixinRule> } = {
     name: [
@@ -148,7 +142,7 @@ export default class Role extends Vue {
     })
   }
 
-  deleteRole(id: number): void {
+  deleteRole(id: string): void {
     this.$confirm('确定要删除, 是否继续?', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',

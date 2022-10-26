@@ -19,8 +19,7 @@
           </el-button>
         </el-col>
       </el-row>
-      <KWTable url="/api-param/sysDictData/getSysDictDataByPaged" v-hasPermissionQueryPage="sysDictDataPermissionPrefix"
-        :defaultLoadData="false" style="width: 100%" ref="kwTableRef">
+      <KWTable url="/api-param/sysDictData/getSysDictDataByPaged" v-hasPermissionQueryPage="sysDictDataPermissionPrefix" :defaultLoadData="false" style="width: 100%" ref="kwTableRef">
         <el-table-column type="index" width="80" label="序号"></el-table-column>
         <el-table-column prop="label" sortable="custom" label="标签"> </el-table-column>
         <el-table-column prop="value" sortable="custom" label="键值"> </el-table-column>
@@ -28,20 +27,16 @@
         <el-table-column prop="createDate" label="创建时间" sortable="custom">
           <template slot-scope="scope">{{ scope.row.createDate | dateTimeFormat }}</template>
         </el-table-column>
-        <el-table-column prop="status" label="状态" sortable="custom"
-          v-hasPermissionEnabled="sysDictDataPermissionPrefix">
+        <el-table-column prop="status" label="状态" sortable="custom" v-hasPermissionEnabled="sysDictDataPermissionPrefix">
           <template v-slot="scope">
-            <el-switch v-model="scope.row.status" active-color="#13ce66" inactive-color="#ff4949"
-              @change="sysDictDataStatusChanged(scope.row, scope.row.status)">
+            <el-switch v-model="scope.row.status" active-color="#13ce66" inactive-color="#ff4949" @change="sysDictDataStatusChanged(scope.row, scope.row.status)">
             </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作">
           <template v-slot="scope">
-            <el-button type="primary" v-hasPermissionUpdate="sysDictDataPermissionPrefix" icon="el-icon-edit"
-              size="mini" @click="showEditDialog(scope.row.id)"></el-button>
-            <el-button type="danger" v-hasPermissionDelete="sysDictDataPermissionPrefix" icon="el-icon-delete"
-              size="mini" @click="deleteSysDictData(scope.row.id)">
+            <el-button type="primary" v-hasPermissionUpdate="sysDictDataPermissionPrefix" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row.id)"></el-button>
+            <el-button type="danger" v-hasPermissionDelete="sysDictDataPermissionPrefix" icon="el-icon-delete" size="mini" @click="deleteSysDictData(scope.row.id)">
             </el-button>
           </template>
         </el-table-column>
@@ -118,7 +113,7 @@ export default class DictData extends Vue {
     label: '',
     value: '',
     remark: '',
-    type: -1,
+    type: '-1',
     attr1: '',
     attr2: '',
     attr3: '',
@@ -129,7 +124,7 @@ export default class DictData extends Vue {
 
   title = ''
   navigationTitle = '字典数据管理'
-  dictTypeId = -1
+  dictTypeId = '-1'
   sysDictDataDialogVisble = false
   sysDictDataValueDisabled = true
   sysDictDataForm: SysDictDataForm = this.t
@@ -162,7 +157,7 @@ export default class DictData extends Vue {
   }
 
   // 展示编辑用于的对话框
-  async showEditDialog(id: number): Promise<void> {
+  async showEditDialog(id: string): Promise<void> {
     this.title = '编辑数据字典'
     this.sysDictDataValueDisabled = true
     const res = await SysDictDataGetApi(id)
@@ -209,7 +204,7 @@ export default class DictData extends Vue {
         label: '',
         value: '',
         remark: '',
-        type: 0,
+        type: '0',
         attr1: '',
         attr2: '',
         attr3: '',
@@ -220,7 +215,7 @@ export default class DictData extends Vue {
     })
   }
 
-  deleteSysDictData(id: number): void {
+  deleteSysDictData(id: string): void {
     this.$confirm('确定要删除, 是否继续?', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
@@ -250,7 +245,7 @@ export default class DictData extends Vue {
 
   mounted(): void {
     if (this.$route.query.id != null) {
-      this.sysDictDataForm.type = Number.parseInt(this.$route.query.id as string)
+      this.sysDictDataForm.type = this.$route.query.id as string
       this.dictTypeId = this.sysDictDataForm.type
     }
     if (this.$route.query.name != null) {

@@ -32,7 +32,7 @@ public class UserCenterApp {
 		SpringApplication app = new SpringApplication(UserCenterApp.class);
         app.addListeners(new PortApplicationEnvironmentPreparedEventListener());
         app.run(args);
-		
+
 	}
 
 }
