@@ -52,7 +52,7 @@ public class CacheConfig {
 	 * 
 	 * @return
 	 */
-	@Bean(name = "mycacheAdvice")
+	@Bean(name = "myCacheAdvice")
 	public MyCacheAspectSupport createCacheAspectSupport() {
 		MyCacheAspectSupport mcas = new MyCacheAspectSupport();
 		mcas.setCacheManager(cacheManager);
@@ -80,7 +80,7 @@ public class CacheConfig {
 	@Bean
 	public BeanFactoryCacheOperationSourceAdvisor createBeanFactoryCacheOperationSourceAdvisor() {
 		BeanFactoryCacheOperationSourceAdvisor bfcosa = new BeanFactoryCacheOperationSourceAdvisor();
-		bfcosa.setAdviceBeanName("mycacheAdvice");
+		bfcosa.setAdviceBeanName("myCacheAdvice");
 		bfcosa.setCacheOperationSource(cacheOperationSource);
 		return bfcosa;
 	}

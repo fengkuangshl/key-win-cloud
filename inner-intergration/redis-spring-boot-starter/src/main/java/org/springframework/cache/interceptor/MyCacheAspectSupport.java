@@ -34,11 +34,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
 /**
- *
  * @author hzwangdaxi
- *
  */
-public  class MyCacheAspectSupport extends AbstractCacheInvoker implements BeanFactoryAware, InitializingBean, SmartInitializingSingleton, MethodInterceptor, Serializable {
+public class MyCacheAspectSupport extends AbstractCacheInvoker implements BeanFactoryAware, InitializingBean, SmartInitializingSingleton, MethodInterceptor, Serializable {
 
     protected final Log logger = LogFactory.getLog(this.getClass());
     private final Map<MyCacheAspectSupport.CacheOperationCacheKey, MyCacheAspectSupport.CacheOperationMetadata> metadataCache = new ConcurrentHashMap(1024);
@@ -231,37 +229,42 @@ public  class MyCacheAspectSupport extends AbstractCacheInvoker implements BeanF
 
         this.processCacheEvicts(contexts.get(CacheEvictOperation.class), true, CacheOperationExpressionEvaluator.NO_RESULT);
         lock.lock();
+        Cache.ValueWrapper cacheHit = this.findCachedItem(contexts.get(CacheableOperation.class));
+        List<MyCacheAspectSupport.CachePutRequest> cachePutRequests = new LinkedList();
+        if (cacheHit == null) {
+            this.collectPutRequests(contexts.get(CacheableOperation.class), CacheOperationExpressionEvaluator.NO_RESULT, cachePutRequests);
+        }
+        Object cacheValue;
         Object returnValue;
-        try {
+        if (cacheHit != null && !this.hasCachePut(contexts)) {
+            logger.info("从缓存中获取到数据！！");
+            cacheValue = cacheHit.get();
+            returnValue = this.wrapCacheValue(method, cacheValue);
+        } else {
+            try {
+                //防止缓存击穿
+                if (cacheHit != null && !this.hasCachePut(contexts)) {
+                    logger.info("从缓存中获取到数据！！");
+                    cacheValue = cacheHit.get();
+                    returnValue = this.wrapCacheValue(method, cacheValue);
+                } else {
+                    //没有缓存，直接执行目标方法
+                    logger.info("没有缓存，直接执行目标方法:" + method.getName());
+                    returnValue = this.invokeOperation(invoker);
+                    cacheValue = this.unwrapReturnValue(returnValue);
+                    this.collectPutRequests(contexts.get(CachePutOperation.class), cacheValue, cachePutRequests);
+                    Iterator var8 = cachePutRequests.iterator();
 
-            Cache.ValueWrapper cacheHit = this.findCachedItem(contexts.get(CacheableOperation.class));
-            List<MyCacheAspectSupport.CachePutRequest> cachePutRequests = new LinkedList();
-            if (cacheHit == null) {
-                this.collectPutRequests(contexts.get(CacheableOperation.class), CacheOperationExpressionEvaluator.NO_RESULT, cachePutRequests);
+                    while (var8.hasNext()) {
+                        MyCacheAspectSupport.CachePutRequest cachePutRequest = (MyCacheAspectSupport.CachePutRequest) var8.next();
+                        cachePutRequest.apply(cacheValue);
+                    }
+
+                    this.processCacheEvicts(contexts.get(CacheEvictOperation.class), false, cacheValue);
+                }
+            } finally {
+                lock.unlock();
             }
-            Object cacheValue;
-            if (cacheHit != null && !this.hasCachePut(contexts)) {
-                logger.info("从缓存中获取到数据！！");
-                cacheValue = cacheHit.get();
-                returnValue = this.wrapCacheValue(method, cacheValue);
-            } else {
-                //没有缓存，直接执行目标方法
-                logger.info("没有缓存，直接执行目标方法:"+method.getName());
-                returnValue = this.invokeOperation(invoker);
-                cacheValue = this.unwrapReturnValue(returnValue);
-            }
-
-            this.collectPutRequests(contexts.get(CachePutOperation.class), cacheValue, cachePutRequests);
-            Iterator var8 = cachePutRequests.iterator();
-
-            while (var8.hasNext()) {
-                MyCacheAspectSupport.CachePutRequest cachePutRequest = (MyCacheAspectSupport.CachePutRequest) var8.next();
-                cachePutRequest.apply(cacheValue);
-            }
-
-            this.processCacheEvicts(contexts.get(CacheEvictOperation.class), false, cacheValue);
-        } finally {
-            lock.unlock();
         }
         return returnValue;
     }
