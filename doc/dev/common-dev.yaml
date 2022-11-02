@@ -3,9 +3,9 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 127.0.0.1:8848
-        namespace: key-win-dev  #命名空间 代指某个环境
-        group: DEV_GROUP
+        server-addr: ${spring.cloud.nacos.config.server-addr} ### nacos server地址127.0.0.1:8848
+        namespace: ${spring.cloud.nacos.config.namespace}  #命名空间 代指某个环境
+        group: ${spring.cloud.nacos.config.group} ###DEV_GROUP
     sentinel:
       transport:
         # 指定sentinel 控制台的地址

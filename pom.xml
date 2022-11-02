@@ -359,7 +359,7 @@
             </properties>
             <activation>
                 <!-- 默认情况下使用dev开发配置 如 打包时不包含 -p 参数-->
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
             </activation>
         </profile>
         <profile>
@@ -378,7 +378,7 @@
             </properties>
             <activation>
                 <!-- 默认情况下使用dev开发配置 如 打包时不包含 -p 参数-->
-                <activeByDefault>false</activeByDefault>
+                <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
         <!-- 打包命令package -P test -->
