@@ -33,6 +33,8 @@ function errorHandle(err: AxiosError): Promise<unknown> {
     case 408:
       message = '请求超时'
       break
+    case 429:
+      return onTooManyRequestError(err)
     case 500:
       message = (err.response as AxiosResponse<{ code: string; msg: string }>).data.msg || '服务器内部错误'
       break
@@ -86,6 +88,13 @@ instance.interceptors.response.use(
     return errorHandle(err)
   }
 )
+
+async function onTooManyRequestError(err: AxiosError) {
+  // eslint-disable-next-line camelcase
+  const response = err.response as AxiosResponse<{ code: string; error: string; error_description: string; msg: string }>
+  const message = response.data.msg
+  Message.error(message)
+}
 
 async function oAuth2Error(err: AxiosError) {
   /* if (errorMessage == null) {

@@ -57,7 +57,7 @@ public class ErrorHandlerConfig {
     }
 
     @Bean
-    @Order(Ordered.HIGHEST_PRECEDENCE)
+    @Order(-2147483647)
     public ErrorWebExceptionHandler errorWebExceptionHandler(ErrorAttributes errorAttributes) {
     	ResExceptionHandler exceptionHandler = new ResExceptionHandler(
                 errorAttributes, 

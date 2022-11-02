@@ -228,7 +228,7 @@ public class MyCacheAspectSupport extends AbstractCacheInvoker implements BeanFa
         }
 
         this.processCacheEvicts(contexts.get(CacheEvictOperation.class), true, CacheOperationExpressionEvaluator.NO_RESULT);
-        lock.lock();
+
         Cache.ValueWrapper cacheHit = this.findCachedItem(contexts.get(CacheableOperation.class));
         List<MyCacheAspectSupport.CachePutRequest> cachePutRequests = new LinkedList();
         if (cacheHit == null) {
@@ -237,14 +237,15 @@ public class MyCacheAspectSupport extends AbstractCacheInvoker implements BeanFa
         Object cacheValue;
         Object returnValue;
         if (cacheHit != null && !this.hasCachePut(contexts)) {
-            logger.info("从缓存中获取到数据！！");
+            logger.info("从缓存中获取到数据1-1！！");
             cacheValue = cacheHit.get();
             returnValue = this.wrapCacheValue(method, cacheValue);
         } else {
+            lock.lock();
             try {
                 //防止缓存击穿
                 if (cacheHit != null && !this.hasCachePut(contexts)) {
-                    logger.info("从缓存中获取到数据！！");
+                    logger.info("从缓存中获取到数据1-2！！");
                     cacheValue = cacheHit.get();
                     returnValue = this.wrapCacheValue(method, cacheValue);
                 } else {

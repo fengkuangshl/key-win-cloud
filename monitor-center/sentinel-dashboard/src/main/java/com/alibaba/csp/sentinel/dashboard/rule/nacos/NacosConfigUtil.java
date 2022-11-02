@@ -15,26 +15,27 @@
  */
 package com.alibaba.csp.sentinel.dashboard.rule.nacos;
 
-import com.alibaba.csp.sentinel.dashboard.datasource.entity.rule.RuleEntity;
-import com.alibaba.csp.sentinel.dashboard.util.JSONUtils;
-import com.alibaba.csp.sentinel.slots.block.Rule;
-import com.alibaba.csp.sentinel.util.AssertUtil;
-import com.alibaba.csp.sentinel.util.StringUtil;
-import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.config.ConfigType;
-import com.alibaba.nacos.api.exception.NacosException;
+import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 /**
  * @author Eric Zhao
  * @since 1.4.0
  */
+@Component
 public final class NacosConfigUtil {
 
-    public static final String GROUP_ID = "SENTINEL_GROUP";
+    @Resource
+    private NacosConfig nacosConfig;
+
+    public static String GROUP_ID = "SENTINEL_GROUP";
+
+    @PostConstruct
+    public void init() {
+        // GROUP_ID = this.nacosConfig.getGroup();
+    }
 
     public static final String FLOW_DATA_ID_POSTFIX = "-flow-rules";
     public static final String PARAM_FLOW_DATA_ID_POSTFIX = "-param-rules";
