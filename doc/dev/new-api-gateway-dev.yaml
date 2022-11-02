@@ -55,6 +55,9 @@ spring:
             rule-type: system
             data-type: json
     gateway:
+#      httpclient:
+#        connect-timeout: 1000
+#        response-timeout: 5s
       discovery:
         locator:
           lowerCaseServiceId: true
