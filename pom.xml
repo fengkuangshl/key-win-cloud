@@ -71,8 +71,8 @@
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <docker.image.prefix>key-win</docker.image.prefix>
         <!-- docker私有仓库地址 -->
-        <docker.registry.url>192.168.1.50:8083</docker.registry.url>
-        <docker.registry.host>http://192.168.1.50:2375</docker.registry.host>
+        <docker.registry.url>192.168.1.11:8083</docker.registry.url>
+        <docker.registry.host>http://192.168.1.11:2375</docker.registry.host>
         <ant.version>1.10.7</ant.version>
     </properties>
 
@@ -378,7 +378,7 @@
             </properties>
             <activation>
                 <!-- 默认情况下使用dev开发配置 如 打包时不包含 -p 参数-->
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
             </activation>
         </profile>
         <!-- 打包命令package -P test -->
@@ -410,6 +410,25 @@
                 </spring.cloud.nacos.config.shared-configs.refresh>
                 <spring.cloud.nacos.config.group>PROD_GROUP</spring.cloud.nacos.config.group>
             </properties>
+        </profile>
+        <!-- 打包命令package -P prod -->
+        <profile>
+            <id>docker</id>
+            <properties>
+                <spring.cloud.nacos.config.server-addr>192.168.1.14:30153</spring.cloud.nacos.config.server-addr>
+                <spring.profiles.active>docker</spring.profiles.active>
+                <spring.cloud.nacos.config.file-extension>yaml</spring.cloud.nacos.config.file-extension>
+                <spring.cloud.nacos.config.namespace>key-win-docker</spring.cloud.nacos.config.namespace>
+                <spring.cloud.nacos.config.shared-configs.data-id>common-docker.yaml
+                </spring.cloud.nacos.config.shared-configs.data-id>
+                <spring.cloud.nacos.config.shared-configs.refresh>true
+                </spring.cloud.nacos.config.shared-configs.refresh>
+                <spring.cloud.nacos.config.group>DOCKER_GROUP</spring.cloud.nacos.config.group>
+            </properties>
+            <activation>
+                <!-- 默认情况下使用dev开发配置 如 打包时不包含 -p 参数-->
+                <activeByDefault>true</activeByDefault>
+            </activation>
         </profile>
     </profiles>
 

@@ -316,6 +316,11 @@ echo 'successful deploy !!!';
             <param name="env-profile-name" value="prod" />
         </antcall>
     </target>
+	<target name="mvn-package-docker-docker" >
+		<antcall target="mvn-build-docker">
+			<param name="env-profile-name" value="docker" />
+		</antcall>
+	</target>
 	<target name="mvn-local-install" description="安装jar包到本地仓库" depends="mvn-clean">
 		<mvn>
 			<arg value="-X" />

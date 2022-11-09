@@ -22,6 +22,29 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+		<!-- 关系型数据库配置 -->
+		<dependency>
+			<groupId>com.key.win</groupId>
+			<artifactId>db-spring-boot-starter</artifactId>
+		</dependency>
+
+		<!-- 非关系型数据库配置 -->
+		<dependency>
+			<groupId>com.key.win</groupId>
+			<artifactId>redis-spring-boot-starter</artifactId>
+		</dependency>
+
+		<!-- 日志中心 -->
+		<dependency>
+			<groupId>com.key.win</groupId>
+			<artifactId>log-spring-boot-starter</artifactId>
+		</dependency>
+
+		<!-- 公共实体配置 -->
+		<dependency>
+			<groupId>com.key.win</groupId>
+			<artifactId>common-spring-boot-starter</artifactId>
+		</dependency>
 
 
 	 	
@@ -29,6 +52,11 @@
 		<dependency>
 			<groupId>com.key.win</groupId>
 			<artifactId>uaa-server-spring-boot-starter</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.key.win</groupId>
+			<artifactId>mybatis-plus-spring-boot-starter</artifactId>
 		</dependency>
 	 	
 
