@@ -3,8 +3,8 @@
 
     <loadproperties srcFile="../../build.properties" encoding="UTF-8"/>
     <import file="../../build-base.xml"/>
-    <property name="project.jar.filename" value="param-center.jar"/>
-    <property name="project.filePath" value="param-center" />
+    <property name="project.jar.filename" value="${ant.project.name}.jar"/>
+    <property name="project.filePath" value="${ant.project.name}" />
     <property name="docker.java.jdk.filePath" value="../../jdk-11.0.9_linux-x64.rpm" />
 
 

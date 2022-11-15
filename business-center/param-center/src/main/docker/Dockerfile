@@ -20,7 +20,7 @@ RUN localedef -c -f UTF-8 -i zh_CN zh_CN.utf8
 
 #RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
 VOLUME /tmp
-ADD file-center.jar app.jar
+ADD param-center.jar app.jar
 #RUN apk --no-cache add tzdata  && \
 #    ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
 #    echo "Asia/Shanghai" > /etc/timezone
