@@ -25,7 +25,7 @@ const settings: ISettings = {
   menuTypeDirectory: '目录',
   defaultAvatar: require('./assets/head.png'),
   isEnablePermission: true,
-  isEnableWebSocket: false,
+  isEnableWebSocket: true,
   apiAuth: '/api-auth/',
   apiUser: '/api-user/',
   apiFile: 'api-file/',

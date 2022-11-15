@@ -834,7 +834,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n// You can customize below settings :)\nconst settings = {\n  title: 'key-win后台管理',\n  activePath: 'activePath',\n  accessToken: 'access_token',\n  refreshToken: 'refresh_token',\n  menuTypeItem: '菜单',\n  menuTypeDirectory: '目录',\n  defaultAvatar: __webpack_require__(/*! ./assets/head.png */ \"./src/assets/head.png\"),\n  isEnablePermission: true,\n  isEnableWebSocket: false,\n  apiAuth: '/api-auth/',\n  apiUser: '/api-user/',\n  apiFile: 'api-file/',\n  apiParam: '/api-param/',\n  apiLog: '/api-log'\n};\n/* harmony default export */ __webpack_exports__[\"default\"] = (settings);\n\n//# sourceURL=webpack:///./src/settings.ts?");
+eval("__webpack_require__.r(__webpack_exports__);\n// You can customize below settings :)\nconst settings = {\n  title: 'key-win后台管理',\n  activePath: 'activePath',\n  accessToken: 'access_token',\n  refreshToken: 'refresh_token',\n  menuTypeItem: '菜单',\n  menuTypeDirectory: '目录',\n  defaultAvatar: __webpack_require__(/*! ./assets/head.png */ \"./src/assets/head.png\"),\n  isEnablePermission: true,\n  isEnableWebSocket: true,\n  apiAuth: '/api-auth/',\n  apiUser: '/api-user/',\n  apiFile: 'api-file/',\n  apiParam: '/api-param/',\n  apiLog: '/api-log'\n};\n/* harmony default export */ __webpack_exports__[\"default\"] = (settings);\n\n//# sourceURL=webpack:///./src/settings.ts?");
 
 /***/ }),
 
