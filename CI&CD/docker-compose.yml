@@ -1,0 +1,88 @@
+# ------------------------------------------------------------------------------
+#
+#    DO NOT MODIFY THIS FILE !!!
+#
+#
+# ------------------------------------------------------------------------------
+
+version: '3.1'
+
+networks:
+  docker-compose-key-win-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.220.1.0/24
+          gateway: 10.220.1.1
+   
+services:
+
+  nacos-server:
+      image: 192.168.1.11:8083/key-win/nacos-server
+      restart: always
+      networks:
+        - docker-compose-key-win-net
+      ports:
+        -  8848:8848/tcp
+      environment:
+        SPRING_DATASOURCE_PLATFORM: mysql
+        MODE: standalone
+        MYSQL_SERVICE_HOST: 192.168.1.29
+        MYSQL_SERVICE_DB_NAME: nacos
+        MYSQL_SERVICE_PORT: 3306
+        MYSQL_SERVICE_USER: root
+        MYSQL_SERVICE_PASSWORD: root
+        NACOS_APPLICATION_PORT: 8848
+      volumes:
+        - ./nacos/logs/:/home/nacos/logs
+        - ./nacos/plugins/:/home/nacos/plugins
+        - ./nacos/conf/application.properties:/home/nacos/conf/application.properties
+      logging:
+        options:
+          max-size: "${DOCKER_LOGS_MAX_SIZE:-100M}"
+
+  user-center:
+    image: 192.168.1.11:8083/key-win/user-center
+    restart: always
+    depends_on:
+      - nacos-server
+    networks:
+      - docker-compose-key-win-net
+    ports:
+      -  7000:7000/tcp
+    volumes:
+      - /app/deploy/business/logs/:/app/deploy/business/logs/
+    environment:
+      - spring.profiles.active=docker
+    logging:
+      options:
+        max-size: "${DOCKER_LOGS_MAX_SIZE:-100M}"  
+
+
+  auth-server:
+    image: 192.168.1.11:8083/key-win/auth-server
+    restart: always
+    depends_on:
+      - platform-base-center
+    networks:
+      - docker-compose-key-win-net
+    ports:
+      -  8000:8000/tcp
+    volumes:
+      - /app/deploy/business/logs/:/app/deploy/business/logs/
+    environment:
+      - spring.profiles.active=docker
+    logging:
+      options:
+        max-size: "${DOCKER_LOGS_MAX_SIZE:-100M}"
+  
+  sztf:
+    image: 192.168.1.11:8083/key-win/back-center-vue
+    restart: always
+    networks:
+      - docker-compose-key-win-net
+    ports:
+      -  8881:8881/tcp
+    logging:
+      options:
+        max-size: "${DOCKER_LOGS_MAX_SIZE:-100M}"

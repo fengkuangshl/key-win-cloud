@@ -38,6 +38,7 @@ import org.springframework.data.redis.connection.lettuce.LettucePoolingClientCon
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
@@ -192,8 +193,9 @@ public class RedisAutoConfig {
 				.disableCachingNullValues() // 如果是空值，不缓存
 				.computePrefixWith(cacheKeyPrefix())
 				.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(RedisSerializer.string())) // 设置key序列化器
-				.serializeValuesWith(
-						RedisSerializationContext.SerializationPair.fromSerializer(RedisSerializer.java())); // 设置value序列化器
+//				.serializeValuesWith(
+//						RedisSerializationContext.SerializationPair.fromSerializer(RedisSerializer.java())); // 设置value序列化器
+				.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
 		return RedisCacheManager.builder(RedisCacheWriter.nonLockingRedisCacheWriter(lettuceConnectionFactory))
 				.cacheDefaults(redisCacheConfiguration).build();
 	}
@@ -211,12 +213,13 @@ public class RedisAutoConfig {
 		redisTemplate.setConnectionFactory(lettuceConnectionFactory);
 		RedisSerializer stringSerializer = new StringRedisSerializer();
 		// RedisSerializer redisObjectSerializer = new RedisObjectSerializer();
-		RedisSerializer redisObjectSerializer = new RedisObjectSerializer();
+		// RedisSerializer redisObjectSerializer = new RedisObjectSerializer();
+		RedisSerializer redisObjectSerializer = new GenericJackson2JsonRedisSerializer();
 		redisTemplate.setKeySerializer(stringSerializer); // key的序列化类型
 		redisTemplate.setHashKeySerializer(stringSerializer);
 		redisTemplate.setValueSerializer(redisObjectSerializer); // value的序列化类型
 		redisTemplate.setHashValueSerializer(redisObjectSerializer); // value的序列化类型
-		redisTemplate.setDefaultSerializer(new StringRedisSerializer()); //default use String
+		redisTemplate.setDefaultSerializer(redisObjectSerializer); //default use String
 		redisTemplate.afterPropertiesSet();
 
 		redisTemplate.opsForValue().set("hello", "wolrd");
@@ -232,12 +235,13 @@ public class RedisAutoConfig {
 	@RefreshScope
 	public RedisTemplate<String, Object> getSingleRedisTemplate(LettuceConnectionFactory lettuceConnectionFactory) {
 		RedisTemplate<String, Object> redisTemplate = new RedisTemplate<String, Object>();
-		RedisSerializer redisObjectSerializer = new RedisObjectSerializer();
+		// RedisSerializer redisObjectSerializer = new RedisObjectSerializer();
+		RedisSerializer redisObjectSerializer = new GenericJackson2JsonRedisSerializer();
 		redisTemplate.setConnectionFactory(lettuceConnectionFactory);
 		redisTemplate.setKeySerializer(new StringRedisSerializer()); // key的序列化类型
 		redisTemplate.setValueSerializer(redisObjectSerializer); // value的序列化类型
 		redisTemplate.setHashValueSerializer(redisObjectSerializer);
-		redisTemplate.setDefaultSerializer(new StringRedisSerializer()); //default use String
+		redisTemplate.setDefaultSerializer(redisObjectSerializer); //default use String
 		redisTemplate.afterPropertiesSet();
 		return redisTemplate;
 	}

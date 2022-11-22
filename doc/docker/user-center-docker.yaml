@@ -9,7 +9,7 @@ spring:
       datasource:
         ds01:
           nacos:
-            server-addr: 192.168.1.14:30153
+            server-addr: ${spring.cloud.nacos.config.server-addr}
             group-id: SENTINEL_GROUP
             namespace: key-win-dev
             rule-type: flow
