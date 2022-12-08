@@ -6,10 +6,8 @@
 
 import $ from 'jquery';
 
-const proHost = window.location.protocol + "//" + window.location.host;
-const href = window.location.href.split("bpmnjs")[0];
-const key = href.split(window.location.host)[1];
-const publicurl = 'http://127.0.0.1:9200/api-activiti/'; //proHost + key;
+const accessToken = 'access_token';
+const publicUrl = 'http://127.0.0.1:9200/api-activiti/';
 const tools = {
     registerFileDrop(container, callback) {
         container.get(0).addEventListener('dragover', tools.handleDragOver, false);
@@ -63,16 +61,7 @@ const tools = {
         }
     },
     getToken() {
-        var tableName = 'easyweb';
-        var userInfo = window.localStorage.getItem(tableName);
-        if (userInfo) {
-            userInfo = JSON.parse(userInfo);
-            var token = userInfo.token;
-            if (token) {
-                return JSON.parse(token);
-            }
-        }
-        return null;
+        return window.localStorage.getItem(accessToken);
     },
     post(path, param, successFun) {
         tools.ajax(path, 'POST', 'json', param, successFun);
@@ -87,7 +76,7 @@ const tools = {
             param.access_token = token.access_token;
         }
         $.ajax({
-            url: publicurl + path,
+            url: publicUrl + path,
             type: method,
             dataType: dataType,
             data: param,
@@ -127,7 +116,7 @@ const tools = {
             }
             var path = 'processDefinitionCtrl/addDeploymentByString';
             tools.post(path, param, function (result) {
-                if (result.code == 0) {
+                if (result.code == 200) {
                     tools.syhide('alert')
                     alert('保存成功')
                 } else {
@@ -176,7 +165,7 @@ const tools = {
         var fm = new FormData();
         fm.append('processFile', FileUpload);
         $.ajax({
-            url: publicurl + 'processDefinitionCtrl/upload',
+            url: publicUrl + 'processDefinitionCtrl/upload',
             type: 'POST',
             data: fm,
             async: false,
@@ -278,7 +267,7 @@ const tools = {
     getByColor(data) {
 
         var ColorJson = []
-        if(data){
+        if (data) {
             for (var k in data['highLine']) {
                 var par = {
                     "name": data['highLine'][k],
@@ -324,28 +313,32 @@ const tools = {
             }
         }
     },
-    loadDefinitionXML(bpmnModeler,param, fn, container) {
+    loadDefinitionXML(bpmnModeler, param, fn, container) {
         //加载后台方法获取xml
         var path = 'processDefinitionCtrl/getDefinitionXML';
         tools.ajax(path, 'GET', 'text', param, function (result) {
-            var newXmlData = result
-            tools.createDiagram(newXmlData, bpmnModeler, container);
-            if (tools.isFunction(fn)) {
-                fn();
+            if (result.code == 200) {
+                var newXmlData = result.data
+                tools.createDiagram(newXmlData, bpmnModeler, container);
+                if (tools.isFunction(fn)) {
+                    fn();
+                }
             }
         })
     },
-    loadhighLine(bpmnModeler,param, param1,container) {
-        var path = 'activitiHistoryCtrl/gethighLine';
+    loadHighLine(bpmnModeler, param, param1, container) {
+        var path = 'activitiHistoryCtrl/getHighLine';
         tools.ajax(path, 'GET', 'json', param1, function (result) {
-            var ColorJson = tools.getByColor(result.obj)
-            tools.loadDefinitionXML(bpmnModeler,param, function () {
-                setTimeout(function () {
-                    for (var i in ColorJson) {
-                        tools.setColor(ColorJson[i], bpmnModeler)
-                    }
-                }, 200)
-            },container)
+            if (result.code == 200) {
+                var ColorJson = tools.getByColor(result.data.obj)
+                tools.loadDefinitionXML(bpmnModeler, param, function () {
+                    setTimeout(function () {
+                        for (var i in ColorJson) {
+                            tools.setColor(ColorJson[i], bpmnModeler)
+                        }
+                    }, 200)
+                }, container)
+            }
         });
     }
 }

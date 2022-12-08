@@ -9,6 +9,7 @@ import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
 import com.key.win.log.annotation.LogAnnotation;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.activiti.api.process.runtime.ProcessRuntime;
 import org.activiti.engine.RepositoryService;
@@ -35,6 +36,7 @@ import java.util.zip.ZipInputStream;
 
 @RestController
 @RequestMapping("/processDefinitionCtrl/*")
+@Api("工作流定义相关的api")
 public class ProcessDefinitionController {
 
     private static final Logger log = LoggerFactory.getLogger(ProcessDefinitionController.class);
@@ -55,8 +57,10 @@ public class ProcessDefinitionController {
     private ProcessDefinitionService processDefinitionService;
 
 
-    @PostMapping(value = "/uploadStreamAndDeployment")
-    public Result uploadStreamAndDeployment(@RequestParam("processFile") MultipartFile multipartFile) {
+    @PostMapping(value = "/uploadStreamAndDeployment/{deploymentName}")
+    @ApiOperation(value = "bpmn文件上传及工作流部署")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    public Result uploadStreamAndDeployment(@RequestParam("processFile") MultipartFile multipartFile, @PathVariable String deploymentName) {
         // 获取上传的文件名
         String fileName = multipartFile.getOriginalFilename();
 
@@ -73,27 +77,29 @@ public class ProcessDefinitionController {
             Deployment deployment = null;
             if (extension.equals("zip")) {
                 ZipInputStream zip = new ZipInputStream(fileInputStream);
-                deployment = repositoryService.createDeployment()//初始化流程
+                deployment = repositoryService.createDeployment()//初始化工作流
                         .addZipInputStream(zip)
-                        .name("流程部署名称可通过接口传递现在写死")
+                        .name(deploymentName)
                         .deploy();
             } else {
-                deployment = repositoryService.createDeployment()//初始化流程
+                deployment = repositoryService.createDeployment()//初始化工作流
                         .addInputStream(fileName, fileInputStream)
-                        .name("流程部署名称可通过接口传递现在写死")
+                        .name(deploymentName)
                         .deploy();
             }
 
-            return Result.succeed("部署流程成功！");
+            return Result.succeed("部署工作流成功！");
 
         } catch (Exception e) {
-            log.error("部署流程失败:" + e.getMessage(), e);
-            return Result.failed("部署流程失败:" + e.getMessage());
+            log.error("部署工作流失败:" + e.getMessage(), e);
+            return Result.failed("部署工作流失败:" + e.getMessage());
         }
     }
 
 
     @PostMapping(value = "/upload")
+    @ApiOperation(value = "bpmn文件上传")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
     public Result upload(HttpServletRequest request, @RequestParam("processFile") MultipartFile multipartFile) {
 
         if (multipartFile.isEmpty()) {
@@ -113,10 +119,10 @@ public class ProcessDefinitionController {
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
         }
-        String bpmnUrl = globalMappingConfig.getBpmnUrlPrefix()+fileName;
+        String bpmnUrl = globalMappingConfig.getBpmnUrlPrefix() + fileName;
         try {
             multipartFile.transferTo(file);
-            return Result.succeed(bpmnUrl,"");
+            return Result.succeed(bpmnUrl, "");
         } catch (Exception e) {
             log.error(fileName + "上传出错！" + e.getMessage(), e);
             return Result.failed(fileName + "上传出错！" + e.getMessage());
@@ -129,38 +135,42 @@ public class ProcessDefinitionController {
      * @return
      */
     @PostMapping(value = "/addDeploymentByFileNameBPMN")
+    @ApiOperation(value = "根据BPMN工作流部署")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
     public Result addDeploymentByFileNameBPMN(@RequestParam("deploymentFileUUID") String deploymentFileUUID, @RequestParam("deploymentName") String deploymentName) {
         try {
-            String filename = "resources/bpmn/" + deploymentFileUUID;
-            Deployment deployment = repositoryService.createDeployment()//初始化流程
+            String filename = globalMappingConfig.getBpmnUploadPath() + deploymentFileUUID;
+            Deployment deployment = repositoryService.createDeployment()//初始化工作流
                     .addClasspathResource(filename)
                     .name(deploymentName)
                     .deploy();
             //System.out.println(deployment.getName());
             return Result.succeed(deployment.getId());
         } catch (Exception e) {
-            log.error("BPMN部署流程失败:" + e.getMessage(), e);
-            return Result.succeed("BPMN部署流程失败:" + e.getMessage());
+            log.error("BPMN部署工作流失败:" + e.getMessage(), e);
+            return Result.succeed("BPMN部署工作流失败:" + e.getMessage());
         }
 
     }
 
     @PostMapping(value = "/addDeploymentByString")
+    @ApiOperation(value = "根据BPMN工作流部署")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
     public Result addDeploymentByString(@RequestParam("stringBPMN") String stringBPMN) {
         try {
             Deployment deployment = repositoryService.createDeployment()
                     .addString("CreateWithBPMNJS.bpmn", stringBPMN)
-                    .name("不知道在哪显示的部署名称")
+                    .name("CreateWithBPMNJS")
                     .deploy();
             //System.out.println(deployment.getName());
             return Result.succeed(deployment.getId());
         } catch (Exception e) {
-            log.error("string部署流程失败:" + e.getMessage(), e);
-            return Result.succeed("部署流程失败:" + e.getMessage());
+            log.error("string部署工作流失败:" + e.getMessage(), e);
+            return Result.succeed("部署工作流失败:" + e.getMessage());
         }
     }
 
-//缺失流程部署ID属性版本，import org.activiti.api.process.model.ProcessDefinition;
+//缺失工作流部署ID属性版本，import org.activiti.api.process.model.ProcessDefinition;
     /*@GetMapping(value = "/getDefinitions")
     public AjaxResponse getDefinitions() {
 
@@ -169,7 +179,7 @@ public class ProcessDefinitionController {
                 securityUtil.logInAs("wukong");
             }
             Page<ProcessDefinition> processDefinitions = processRuntime.processDefinitions(Pageable.of(0, 50));
-            System.out.println("流程定义数量： " + processDefinitions.getTotalItems());
+            System.out.println("工作流定义数量： " + processDefinitions.getTotalItems());
             for (ProcessDefinition pd : processDefinitions.getContent()) {
                 System.out.println("getId：" + pd.getId());
                 System.out.println("getName：" + pd.getName());
@@ -182,13 +192,13 @@ public class ProcessDefinitionController {
                     GlobalConfig.ResponseCode.SUCCESS.getDesc(), processDefinitions.getContent());
         }catch (Exception e) {
             return AjaxResponse.AjaxData(GlobalConfig.ResponseCode.ERROR.getCode(),
-                    "获取流程定义失败", e.toString());
+                    "获取工作流定义失败", e.toString());
         }
     }*/
 
 
     //import org.activiti.engine.RepositoryService;
-    @ApiOperation("分页")
+    @ApiOperation("工作流部署分页")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
     @PostMapping(value = "/getDefinitions")
     public PageResult<ProcessDefinitionVo> getDefinitions(@RequestBody PageRequest<ProcessDefinitionVo> t) {
@@ -196,8 +206,10 @@ public class ProcessDefinitionController {
 
     }
 
-    //获取流程定义XML
+    //获取工作流定义XML
     @GetMapping(value = "/getDefinitionXML")
+    @ApiOperation(value = "以xml返回工作流的内容")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
     public void getProcessDefineXML(HttpServletResponse response,
                                     @RequestParam("deploymentId") String deploymentId,
                                     @RequestParam("resourceName") String resourceName) {
@@ -214,25 +226,29 @@ public class ProcessDefinitionController {
             }
             inputStream.close();
         } catch (Exception e) {
-            log.error("获取流程定义XML出错：" + e.getMessage(), e);
+            log.error("获取工作流定义XML出错：" + e.getMessage(), e);
         }
     }
 
 
     @GetMapping(value = "/getDeployments")
-    public List<Deployment> getDeployments() {
-        return repositoryService.createDeploymentQuery().list();
+    @ApiOperation(value = "获取所有部署工作流")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    public Result<List<Deployment>> getDeployments() {
+        List<Deployment> deploymentList = repositoryService.createDeploymentQuery().list();
+        return Result.succeed(deploymentList);
     }
 
 
-    //删除流程定义
+    //删除工作流定义
     @GetMapping(value = "/delDefinition")
-    public Result delDefinition(@RequestParam("depId") String depId, @RequestParam("pdId") String pdId) {
+    @ApiOperation(value = "根据部署Id获取工作流")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    public Result delDefinition(@RequestParam("procDefId") String procDefId, @RequestParam("deploymentId") String deploymentId) {
         try {
-
             //删除数据
-            formDataService.deleteFormDataByProcDefId(depId);
-            repositoryService.deleteDeployment(depId, true);
+            formDataService.deleteFormDataByProcDefId(procDefId);
+            repositoryService.deleteDeployment(deploymentId, true);
             return Result.succeed("删除成功");
 
 

@@ -6,10 +6,12 @@ import com.key.win.activiti.util.ActivitiConstant;
 import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.util.SysUserUtil;
 import com.key.win.common.web.Result;
+import com.key.win.log.annotation.LogAnnotation;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.activiti.bpmn.model.*;
 import org.activiti.bpmn.model.Process;
+import org.activiti.bpmn.model.*;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/processTaskActionController")
+@Api("工作流动作任务相关的api")
 public class ProcessTaskActionController {
 
     @Autowired
@@ -49,7 +52,8 @@ public class ProcessTaskActionController {
 
     @GetMapping("/getHistoryNode")
     @ApiOperation(value = "获取流程实例已执行节点", notes = "获取流程实例已执行节点")
-    public Result<List<Map<String, Object>>> getHistoryNode(@ApiParam("流程实例id") @RequestParam String procInstId,
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    public Result<List<Map<String, Object>>> getHistoryNode(@ApiParam("流程实例id") @RequestParam String instanceId,
                                                             @ApiParam("任务id") @RequestParam String taskId) {
 
         List<HistoricActivityInstance> tempList = new ArrayList<>();
@@ -70,7 +74,7 @@ public class ProcessTaskActionController {
         resultList.add(tempMap);
 
         List<HistoricActivityInstance> activityFinishedList = historyService.createHistoricActivityInstanceQuery()
-                .processInstanceId(procInstId)
+                .processInstanceId(instanceId)
                 .activityType("userTask")
                 .finished()
                 .orderByHistoricActivityInstanceEndTime()
@@ -132,7 +136,8 @@ public class ProcessTaskActionController {
 
     @GetMapping("/getPreOneIncomeNode")
     @ApiOperation(value = "驳回上一节点", notes = "驳回上一节点")
-    public void getPreOneIncomeNode(@ApiParam("流程实例id")@RequestParam String taskId) {
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    public Result getPreOneIncomeNode(@ApiParam("流程实例id")@RequestParam String taskId) {
         List<Map<String, String>> incomeNodes = new ArrayList<>();
 
         org.activiti.engine.task.Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
@@ -195,6 +200,7 @@ public class ProcessTaskActionController {
 
         //恢复原方向
         currFlow.setOutgoingFlows(oriSequenceFlows);
+        return Result.result(true);
     }
 
     /**
@@ -242,14 +248,16 @@ public class ProcessTaskActionController {
 
     //获取参数
     @GetMapping(value = "/revocation")
-    public void revocation(@RequestParam("instanceId") String procInstId) {
+    @ApiOperation(value = "申请追回")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    public Result revocation(@RequestParam("instanceId") String instanceId) {
         LoginAppUser loginAppUser = SysUserUtil.getLoginAppUser();
         if(loginAppUser == null){
             throw new RuntimeException("用户不存在！");
         }
 
         // 获取当前执行任务节点
-        org.activiti.engine.runtime.ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(procInstId).singleResult();
+        org.activiti.engine.runtime.ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(instanceId).singleResult();
         List<Execution> list = runtimeService.createExecutionQuery().processInstanceId(processInstance.getId()).list();
         Set<Execution> executions = list.stream().filter(execution -> execution.getActivityId() != null).collect(Collectors.toSet());
 
@@ -259,21 +267,24 @@ public class ProcessTaskActionController {
             // 获取当前执行任务
             Task task = taskService.createTaskQuery().executionId(execution.getId()).singleResult();
             String comment = "【" + loginAppUser.getNickname() + "】追回了该申请";
-            handleResult(task.getId(), procInstId, ActivitiConstant.HANDLE_STATUS_YCX, comment, task.getTaskDefinitionKey(), loginAppUser.getUsername(), execution.getId());
+            handleResult(task.getId(), instanceId, ActivitiConstant.HANDLE_STATUS_YCX, comment, task.getTaskDefinitionKey(), loginAppUser.getUsername(), execution.getId());
         }
 
-        runtimeService.deleteProcessInstance(procInstId, ActivitiConstant.HANDEL_RESULT_CX);
+        runtimeService.deleteProcessInstance(instanceId, ActivitiConstant.HANDEL_RESULT_CX);
+        return Result.result(true);
     }
 
     @GetMapping(value = "/handleCancellation")
-    public void handleCancellation(@RequestParam("procInstId") String procInstId) {
+    @ApiOperation(value = "申请作废")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    public Result handleCancellation(@RequestParam("processInstanceId") String instanceId) {
         LoginAppUser loginAppUser = SysUserUtil.getLoginAppUser();
         if(loginAppUser == null){
             throw new RuntimeException("用户不存在！");
         }
 
         // 获取当前执行任务节点
-        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(procInstId).singleResult();
+        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(instanceId).singleResult();
         List<Execution> list = runtimeService.createExecutionQuery().processInstanceId(processInstance.getId()).list();
         Set<Execution> executions = list.stream().filter(execution -> execution.getActivityId() != null).collect(Collectors.toSet());
 
@@ -283,13 +294,14 @@ public class ProcessTaskActionController {
             // 获取当前执行任务
             Task task = taskService.createTaskQuery().executionId(execution.getId()).singleResult();
             String comment = "【" + loginAppUser.getNickname() + "】作废了该申请";
-            handleResult(task.getId(), procInstId, ActivitiConstant.HANDLE_STATUS_YZF, comment, task.getTaskDefinitionKey(), loginAppUser.getUsername(), execution.getId());
+            handleResult(task.getId(), instanceId, ActivitiConstant.HANDLE_STATUS_YZF, comment, task.getTaskDefinitionKey(), loginAppUser.getUsername(), execution.getId());
         }
 
-        runtimeService.deleteProcessInstance(procInstId, ActivitiConstant.HANDEL_RESULT_ZF);
+        runtimeService.deleteProcessInstance(instanceId, ActivitiConstant.HANDEL_RESULT_ZF);
+        return Result.result(true);
     }
 
-    private void handleResult(String id, String procInstId, Integer handleStatus, String comment, String taskDefinitionKey, String username, String executionId) {
+    private void handleResult(String id, String instanceId, Integer handleStatus, String comment, String taskDefinitionKey, String username, String executionId) {
 
     }
 

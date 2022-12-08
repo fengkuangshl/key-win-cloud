@@ -7,6 +7,10 @@ import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.util.SysUserUtil;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
+import com.key.win.common.web.Result;
+import com.key.win.log.annotation.LogAnnotation;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.activiti.bpmn.model.Process;
 import org.activiti.bpmn.model.*;
 import org.activiti.engine.HistoryService;
@@ -21,6 +25,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/activitiHistoryCtrl")
+@Api("工作流历史相关的api")
 public class ActivitiHistoryController {
 
     @Autowired
@@ -34,30 +39,34 @@ public class ActivitiHistoryController {
 
     //用户历史
     @PostMapping(value = "/getInstancesByUserName")
-    public PageResult<ActivitiHistoryVo> InstancesByUser(@RequestBody PageRequest<ActivitiHistoryVo> t) {
+    @ApiOperation(value = "获取历史实例分页")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    public PageResult<ActivitiHistoryVo> getInstancesByUser(@RequestBody PageRequest<ActivitiHistoryVo> t) {
         return activitiHistoryService.findActivitiHistoryByPaged(t);
 
     }
 
     //任务实例历史
     @PostMapping(value = "/getInstancesByPiId")
-    public List<HistoricTaskInstance> getInstancesByPiId(@RequestParam("piId") String piId) {
+    @ApiOperation(value = "任务实例历史")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    public Result getInstancesByPiId(@RequestParam("instanceId") String instanceId) {
 
         //--------------------------------------------另一种写法-------------------------
         List<HistoricTaskInstance> historicTaskInstances = historyService.createHistoricTaskInstanceQuery()
                 .orderByHistoricTaskInstanceEndTime().asc()
-                .processInstanceId(piId)
+                .processInstanceId(instanceId)
                 .list();
 
-        return historicTaskInstances;
+        return Result.succeed(historicTaskInstances);
 
 
     }
 
 
     //流程图高亮
-    @GetMapping("/gethighLine")
-    public Map<String, Object> gethighLine(@RequestParam("instanceId") String instanceId) {
+    @GetMapping("/getHighLine")
+    public Result getHighLine(@RequestParam("instanceId") String instanceId) {
         HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
                 .processInstanceId(instanceId).singleResult();
         //获取bpmnModel对象
@@ -158,12 +167,12 @@ public class ActivitiHistoryController {
 
         taskInstanceList.forEach(a -> iDo.add(a.getTaskDefinitionKey()));
 
-        Map<String, Object> reMap = new HashMap<>();
-        reMap.put("highPoint", highPoint);
-        reMap.put("highLine", highLine);
-        reMap.put("waitingToDo", waitingToDo);
-        reMap.put("iDo", iDo);
-        return reMap;
+        Map<String, Object> returnMap = new HashMap<>();
+        returnMap.put("highPoint", highPoint);
+        returnMap.put("highLine", highLine);
+        returnMap.put("waitingToDo", waitingToDo);
+        returnMap.put("iDo", iDo);
+        return Result.succeed(returnMap);
 
     }
 

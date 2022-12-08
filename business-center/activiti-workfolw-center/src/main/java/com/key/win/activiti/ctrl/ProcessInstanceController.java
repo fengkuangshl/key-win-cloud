@@ -6,6 +6,9 @@ import com.key.win.activiti.vo.ProcessInstanceVo;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
+import com.key.win.log.annotation.LogAnnotation;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.activiti.api.model.shared.model.VariableInstance;
 import org.activiti.api.process.model.ProcessInstance;
 import org.activiti.api.process.model.builders.ProcessPayloadBuilder;
@@ -20,6 +23,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/processInstanceCtrl")
+@Api("工作流实例相关的api")
 public class ProcessInstanceController {
     private static final Logger log = LoggerFactory.getLogger(ProcessDefinitionController.class);
     @Autowired
@@ -36,6 +40,8 @@ public class ProcessInstanceController {
 
 
     @PostMapping(value = "/getInstances")
+    @ApiOperation(value = "获取工作流实例分页")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
     public PageResult<ProcessInstanceVo> getInstances(@RequestBody PageRequest<ProcessInstanceVo> t) {
         return processInstanceService.findProcessInstanceByPaged(t);
     }
@@ -43,6 +49,8 @@ public class ProcessInstanceController {
 
     //启动
     @GetMapping(value = "/startProcess")
+    @ApiOperation(value = "启动工作流实例")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
     public Result startProcess(@RequestParam("processDefinitionKey") String processDefinitionKey,
                                @RequestParam("instanceName") String instanceName,
                                @RequestParam("instanceVariable") String instanceVariable) {
@@ -55,33 +63,36 @@ public class ProcessInstanceController {
                     //.withVariable("参数2", "参数2的值")
                     .withBusinessKey("自定义BusinessKey")
                     .build());
-            return Result.succeed("流程启动成功！" );
+            return Result.succeed("工作流启动成功！" );
         } catch (Exception e) {
-            log.error("创建流程实例失败:" + e.getMessage(), e);
-            return Result.failed("创建流程实例失败:" + e.getMessage());
+            log.error("创建工作流实例失败:" + e.getMessage(), e);
+            return Result.failed("创建工作流实例失败:" + e.getMessage());
         }
     }
 
     //删除
     @GetMapping(value = "/deleteInstance")
+    @ApiOperation(value = "删除工作流实例")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
     public Result deleteInstance(@RequestParam("instanceId") String instanceId) {
         try {
-
             ProcessInstance processInstance = processRuntime.delete(ProcessPayloadBuilder
                     .delete()
                     .withProcessInstanceId(instanceId)
                     .build()
             );
-            return Result.succeed("删除流程实例成功！");
+            return Result.succeed("删除工作流实例成功！");
         } catch (Exception e) {
-            log.error("删除流程实例失败:" + e.getMessage(), e);
-            return Result.failed("删除流程实例失败:" + e.getMessage());
+            log.error("删除工作流实例失败:" + e.getMessage(), e);
+            return Result.failed("删除工作流实例失败:" + e.getMessage());
         }
 
     }
 
     //挂起冷冻
     @GetMapping(value = "/suspendInstance")
+    @ApiOperation(value = "挂起工作流实例")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
     public Result suspendInstance(@RequestParam("instanceId") String instanceId) {
 
         try {
@@ -90,15 +101,17 @@ public class ProcessInstanceController {
                     .withProcessInstanceId(instanceId)
                     .build()
             );
-            return Result.succeed("流程实例挂起成功！");
+            return Result.succeed("工作流实例挂起成功！");
         } catch (Exception e) {
-            log.error("挂起流程实例失败:" + e.getMessage(), e);
-            return Result.failed("挂起流程实例失败:" + e.getMessage());
+            log.error("挂起工作流实例失败:" + e.getMessage(), e);
+            return Result.failed("挂起工作流实例失败:" + e.getMessage());
         }
     }
 
     //激活
     @GetMapping(value = "/resumeInstance")
+    @ApiOperation(value = "激活工作流实例")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
     public Result resumeInstance(@RequestParam("instanceId") String instanceId) {
 
         try {
@@ -108,23 +121,25 @@ public class ProcessInstanceController {
                     .withProcessInstanceId(instanceId)
                     .build()
             );
-            return Result.succeed("流程实例激活成功！");
+            return Result.succeed("工作流实例激活成功！");
         } catch (Exception e) {
-            log.error("激活流程实例失败:" + e.getMessage(), e);
-            return Result.failed("激活流程实例失败:" + e.getMessage());
+            log.error("激活工作流实例失败:" + e.getMessage(), e);
+            return Result.failed("激活工作流实例失败:" + e.getMessage());
         }
     }
 
 
     //获取参数
     @GetMapping(value = "/variables")
-    public List<VariableInstance> variables(@RequestParam("instanceId") String instanceId) {
+    @ApiOperation(value = "获取工作流实例参数")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    public Result variables(@RequestParam("instanceId") String instanceId) {
         List<VariableInstance> variableInstance = processRuntime.variables(ProcessPayloadBuilder
                 .variables()
                 .withProcessInstanceId(instanceId)
                 .build());
 
-        return variableInstance;
+        return Result.succeed(variableInstance);
     }
 
 

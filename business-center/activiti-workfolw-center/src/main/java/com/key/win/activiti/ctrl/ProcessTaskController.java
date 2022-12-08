@@ -11,6 +11,9 @@ import com.key.win.common.util.StringUtil;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
+import com.key.win.log.annotation.LogAnnotation;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.activiti.api.task.model.Task;
 import org.activiti.api.task.model.builders.TaskPayloadBuilder;
 import org.activiti.api.task.runtime.TaskRuntime;
@@ -32,6 +35,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/processTaskCtrl")
+@Api("工作流任务相关的api")
 public class ProcessTaskController {
     private static final Logger log = LoggerFactory.getLogger(ProcessDefinitionController.class);
 
@@ -66,12 +70,16 @@ public class ProcessTaskController {
 
     //获取我的代办任务
     @PostMapping(value = "/getTasks")
+    @ApiOperation(value = "获取我的代办任务分页")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
     public PageResult<ProcessTaskVo> getTasks(@RequestBody PageRequest<ProcessTaskVo> t) {
         return processTaskService.findProcessTaskByPaged(t);
     }
 
     //完成待办任务
     @GetMapping(value = "/completeTask")
+    @ApiOperation(value = "完成待办任务")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
     public Result completeTask(@RequestParam("taskId") String taskId,@RequestParam("audit") String audit) {
         try {
             Task task = taskRuntime.task(taskId);
@@ -97,7 +105,9 @@ public class ProcessTaskController {
 
     //渲染表单
     @GetMapping(value = "/formDataShow")
-    public Result formDataShow(@RequestParam("taskI") String taskId) {
+    @ApiOperation(value = "渲染表单")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    public Result formDataShow(@RequestParam("taskId") String taskId) {
         try {
 
             Task task = taskRuntime.task(taskId);
@@ -175,6 +185,8 @@ public class ProcessTaskController {
 
     //保存表单
     @PostMapping(value = "/formDataSave")
+    @ApiOperation(value = "保存表单")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
     public Result formDataSave(@RequestParam("taskId") String taskId,
                                @RequestParam("formData") String formData) {
         try {
