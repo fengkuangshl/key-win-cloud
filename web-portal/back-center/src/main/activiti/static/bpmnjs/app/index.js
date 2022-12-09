@@ -13,7 +13,6 @@ import diagramXML from '../resources/newDiagram.bpmn';
 var customTranslateModule = {
     translate: ['value', customTranslate]
 };
-debugger
 var container = $('#js-drop-zone');
 var canvas = $('#js-canvas');
 var bpmnModeler = new BpmnModeler({

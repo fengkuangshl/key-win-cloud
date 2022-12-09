@@ -8,6 +8,7 @@ import $ from 'jquery';
 
 const accessToken = 'access_token';
 const publicUrl = 'http://127.0.0.1:9200/api-activiti/';
+const serviceUrl = 'serviceUrl';
 const tools = {
     registerFileDrop(container, callback) {
         container.get(0).addEventListener('dragover', tools.handleDragOver, false);
@@ -61,7 +62,21 @@ const tools = {
         }
     },
     getToken() {
+        var params = tools.getUrlParam(window.location.href);
+        if (params[accessToken]) {
+            return params[accessToken];
+        }
         return window.localStorage.getItem(accessToken);
+    },
+    getServiceUrl() {
+        var params = tools.getUrlParam(window.location.href);
+        if (params[serviceUrl]) {
+            if (/\/$/.test(params[serviceUrl])) {
+                return params[serviceUrl];
+            }
+            return params[serviceUrl] + '/';
+        }
+        return window.location.href;
     },
     post(path, param, successFun) {
         tools.ajax(path, 'POST', 'json', param, successFun);
@@ -73,10 +88,10 @@ const tools = {
         param = param || {};
         var token = tools.getToken();
         if (token) {
-            param.access_token = token.access_token;
+            param.access_token = token;
         }
         $.ajax({
-            url: publicUrl + path,
+            url: tools.getServiceUrl() + path,
             type: method,
             dataType: dataType,
             data: param,
@@ -85,7 +100,7 @@ const tools = {
                 var token = tools.getToken();
                 if (token) {
                     // xhr.setRequestHeader('Authorization', 'Basic ' + token.access_token);
-                    xhr.setRequestHeader('Authorization', 'Bearer ' + token.access_token);
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
                 }
             },
             success: function (result) {
@@ -165,7 +180,7 @@ const tools = {
         var fm = new FormData();
         fm.append('processFile', FileUpload);
         $.ajax({
-            url: publicUrl + 'processDefinitionCtrl/upload',
+            url: tools.getServiceUrl() + 'processDefinitionCtrl/upload',
             type: 'POST',
             data: fm,
             async: false,
