@@ -5,7 +5,7 @@ import com.key.win.activiti.model.FormData;
 import com.key.win.activiti.service.FormDataService;
 import com.key.win.activiti.service.ProcessRuntimeService;
 import com.key.win.activiti.service.ProcessTaskService;
-import com.key.win.activiti.vo.ProcessTaskVo;
+import com.key.win.activiti.vo.ProcessTaskResponseVo;
 import com.key.win.common.model.system.SysUser;
 import com.key.win.common.util.StringUtil;
 import com.key.win.common.web.PageRequest;
@@ -72,7 +72,7 @@ public class ProcessTaskController {
     @PostMapping(value = "/getTasks")
     @ApiOperation(value = "获取我的代办任务分页")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
-    public PageResult<ProcessTaskVo> getTasks(@RequestBody PageRequest<ProcessTaskVo> t) {
+    public PageResult<ProcessTaskResponseVo> getTasks(@RequestBody PageRequest<ProcessTaskResponseVo> t) {
         return processTaskService.findProcessTaskByPaged(t);
     }
 

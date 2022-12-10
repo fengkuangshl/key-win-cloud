@@ -13,6 +13,7 @@ interface ISettings {
   apiFile: string
   apiParam: string
   apiLog: string
+  apiActiviti: string
 }
 
 // You can customize below settings :)
@@ -24,13 +25,14 @@ const settings: ISettings = {
   menuTypeItem: '菜单',
   menuTypeDirectory: '目录',
   defaultAvatar: require('./assets/head.png'),
-  isEnablePermission: true,
+  isEnablePermission: false,
   isEnableWebSocket: false,
   apiAuth: '/api-auth/',
   apiUser: '/api-user/',
   apiFile: 'api-file/',
   apiParam: '/api-param/',
-  apiLog: '/api-log'
+  apiLog: '/api-log/',
+  apiActiviti: '/api-activiti/'
 }
 
 export default settings

@@ -65,6 +65,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUser> impleme
 
     @Autowired
     private SysMenuService sysMenuService;
+
+    @Autowired
+    private  SysRoleService sysRoleService;
+
+    @Autowired
+    private SysGroupService sysGroupService;
+
     @Autowired
     private SysPermissionService sysPermissionService;
 
@@ -248,26 +255,33 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUser> impleme
 
     private void setUserExtInfo(SysUser dbUser, LoginAppUser loginUser) {
         BeanUtils.copyProperties(dbUser, loginUser);
-        List<SysGroup> groupByUserId = sysUserGroupDao.findGroupByUserId(dbUser.getId());
-        List<SysRole> rolesByUserId = sysUserRoleDao.findRolesByUserId(dbUser.getId());
-        loginUser.setSysGroups(groupByUserId);
-        loginUser.setSysRoles(rolesByUserId);
+
         if (dbUser.getType() == UserTypeEnum.ADMIN) {
+            List<SysGroup> groupList = sysGroupService.list();
+            List<SysRole> roleList = sysRoleService.list();
+            loginUser.setSysGroups(groupList);
+            loginUser.setSysRoles(roleList);
             //List<SysMenuPermission> permissionDaoByRoleIds = sysMenuPermissionService.list();
             List<SysMenu> menus = sysMenuService.list();
             List<SysPermission> sysPermissions = sysPermissionService.list();
             loginUser.setPermissions(getMenuPermissions(menus, sysPermissions));
             loginUser.setMenus(menus);
-        } else if (!CollectionUtils.isEmpty(rolesByUserId)) {
-            Set<Long> roleIds = rolesByUserId.stream().map(SysRole::getId).collect(Collectors.toSet());
-            List<SysRoleMenuPermission> grantMenus = sysRoleMenuPermissionService.findGrantMenus(roleIds);
-            Set<Long> menuIds = grantMenus.stream().map(SysRoleMenuPermission::getMenuId).collect(Collectors.toSet());
-            List<SysMenu> menus = sysMenuService.findSysMenuByMenuIds(menuIds);
-            List<SysRoleMenuPermission> grantMenuPermissions = sysRoleMenuPermissionService.findGrantMenuPermissions(roleIds);
-            Set<Long> menuPermissionIds = grantMenuPermissions.stream().map(SysRoleMenuPermission::getMenuPermissionId).collect(Collectors.toSet());
-            List<SysMenuPermission> sysMenuPermissionByIds = sysMenuPermissionService.findSysMenuPermissionByIds(menuPermissionIds);
-            loginUser.setPermissions(sysMenuPermissionByIds);
-            loginUser.setMenus(menus);
+        } else  {
+            List<SysGroup> groupByUserId = sysUserGroupDao.findGroupByUserId(dbUser.getId());
+            List<SysRole> rolesByUserId = sysUserRoleDao.findRolesByUserId(dbUser.getId());
+            loginUser.setSysGroups(groupByUserId);
+            loginUser.setSysRoles(rolesByUserId);
+            if (!CollectionUtils.isEmpty(rolesByUserId)) {
+                Set<Long> roleIds = rolesByUserId.stream().map(SysRole::getId).collect(Collectors.toSet());
+                List<SysRoleMenuPermission> grantMenus = sysRoleMenuPermissionService.findGrantMenus(roleIds);
+                Set<Long> menuIds = grantMenus.stream().map(SysRoleMenuPermission::getMenuId).collect(Collectors.toSet());
+                List<SysMenu> menus = sysMenuService.findSysMenuByMenuIds(menuIds);
+                List<SysRoleMenuPermission> grantMenuPermissions = sysRoleMenuPermissionService.findGrantMenuPermissions(roleIds);
+                Set<Long> menuPermissionIds = grantMenuPermissions.stream().map(SysRoleMenuPermission::getMenuPermissionId).collect(Collectors.toSet());
+                List<SysMenuPermission> sysMenuPermissionByIds = sysMenuPermissionService.findSysMenuPermissionByIds(menuPermissionIds);
+                loginUser.setPermissions(sysMenuPermissionByIds);
+                loginUser.setMenus(menus);
+            }
         }
         if(!CollectionUtils.isEmpty(loginUser.getMenus())){
             Collections.sort(loginUser.getMenus(), new Comparator<SysMenu>() {

@@ -4,7 +4,7 @@ package com.key.win.activiti.ctrl;
 import com.key.win.activiti.config.GlobalMappingConfig;
 import com.key.win.activiti.service.FormDataService;
 import com.key.win.activiti.service.ProcessDefinitionService;
-import com.key.win.activiti.vo.ProcessDefinitionVo;
+import com.key.win.activiti.vo.ProcessDefinitionResponseVo;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
@@ -14,7 +14,6 @@ import io.swagger.annotations.ApiOperation;
 import org.activiti.api.process.runtime.ProcessRuntime;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Deployment;
-import org.activiti.engine.repository.ProcessDefinition;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.zip.ZipInputStream;
@@ -57,10 +54,10 @@ public class ProcessDefinitionController {
     private ProcessDefinitionService processDefinitionService;
 
 
-    @PostMapping(value = "/uploadStreamAndDeployment/{deploymentName}")
+    @PostMapping(value = "/uploadStreamAndDeployment")
     @ApiOperation(value = "bpmn文件上传及工作流部署")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
-    public Result uploadStreamAndDeployment(@RequestParam("processFile") MultipartFile multipartFile, @PathVariable String deploymentName) {
+    public Result uploadStreamAndDeployment(@RequestParam("processFile") MultipartFile multipartFile) {
         // 获取上传的文件名
         String fileName = multipartFile.getOriginalFilename();
 
@@ -79,12 +76,12 @@ public class ProcessDefinitionController {
                 ZipInputStream zip = new ZipInputStream(fileInputStream);
                 deployment = repositoryService.createDeployment()//初始化工作流
                         .addZipInputStream(zip)
-                        .name(deploymentName)
+                        .name("")
                         .deploy();
             } else {
                 deployment = repositoryService.createDeployment()//初始化工作流
                         .addInputStream(fileName, fileInputStream)
-                        .name(deploymentName)
+                        .name("")
                         .deploy();
             }
 
@@ -201,7 +198,7 @@ public class ProcessDefinitionController {
     @ApiOperation("工作流部署分页")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
     @PostMapping(value = "/getDefinitions")
-    public PageResult<ProcessDefinitionVo> getDefinitions(@RequestBody PageRequest<ProcessDefinitionVo> t) {
+    public PageResult<ProcessDefinitionResponseVo> getDefinitions(@RequestBody PageRequest<ProcessDefinitionResponseVo> t) {
         return processDefinitionService.findProcessDefinitionByPaged(t);
 
     }

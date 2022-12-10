@@ -2,7 +2,8 @@ package com.key.win.activiti.ctrl;
 
 import com.key.win.activiti.service.ProcessInstanceService;
 import com.key.win.activiti.util.SecurityUtil;
-import com.key.win.activiti.vo.ProcessInstanceVo;
+import com.key.win.activiti.vo.ProcessInstanceRequestVo;
+import com.key.win.activiti.vo.ProcessInstanceResponseVo;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
@@ -14,6 +15,7 @@ import org.activiti.api.process.model.ProcessInstance;
 import org.activiti.api.process.model.builders.ProcessPayloadBuilder;
 import org.activiti.api.process.runtime.ProcessRuntime;
 import org.activiti.engine.RepositoryService;
+import org.activiti.engine.RuntimeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,9 @@ public class ProcessInstanceController {
     private ProcessRuntime processRuntime;
 
     @Autowired
+    private RuntimeService runtimeService;
+
+    @Autowired
     private SecurityUtil securityUtil;
 
     @Autowired
@@ -42,7 +47,7 @@ public class ProcessInstanceController {
     @PostMapping(value = "/getInstances")
     @ApiOperation(value = "获取工作流实例分页")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
-    public PageResult<ProcessInstanceVo> getInstances(@RequestBody PageRequest<ProcessInstanceVo> t) {
+    public PageResult<ProcessInstanceResponseVo> getInstances(@RequestBody PageRequest<ProcessInstanceResponseVo> t) {
         return processInstanceService.findProcessInstanceByPaged(t);
     }
 
@@ -63,6 +68,28 @@ public class ProcessInstanceController {
                     //.withVariable("参数2", "参数2的值")
                     .withBusinessKey("自定义BusinessKey")
                     .build());
+            return Result.succeed("工作流启动成功！" );
+        } catch (Exception e) {
+            log.error("创建工作流实例失败:" + e.getMessage(), e);
+            return Result.failed("创建工作流实例失败:" + e.getMessage());
+        }
+    }
+
+    //启动
+    @PostMapping(value = "/startProcess")
+    @ApiOperation(value = "启动工作流实例")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    public Result startProcessPost(@RequestBody ProcessInstanceRequestVo processInstanceRequest) {
+        try {
+//            ProcessInstance processInstance = processRuntime.start(ProcessPayloadBuilder
+//                    .start()
+//                    .withProcessDefinitionId(processInstanceRequest.getProcessDefinitionId())
+//                    .withProcessDefinitionKey(processInstanceRequest.getProcessDefinitionKey())
+//                    .withName(processInstanceRequest.getName())
+//                    .withVariables(processInstanceRequest.getVariables())
+//                    .withBusinessKey(processInstanceRequest.getBusinessKey())
+//                    .build());
+            runtimeService.startProcessInstanceById(processInstanceRequest.getProcessDefinitionId(),processInstanceRequest.getVariables());
             return Result.succeed("工作流启动成功！" );
         } catch (Exception e) {
             log.error("创建工作流实例失败:" + e.getMessage(), e);

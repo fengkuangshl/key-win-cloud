@@ -2,7 +2,7 @@ package com.key.win.activiti.ctrl;
 
 
 import com.key.win.activiti.service.ActivitiHistoryService;
-import com.key.win.activiti.vo.ActivitiHistoryVo;
+import com.key.win.activiti.vo.ActivitiHistoryResponseVo;
 import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.util.SysUserUtil;
 import com.key.win.common.web.PageRequest;
@@ -41,7 +41,7 @@ public class ActivitiHistoryController {
     @PostMapping(value = "/getInstancesByUserName")
     @ApiOperation(value = "获取历史实例分页")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
-    public PageResult<ActivitiHistoryVo> getInstancesByUser(@RequestBody PageRequest<ActivitiHistoryVo> t) {
+    public PageResult<ActivitiHistoryResponseVo> getInstancesByUser(@RequestBody PageRequest<ActivitiHistoryResponseVo> t) {
         return activitiHistoryService.findActivitiHistoryByPaged(t);
 
     }

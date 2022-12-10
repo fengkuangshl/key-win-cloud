@@ -2,7 +2,7 @@ package com.key.win.activiti.service.impl;
 
 import com.key.win.activiti.service.ActivitiHistoryService;
 import com.key.win.activiti.util.PageResultUtil;
-import com.key.win.activiti.vo.ActivitiHistoryVo;
+import com.key.win.activiti.vo.ActivitiHistoryResponseVo;
 import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.util.BeanUtils;
 import com.key.win.common.util.StringUtil;
@@ -10,8 +10,6 @@ import com.key.win.common.util.SysUserUtil;
 import com.key.win.common.web.OrderDir;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
-import org.activiti.api.process.runtime.ProcessRuntime;
-import org.activiti.api.runtime.shared.identity.UserGroupManager;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricTaskInstanceQuery;
@@ -75,16 +73,16 @@ public class ActivitiHistoryServiceImpl implements ActivitiHistoryService {
 
 
     private List activitiHistoryToVos(List<HistoricTaskInstance> activitiHistorys) {
-        List<ActivitiHistoryVo> processTaskVos = new ArrayList<>();
+        List<ActivitiHistoryResponseVo> processTaskVos = new ArrayList<>();
         for (HistoricTaskInstance historicTaskInstance : activitiHistorys) {
-            ActivitiHistoryVo vo = new ActivitiHistoryVo();
+            ActivitiHistoryResponseVo vo = new ActivitiHistoryResponseVo();
             BeanUtils.copyProperties(historicTaskInstance, vo);
             processTaskVos.add(vo);
         }
         return processTaskVos;
     }
 
-    public PageResult<ActivitiHistoryVo> findActivitiHistoryByPaged(PageRequest<ActivitiHistoryVo> pageRequest) {
+    public PageResult<ActivitiHistoryResponseVo> findActivitiHistoryByPaged(PageRequest<ActivitiHistoryResponseVo> pageRequest) {
 
         HistoricTaskInstanceQuery historicTaskInstanceQuery = historyService.createHistoricTaskInstanceQuery();
         LoginAppUser loginAppUser = SysUserUtil.getLoginAppUser();

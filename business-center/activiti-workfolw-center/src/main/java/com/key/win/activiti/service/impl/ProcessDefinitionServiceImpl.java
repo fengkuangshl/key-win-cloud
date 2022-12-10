@@ -2,7 +2,7 @@ package com.key.win.activiti.service.impl;
 
 import com.key.win.activiti.service.ProcessDefinitionService;
 import com.key.win.activiti.util.PageResultUtil;
-import com.key.win.activiti.vo.ProcessDefinitionVo;
+import com.key.win.activiti.vo.ProcessDefinitionResponseVo;
 import com.key.win.common.util.BeanUtils;
 import com.key.win.common.util.StringUtil;
 import com.key.win.common.web.OrderDir;
@@ -40,7 +40,7 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
     }
 
     @Override
-    public PageResult<ProcessDefinitionVo> findProcessDefinitionByPaged(PageRequest<ProcessDefinitionVo> pageRequest) {
+    public PageResult<ProcessDefinitionResponseVo> findProcessDefinitionByPaged(PageRequest<ProcessDefinitionResponseVo> pageRequest) {
         long count = repositoryService.createProcessDefinitionQuery().count();
         ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
         String order = "id";
@@ -53,18 +53,27 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
         } else {
             processDefinitionQuery.asc();
         }
+        if(StringUtil.isNotBlank(pageRequest.getT().getKey())){
+            processDefinitionQuery.processDefinitionKeyLike(pageRequest.getT().getKey());
+        }
+        if(StringUtil.isNotBlank(pageRequest.getT().getName())){
+            processDefinitionQuery.processDefinitionKeyLike(pageRequest.getT().getName());
+        }
+        if(StringUtil.isNotBlank(pageRequest.getT().getResourceName())){
+            processDefinitionQuery.processDefinitionResourceNameLike(pageRequest.getT().getResourceName());
+        }
         List<ProcessDefinition> processDefinitions = processDefinitionQuery.listPage(pageRequest.getHbPageNo() * pageRequest.getPageSize(), pageRequest.getPageSize());
 
         return PageResultUtil.constructPageResult(pageRequest, count, this.processDefinitionsToVos(processDefinitions));
     }
 
-    private List<ProcessDefinitionVo> processDefinitionsToVos(List<ProcessDefinition> processDefinitions) {
-        List<ProcessDefinitionVo> processDefinitionVos = new ArrayList<>();
+    private List<ProcessDefinitionResponseVo> processDefinitionsToVos(List<ProcessDefinition> processDefinitions) {
+        List<ProcessDefinitionResponseVo> processDefinitionResponseVos = new ArrayList<>();
         for (ProcessDefinition processDefinition : processDefinitions) {
-            ProcessDefinitionVo vo = new ProcessDefinitionVo();
+            ProcessDefinitionResponseVo vo = new ProcessDefinitionResponseVo();
             BeanUtils.copyProperties(processDefinition, vo);
-            processDefinitionVos.add(vo);
+            processDefinitionResponseVos.add(vo);
         }
-        return processDefinitionVos;
+        return processDefinitionResponseVos;
     }
 }

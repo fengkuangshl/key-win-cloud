@@ -2,7 +2,7 @@ package com.key.win.activiti.service.impl;
 
 import com.key.win.activiti.service.ProcessInstanceService;
 import com.key.win.activiti.util.PageResultUtil;
-import com.key.win.activiti.vo.ProcessInstanceVo;
+import com.key.win.activiti.vo.ProcessInstanceResponseVo;
 import com.key.win.common.util.BeanUtils;
 import com.key.win.common.util.StringUtil;
 import com.key.win.common.web.OrderDir;
@@ -46,11 +46,11 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
 
 
     private List processInstanceToVos(List<ProcessInstance> processInstances) {
-        List<ProcessInstanceVo> processInstanceVos = new ArrayList<>();
+        List<ProcessInstanceResponseVo> processInstanceResponseVos = new ArrayList<>();
         for (ProcessInstance processInstance : processInstances) {
-            ProcessInstanceVo vo = new ProcessInstanceVo();
+            ProcessInstanceResponseVo vo = new ProcessInstanceResponseVo();
             BeanUtils.copyProperties(processInstance, vo);
-            processInstanceVos.add(vo);
+            processInstanceResponseVos.add(vo);
             ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
                     .processDefinitionId(processInstance.getProcessDefinitionId())
                     .singleResult();
@@ -59,11 +59,11 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
             vo.setDeploymentId(pd.getDeploymentId());
 
         }
-        return processInstanceVos;
+        return processInstanceResponseVos;
     }
 
     @Override
-    public PageResult<ProcessInstanceVo> findProcessInstanceByPaged(PageRequest<ProcessInstanceVo> pageRequest) {
+    public PageResult<ProcessInstanceResponseVo> findProcessInstanceByPaged(PageRequest<ProcessInstanceResponseVo> pageRequest) {
 
         ProcessInstanceQuery processInstanceQuery = runtimeService.createProcessInstanceQuery();
         long count = processInstanceQuery.count();

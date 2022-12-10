@@ -332,12 +332,10 @@ const tools = {
         //加载后台方法获取xml
         var path = 'processDefinitionCtrl/getDefinitionXML';
         tools.ajax(path, 'GET', 'text', param, function (result) {
-            if (result.code == 200) {
-                var newXmlData = result.data
-                tools.createDiagram(newXmlData, bpmnModeler, container);
-                if (tools.isFunction(fn)) {
-                    fn();
-                }
+            var newXmlData = result;
+            tools.createDiagram(newXmlData, bpmnModeler, container);
+            if (tools.isFunction(fn)) {
+                fn();
             }
         })
     },

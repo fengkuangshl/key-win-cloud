@@ -2,9 +2,8 @@ package com.key.win.activiti.service.impl;
 
 import com.key.win.activiti.service.ProcessRuntimeService;
 import com.key.win.activiti.util.PageResultUtil;
-import com.key.win.activiti.vo.ProcessDefinitionVo;
-import com.key.win.activiti.vo.ProcessInstanceVo;
-import com.key.win.activiti.vo.ProcessTaskVo;
+import com.key.win.activiti.vo.ProcessInstanceResponseVo;
+import com.key.win.activiti.vo.ProcessTaskResponseVo;
 import com.key.win.common.util.BeanUtils;
 import com.key.win.common.util.StringUtil;
 import com.key.win.common.web.OrderDir;
@@ -59,7 +58,7 @@ public class ProcessRuntimeServiceImpl implements ProcessRuntimeService {
         processTaskMapping.put("tenantId", TaskQueryProperty.TENANT_ID);
     }
 
-    public PageResult<ProcessTaskVo> findProcessTaskByPaged(PageRequest<ProcessTaskVo> pageRequest) {
+    public PageResult<ProcessTaskResponseVo> findProcessTaskByPaged(PageRequest<ProcessTaskResponseVo> pageRequest) {
         Order.Direction direction = pageRequest.getSortDir() == OrderDir.DESC ? Order.Direction.DESC : Order.Direction.ASC;
         String order = "id";
         if (StringUtil.isNotBlank(pageRequest.getSortName())) {
@@ -72,24 +71,24 @@ public class ProcessRuntimeServiceImpl implements ProcessRuntimeService {
 
 
     private List processTaskToVos(List<Task> processTasks) {
-        List<ProcessTaskVo> processTaskVos = new ArrayList<>();
+        List<ProcessTaskResponseVo> processTaskResponseVos = new ArrayList<>();
         for (Task processTask : processTasks) {
-            ProcessTaskVo vo = new ProcessTaskVo();
+            ProcessTaskResponseVo vo = new ProcessTaskResponseVo();
             BeanUtils.copyProperties(processTask, vo);
-            processTaskVos.add(vo);
+            processTaskResponseVos.add(vo);
             vo.setName(processTask.getName());
             ProcessInstance processInstance = processRuntime.processInstance(processTask.getProcessInstanceId());
             vo.setInstanceName(processInstance.getName());
             vo.setStatus(processTask.getStatus().name());
             vo.setCreateTime(processTask.getCreatedDate());
         }
-        return processTaskVos;
+        return processTaskResponseVos;
     }
 
 
 
     @Override
-    public PageResult<ProcessInstanceVo> findProcessInstanceByPaged(PageRequest<ProcessInstanceVo> pageRequest) {
+    public PageResult<ProcessInstanceResponseVo> findProcessInstanceByPaged(PageRequest<ProcessInstanceResponseVo> pageRequest) {
         Order.Direction direction = pageRequest.getSortDir() == OrderDir.DESC ? Order.Direction.DESC : Order.Direction.ASC;
         Page<ProcessInstance> processInstancePage = processRuntime.processInstances(Pageable.of(pageRequest.getHbPageNo() * pageRequest.getPageSize(), pageRequest.getPageSize(),
                 Order.by(pageRequest.getSortName(), direction)));
@@ -97,11 +96,11 @@ public class ProcessRuntimeServiceImpl implements ProcessRuntimeService {
     }
 
     private List processInstanceToVos(List<ProcessInstance> processInstances) {
-        List<ProcessInstanceVo> processInstanceVos = new ArrayList<>();
+        List<ProcessInstanceResponseVo> processInstanceResponseVos = new ArrayList<>();
         for (ProcessInstance processInstance : processInstances) {
-            ProcessInstanceVo vo = new ProcessInstanceVo();
+            ProcessInstanceResponseVo vo = new ProcessInstanceResponseVo();
             BeanUtils.copyProperties(processInstance, vo);
-            processInstanceVos.add(vo);
+            processInstanceResponseVos.add(vo);
             ProcessDefinition pd = repositoryService.createProcessDefinitionQuery()
                     .processDefinitionId(processInstance.getProcessDefinitionId())
                     .singleResult();
@@ -111,6 +110,6 @@ public class ProcessRuntimeServiceImpl implements ProcessRuntimeService {
             vo.setStartTime(processInstance.getStartDate());
 
         }
-        return processInstanceVos;
+        return processInstanceResponseVos;
     }
 }

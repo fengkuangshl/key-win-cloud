@@ -91,11 +91,11 @@ export default class Role extends Vue {
   readonly sysRoleFormRules: { name: Array<KWRule.Rule | KWRule.MixinRule>; code: Array<KWRule.Rule | KWRule.MixinRule> } = {
     name: [
       { required: true, message: '请输入帐号', trigger: 'blur' },
-      { min: 3, max: 10, message: '用户名的长度3~10个字符之间', trigger: 'blur' }
+      { min: 3, max: 20, message: '用户名的长度3~20个字符之间', trigger: 'blur' }
     ],
     code: [
       { required: true, message: '请输入用户名', trigger: 'blur' },
-      { min: 3, max: 10, message: '用户名的长度3~10个字符之间', trigger: 'blur' }
+      { min: 3, max: 20, message: '用户名的长度3~20个字符之间', trigger: 'blur' }
     ]
   }
 
