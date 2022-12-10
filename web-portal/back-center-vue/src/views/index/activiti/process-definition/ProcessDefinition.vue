@@ -49,12 +49,6 @@
         <el-button type="primary" @click="submitUpload">上传到服务器</el-button>
       </span>
     </el-dialog>
-
-    <el-dialog :visible.sync="dialogVisible" custom-class="dialogclass" :fullscreen="true" style="height:auto;" slot="header" :before-close="handleClose">
-      <div style="height:auto;">
-        <iframe id="bdIframe" :src=bpmnUrl frameborder="0" style="width:100%;height:100%;" scrolling="no"></iframe>
-      </div>
-    </el-dialog>
     <el-dialog :title="title" @close="aditPocessInstanceClosed" :visible.sync="processInstanceEditVisble" width="20%">
       <el-form :model="processInstanceForm" :rules="processInstanceFormRules" ref="processInstanceFormRef" label-width="90px">
         <el-form-item label="实例名称" prop="name">
@@ -70,6 +64,7 @@
         <el-button type="primary" @click="startProcessInstance">确 定</el-button>
       </span>
     </el-dialog>
+    <KWBpmnJsIframe :showBpmn="showBpmn" :deploymentFileUUID="deploymentFileUUID" :type="type" :deploymentName="deploymentName"></KWBpmnJsIframe>
   </div>
 </template>
 
@@ -78,6 +73,7 @@ import { ElForm } from 'element-ui/types/form'
 import { Component, Vue, Ref } from 'vue-property-decorator'
 import { ElUpload, ElUploadInternalFileDetail, HttpRequestOptions } from 'element-ui/types/upload'
 import KWTable from '@/components/table/Table.vue'
+import KWBpmnJsIframe from '@/components/bpmn-js/BpmnJsIframe.vue'
 import PermissionUtil from '@/common/utils/permission/permission-util'
 import PermissionPrefixUtils from '@/common/utils/permission/permission-prefix'
 import { ProcessDefinitionDetail } from '../interface/process-definition'
@@ -89,7 +85,8 @@ import settings from '@/settings'
 import FormValidatorRule from '@/common/form-validator/form-validator'
 @Component({
   components: {
-    KWTable
+    KWTable,
+    KWBpmnJsIframe
   }
 })
 export default class ProcessDefinition extends Vue {
@@ -119,8 +116,10 @@ export default class ProcessDefinition extends Vue {
     variable: ''
   }
 
-  dialogVisible = false
-  bpmnUrl = 'http://localhost:9013?serviceUrl=http://127.0.0.1:9200/api-activiti/&access_token=' + local.getStr(settings.accessToken)
+  showBpmn = false
+  deploymentFileUUID = ''
+  deploymentName = ''
+  type = ''
 
   @Ref('processInstanceFormRef')
   readonly processInstanceFormRef!: ElForm
@@ -150,8 +149,13 @@ export default class ProcessDefinition extends Vue {
   }
 
   showProcessDefintionDetailDialog(data: ProcessDefinitionDetail): void {
-    this.bpmnUrl = 'http://localhost:9013?serviceUrl=http://127.0.0.1:9200/api-activiti/&type=addBpmn&access_token=' + local.getStr(settings.accessToken) + '&type=lookBpmn&deploymentFileUUID=' + data.deploymentId + '&deploymentName=' + encodeURI(data.resourceName)
-    this.resizeWindows()
+    this.deploymentFileUUID = data.deploymentId
+    this.deploymentName = data.resourceName
+    this.showBpmn = true
+    this.type = 'lookBpmn'
+    setTimeout(() => {
+      this.showBpmn = false
+    }, 1000)
   }
 
   deleteProcessDefinition(data: ProcessDefinitionDetail): void {
@@ -180,8 +184,13 @@ export default class ProcessDefinition extends Vue {
   }
 
   activitiDraw(): void {
-    this.bpmnUrl = 'http://localhost:9013?serviceUrl=http://127.0.0.1:9200/api-activiti/&type=addBpmn&access_token=' + local.getStr(settings.accessToken)
-    this.resizeWindows()
+    this.deploymentFileUUID = ''
+    this.deploymentName = ''
+    this.showBpmn = true
+    this.type = 'addBpmn'
+    setTimeout(() => {
+      this.showBpmn = false
+    }, 1000)
   }
 
   activitiUpload(): void {
@@ -221,34 +230,6 @@ export default class ProcessDefinition extends Vue {
 
   clearFiles(): void {
     this.upload.clearFiles()
-  }
-
-  handleClose(): void {
-    this.$confirm('确认关闭？')
-      .then(value => {
-        this.dialogVisible = false
-        console.log(value)
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  }
-
-  resizeWindows(): void {
-    this.dialogVisible = true
-    setTimeout(function () {
-      console.log('---------')
-      /**
-       * iframe-宽高自适应显示`
-       */
-      const oIframe = document.getElementById('bdIframe') as HTMLElement
-      console.log(oIframe)
-      const deviceWidth = document.documentElement.clientWidth
-      const deviceHeight = document.documentElement.clientHeight
-      // oIframe.style.width = Number(deviceWidth) - 220 + "px"; //数字是页面布局宽度差值
-      oIframe.style.width = Number(deviceWidth) + 'px' // 数字是页面布局宽度差值
-      oIframe.style.height = Number(deviceHeight) + 'px' // 数字是页面布局高度差
-    }, 1000)
   }
 
   aditPocessInstanceClosed(): void {
