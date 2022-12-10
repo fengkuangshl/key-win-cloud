@@ -21,8 +21,8 @@
         <el-table-column prop="name" sortable="custom" label="实例名称"> </el-table-column>
         <el-table-column prop="processDefinitionId" label="流程定义编号" sortable="custom"></el-table-column>
         <el-table-column prop="processDefinitionKey" label="流程定义KEY" sortable="custom"></el-table-column>
-        <el-table-column prop="processDefinitionVersion" label="版本" sortable="custom"></el-table-column>
-        <el-table-column prop="status" label="部署版本" sortable="custom" :formatter="
+        <!-- <el-table-column prop="processDefinitionVersion" label="版本" sortable="custom"></el-table-column> -->
+        <el-table-column prop="status" label="状态" sortable="custom" :formatter="
             row => {
               if(row.status &&  row.status == 'active'){
                 return '激活'
@@ -36,130 +36,66 @@
         </el-table-column>
         <el-table-column label="操作">
           <template v-slot="scope">
-            <el-button type="primary" v-if="scope.row.status == 'active'" icon="el-icon-view" v-hasPermissionUpdate="processInstancePermissionPrefix" size="mini" @click="doHangUp(scope.row)">挂起</el-button>
-            <el-button type="primary" v-if="scope.row.status !== 'active'" icon="el-icon-view" v-hasPermissionUpdate="processInstancePermissionPrefix" size="mini" @click="doActive(scope.row)">激活</el-button>
+            <el-tooltip effect="dark" content="挂起" v-if="hasPermission(scope.row)" placement="top" :enterable="false">
+              <el-button type="primary" v-if="scope.row.status == 'active'" icon="el-icon-video-pause" v-hasPermissionUpdate="processInstancePermissionPrefix" size="mini" @click="suspendProcessInstance(scope.row.id)"></el-button>
+            </el-tooltip>
+            <el-tooltip effect="dark" content="激活" v-if="hasPermission(scope.row)" placement="top" :enterable="false">
+              <el-button type="primary" v-if="scope.row.status !== 'active'" icon="el-icon-video-play" v-hasPermissionUpdate="processInstancePermissionPrefix" size="mini" @click="resumeProcessInstance(scope.row.id)"></el-button>
+            </el-tooltip>
             <el-button type="danger" icon="el-icon-delete" v-hasPermissionDelete="processInstancePermissionPrefix" size="mini" @click="deleteProcessInstance(scope.row.id)">
             </el-button>
-            <el-tooltip effect="dark" content="启动实例" v-if="hasPermission(scope.row)" placement="top" :enterable="false">
-              <el-button type="warning" icon="el-icon-s-tools" size="mini" @click="showProcessDefintionDetailEditDialog(scope.row)">
+            <el-tooltip effect="dark" content="查看历史" v-if="hasPermission(scope.row)" placement="top" :enterable="false">
+              <el-button type="warning" icon="el-icon-view" size="mini" @click="showProcessInstanceDetail(scope.row)">
               </el-button>
             </el-tooltip>
           </template>
         </el-table-column>
       </KWTable>
+      <KWBpmnJsIframe :showBpmn="showBpmn" :deploymentFileUUID="deploymentFileUUID" :type="'lookBpmn'" :deploymentName="deploymentName"></KWBpmnJsIframe>
     </el-card>
-    <el-dialog :title="title" @close="aditFileClosed" :visible.sync="fileDialogVisble" width="20%">
-      <el-upload class="upload-demo" ref="upload" action="" :on-preview="handlePreview" :on-remove="handleRemove" :on-success="uploadSuccess" :http-request="httpRequest" :file-list="fileList" :auto-upload="false">
-        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-      </el-upload>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="fileDialogVisble = false; clearFiles()">取 消</el-button>
-        <el-button type="primary" @click="submitUpload">上传到服务器</el-button>
-      </span>
-    </el-dialog>
-
-    <el-dialog :visible.sync="dialogVisible" custom-class="dialogclass" :fullscreen="true" style="height:auto;" slot="header" :before-close="handleClose">
-      <div style="height:auto;">
-        <iframe id="bdIframe" :src=bpmnUrl frameborder="0" style="width:100%;height:100%;" scrolling="no"></iframe>
-      </div>
-    </el-dialog>
-    <el-dialog :title="title" @close="aditPocessInstanceClosed" :visible.sync="processInstanceEditVisble" width="20%">
-      <el-form :model="processInstanceForm" :rules="processInstanceFormRules" ref="processInstanceFormRef" label-width="90px">
-        <el-form-item label="实例名称" prop="name">
-          <el-input v-model="processInstanceForm.name" style="max-width: 220px;">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="实例变量" prop="variable">
-          <el-input v-model="processInstanceForm.variable" style="max-width: 220px;"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="processInstanceEditVisble = false">取 消</el-button>
-        <el-button type="primary" @click="startProcessInstance">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
-import { ElForm } from 'element-ui/types/form'
 import { Component, Vue, Ref } from 'vue-property-decorator'
-import { ElUpload, ElUploadInternalFileDetail, HttpRequestOptions } from 'element-ui/types/upload'
 import KWTable from '@/components/table/Table.vue'
+import KWBpmnJsIframe from '@/components/bpmn-js/BpmnJsIframe.vue'
 import PermissionUtil from '@/common/utils/permission/permission-util'
 import PermissionPrefixUtils from '@/common/utils/permission/permission-prefix'
-import { ProcessInstanceDetail } from '../interface/process-definition'
-import { DeleteProcessInstanceApi, ProcessInstanceUploadApi } from './process-definition-api'
-import { ProcessInstanceForm } from './interface/process-instance'
-import { StartProcessInstanceApi } from './process-instace-api'
-import { local } from '@/store'
-import settings from '@/settings'
-import FormValidatorRule from '@/common/form-validator/form-validator'
+import { ProcessInstanceDetail } from './interface/process-instance'
+import { DeleteProcessInstanceApi, ResumeProcessInstanceApi, SuspendProcessInstanceApi } from './process-instance-api'
 @Component({
   components: {
-    KWTable
+    KWTable,
+    KWBpmnJsIframe
   }
 })
 export default class ProcessInstance extends Vue {
   t: ProcessInstanceDetail = {
-    deploymentId: '',
     resourceName: '',
-    key: '',
+    deploymentId: '',
+    processDefinitionVersion: 0,
+    startTime: new Date(),
+    status: '',
     id: '',
-    name: '',
     version: 0
   }
 
-  @Ref('upload')
-  readonly upload!: ElUpload
+  showBpmn = false
+  deploymentFileUUID = ''
+  deploymentName = ''
 
-  fileList: Array<ElUploadInternalFileDetail> = []
   processInstancePermissionPrefix = PermissionPrefixUtils.processInstance
-  title = ''
-  fileDialogVisble = false
-  processInstanceEditVisble = false
-  processInstanceForm: ProcessInstanceForm = {
-    variables: new Map(),
-    businessKey: '',
-    processInstanceId: '',
-    processInstanceKey: '',
-    name: '',
-    variable: ''
-  }
-
-  dialogVisible = false
-  bpmnUrl = 'http://localhost:9013?serviceUrl=http://127.0.0.1:9200/api-activiti/&access_token=' + local.getStr(settings.accessToken)
-
-  @Ref('processInstanceFormRef')
-  readonly processInstanceFormRef!: ElForm
 
   @Ref('kwTableRef')
   readonly kwTableRef!: KWTable<ProcessInstanceDetail, ProcessInstanceDetail>
-
-  hasPermission(data: ProcessInstance): boolean {
-    return true
-  }
 
   hasPermissionEnabled(): boolean {
     return PermissionUtil.hasPermissionForEnabled(this.processInstancePermissionPrefix)
   }
 
-  readonly processInstanceFormRules: { name: Array<KWRule.Rule | KWRule.MixinRule> } = {
-    name: [FormValidatorRule.requiredRule('请输入实例名称'), FormValidatorRule.mixinRul(2, 10, '实例名称的长度2~10个字符之间')]
-  }
-
-  aditFileClosed(): void {
-    this.fileDialogVisble = false
-  }
-
-  aditProcessInstanceClosed(): void {
-    this.fileDialogVisble = false
-    this.processInstanceFormRef.resetFields()
-  }
-
-  showProcessDefintionDetailDialog(data: ProcessInstanceDetail): void {
-    this.bpmnUrl = 'http://localhost:9013?serviceUrl=http://127.0.0.1:9200/api-activiti/&type=addBpmn&access_token=' + local.getStr(settings.accessToken) + '&type=lookBpmn&deploymentFileUUID=' + data.deploymentId + '&deploymentName=' + encodeURI(data.resourceName)
-    this.resizeWindows()
+  hasPermission(data: ProcessInstanceDetail): boolean {
+    return true
   }
 
   deleteProcessInstance(id: string): void {
@@ -190,110 +126,66 @@ export default class ProcessInstance extends Vue {
     this.kwTableRef.loadByCondition(this.t)
   }
 
-  activitiDraw(): void {
-    this.bpmnUrl = 'http://localhost:9013?serviceUrl=http://127.0.0.1:9200/api-activiti/&type=addBpmn&access_token=' + local.getStr(settings.accessToken)
-    this.resizeWindows()
-  }
-
-  activitiUpload(): void {
-    this.title = '上传文件'
-    this.fileDialogVisble = true
-  }
-
-  submitUpload(): void {
-    this.upload.submit()
-  }
-
-  handleRemove(file: ElUploadInternalFileDetail, fileList: Array<ElUploadInternalFileDetail>): void {
-    console.log(file, fileList)
-  }
-
-  handlePreview(file: ElUploadInternalFileDetail): void {
-    console.log(file)
-  }
-
-  async httpRequest(params: HttpRequestOptions): Promise<void> {
-    console.log(params.file) // 拿到上传的文件
-    var formdata = new FormData()
-    formdata.append('processFile', params.file)
-    const { code, msg } = await ProcessInstanceUploadApi(formdata)
-    if (code !== 200) {
-      this.$message.error(msg || '上传失败!')
-    } else {
-      this.searchProcessInstance()
-      this.$message.success('上传成功!')
-      this.fileDialogVisble = false
-    }
-  }
-
-  uploadSuccess(): void {
-    this.clearFiles()
-  }
-
-  clearFiles(): void {
-    this.upload.clearFiles()
-  }
-
-  handleClose(): void {
-    this.$confirm('确认关闭？')
-      .then(value => {
-        this.dialogVisible = false
-        console.log(value)
-      })
-      .catch(err => {
-        console.log(err)
-      })
-  }
-
-  resizeWindows(): void {
-    this.dialogVisible = true
-    setTimeout(function () {
-      console.log('---------')
-      /**
-       * iframe-宽高自适应显示`
-       */
-      const oIframe = document.getElementById('bdIframe') as HTMLElement
-      console.log(oIframe)
-      const deviceWidth = document.documentElement.clientWidth
-      const deviceHeight = document.documentElement.clientHeight
-      // oIframe.style.width = Number(deviceWidth) - 220 + "px"; //数字是页面布局宽度差值
-      oIframe.style.width = Number(deviceWidth) + 'px' // 数字是页面布局宽度差值
-      oIframe.style.height = Number(deviceHeight) + 'px' // 数字是页面布局高度差
-    }, 1000)
-  }
-
-  aditPocessInstanceClosed(): void {
-    this.processInstanceEditVisble = false
-    this.processInstanceFormRef.resetFields()
-  }
-
-  // 展示编辑用于的对话框
-  showProcessDefintionDetailEditDialog(data: ProcessInstanceDetail): void {
-    this.title = '启动流程部署信息'
-    this.processInstanceEditVisble = true
-    this.processInstanceForm.processInstanceKey = data.key
-    this.processInstanceForm.processInstanceId = data.id
-  }
-
-  startProcessInstance(): void {
-    this.processInstanceFormRef.validate(async valid => {
-      if (!valid) {
-        return false
-      }
-      const { code, msg } = await StartProcessInstanceApi(this.processInstanceForm)
-      if (code !== 200) {
-        this.$message.error(msg || '启动实例失败!')
-      } else {
-        this.processInstanceEditVisble = false
-        this.searchProcessInstance()
-        this.$message.success('启动实例成功!')
-      }
+  suspendProcessInstance(id: string): void {
+    this.$confirm('确定要挂起当前流程实现吗, 是否继续?', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
     })
+      .then(async () => {
+        const { code, msg } = await SuspendProcessInstanceApi(id)
+        if (code !== 200) {
+          this.$message.error(msg || '挂起失败!')
+        } else {
+          this.searchProcessInstance()
+          this.$message.success('挂起成功!')
+        }
+      })
+      .catch(e => {
+        console.log(e)
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        })
+      })
+  }
+
+  resumeProcessInstance(id: string): void {
+    this.$confirm('确定要激活当前流程实现吗, 是否继续?', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+      .then(async () => {
+        const { code, msg } = await ResumeProcessInstanceApi(id)
+        if (code !== 200) {
+          this.$message.error(msg || '激活失败!')
+        } else {
+          this.searchProcessInstance()
+          this.$message.success('激活成功!')
+        }
+      })
+      .catch(e => {
+        console.log(e)
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        })
+      })
+  }
+
+  showProcessInstanceDetail(data: ProcessInstanceDetail): void {
+    this.deploymentFileUUID = data.deploymentId
+    this.deploymentName = data.resourceName
+    this.showBpmn = true
+    setTimeout(() => {
+      this.showBpmn = false
+    }, 1000)
   }
 }
 </script>
 
-<style lang="less" >
+<style lang="less" scoped >
 .search-primary {
   background: #409eff !important;
   border-color: #409eff !important;
@@ -304,16 +196,5 @@ export default class ProcessInstance extends Vue {
   background: #66b1ff !important;
   border-color: #66b1ff !important;
   color: #fff !important;
-}
-.dialogclass {
-  .el-dialog__body {
-    padding: 0px !important;
-  }
-  .el-dialog__header {
-    padding: 0px !important;
-  }
-  .dialog-footer {
-    height: 0px !important;
-  }
 }
 </style>

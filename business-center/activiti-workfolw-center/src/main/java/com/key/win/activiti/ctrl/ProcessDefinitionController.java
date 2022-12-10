@@ -238,10 +238,10 @@ public class ProcessDefinitionController {
 
 
     //删除工作流定义
-    @GetMapping(value = "/delDefinition")
+    @DeleteMapping(value = "/delDefinition/{procDefId}/{deploymentId}")
     @ApiOperation(value = "根据部署Id获取工作流")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
-    public Result delDefinition(@RequestParam("procDefId") String procDefId, @RequestParam("deploymentId") String deploymentId) {
+    public Result delDefinition(@PathVariable("procDefId") String procDefId, @PathVariable("deploymentId") String deploymentId) {
         try {
             //删除数据
             formDataService.deleteFormDataByProcDefId(procDefId);

@@ -30,10 +30,10 @@
         <el-table-column label="操作">
           <template v-slot="scope">
             <el-button type="primary" icon="el-icon-view" v-hasPermissionUpdate="processDefinitionPermissionPrefix" size="mini" @click="showProcessDefintionDetailDialog(scope.row)"></el-button>
-            <el-button type="danger" icon="el-icon-delete" v-hasPermissionDelete="processDefinitionPermissionPrefix" size="mini" @click="deleteProcessDefinition(scope.row.id)">
+            <el-button type="danger" icon="el-icon-delete" v-hasPermissionDelete="processDefinitionPermissionPrefix" size="mini" @click="deleteProcessDefinition(scope.row)">
             </el-button>
             <el-tooltip effect="dark" content="启动实例" v-if="hasPermission(scope.row)" placement="top" :enterable="false">
-              <el-button type="warning" icon="el-icon-s-tools" size="mini" @click="showProcessDefintionDetailEditDialog(scope.row)">
+              <el-button type="warning" icon="el-icon-video-play" size="mini" @click="showProcessDefintionDetailEditDialog(scope.row)">
               </el-button>
             </el-tooltip>
           </template>
@@ -83,7 +83,7 @@ import PermissionPrefixUtils from '@/common/utils/permission/permission-prefix'
 import { ProcessDefinitionDetail } from '../interface/process-definition'
 import { DeleteProcessDefinitionApi, ProcessDefinitionUploadApi } from './process-definition-api'
 import { ProcessInstanceForm } from '../process-instance/interface/process-instance'
-import { StartProcessInstanceApi } from '../process-instance/process-instace-api'
+import { StartProcessInstanceApi } from '../process-instance/process-instance-api'
 import { local } from '@/store'
 import settings from '@/settings'
 import FormValidatorRule from '@/common/form-validator/form-validator'
@@ -154,14 +154,14 @@ export default class ProcessDefinition extends Vue {
     this.resizeWindows()
   }
 
-  deleteProcessDefinition(id: string): void {
+  deleteProcessDefinition(data: ProcessDefinitionDetail): void {
     this.$confirm('确定要删除, 是否继续?', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning'
     })
       .then(async () => {
-        const { code, msg } = await DeleteProcessDefinitionApi(id)
+        const { code, msg } = await DeleteProcessDefinitionApi(data.id, data.deploymentId)
         if (code !== 200) {
           this.$message.error(msg || '删除失败!')
         } else {
@@ -171,10 +171,7 @@ export default class ProcessDefinition extends Vue {
       })
       .catch(e => {
         console.log(e)
-        this.$message({
-          type: 'info',
-          message: '已取消'
-        })
+        this.$message.error('删除失败!')
       })
   }
 

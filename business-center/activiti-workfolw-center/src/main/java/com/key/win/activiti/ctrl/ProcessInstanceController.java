@@ -19,6 +19,7 @@ import org.activiti.engine.RuntimeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -89,7 +90,11 @@ public class ProcessInstanceController {
 //                    .withVariables(processInstanceRequest.getVariables())
 //                    .withBusinessKey(processInstanceRequest.getBusinessKey())
 //                    .build());
-            runtimeService.startProcessInstanceById(processInstanceRequest.getProcessDefinitionId(),processInstanceRequest.getVariables());
+            org.activiti.engine.runtime.ProcessInstance processInstance = runtimeService.startProcessInstanceById(processInstanceRequest.getProcessDefinitionId());
+            runtimeService.setProcessInstanceName(processInstance.getId(),processInstanceRequest.getName());
+            if(!CollectionUtils.isEmpty(processInstanceRequest.getVariables())){
+                runtimeService.setVariables(processInstance.getId(),processInstanceRequest.getVariables());
+            }
             return Result.succeed("工作流启动成功！" );
         } catch (Exception e) {
             log.error("创建工作流实例失败:" + e.getMessage(), e);
@@ -98,10 +103,10 @@ public class ProcessInstanceController {
     }
 
     //删除
-    @GetMapping(value = "/deleteInstance")
+    @DeleteMapping(value = "/deleteInstance/{instanceId}")
     @ApiOperation(value = "删除工作流实例")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
-    public Result deleteInstance(@RequestParam("instanceId") String instanceId) {
+    public Result deleteInstance(@PathVariable("instanceId") String instanceId) {
         try {
             ProcessInstance processInstance = processRuntime.delete(ProcessPayloadBuilder
                     .delete()
@@ -117,10 +122,10 @@ public class ProcessInstanceController {
     }
 
     //挂起冷冻
-    @GetMapping(value = "/suspendInstance")
+    @GetMapping(value = "/suspendInstance/{instanceId}")
     @ApiOperation(value = "挂起工作流实例")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
-    public Result suspendInstance(@RequestParam("instanceId") String instanceId) {
+    public Result suspendInstance(@PathVariable("instanceId") String instanceId) {
 
         try {
             ProcessInstance processInstance = processRuntime.suspend(ProcessPayloadBuilder
@@ -136,10 +141,10 @@ public class ProcessInstanceController {
     }
 
     //激活
-    @GetMapping(value = "/resumeInstance")
+    @GetMapping(value = "/resumeInstance/{instanceId}")
     @ApiOperation(value = "激活工作流实例")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
-    public Result resumeInstance(@RequestParam("instanceId") String instanceId) {
+    public Result resumeInstance(@PathVariable("instanceId") String instanceId) {
 
         try {
 
@@ -157,10 +162,10 @@ public class ProcessInstanceController {
 
 
     //获取参数
-    @GetMapping(value = "/variables")
+    @GetMapping(value = "/variables/{instanceId}")
     @ApiOperation(value = "获取工作流实例参数")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
-    public Result variables(@RequestParam("instanceId") String instanceId) {
+    public Result variables(@PathVariable("instanceId") String instanceId) {
         List<VariableInstance> variableInstance = processRuntime.variables(ProcessPayloadBuilder
                 .variables()
                 .withProcessInstanceId(instanceId)

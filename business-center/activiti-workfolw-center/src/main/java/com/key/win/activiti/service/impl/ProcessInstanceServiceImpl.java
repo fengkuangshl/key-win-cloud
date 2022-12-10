@@ -57,6 +57,7 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
             vo.setStatus(processInstance.isSuspended()?"suspended":"active");
             vo.setResourceName(pd.getResourceName());
             vo.setDeploymentId(pd.getDeploymentId());
+            vo.setName(processInstance.getName());
 
         }
         return processInstanceResponseVos;

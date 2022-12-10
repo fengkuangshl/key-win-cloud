@@ -11,4 +11,4 @@ export const ProcessDefinitionUploadApi = (formData: FormData): Promise<KWRespon
   }
   return request.post(settings.apiActiviti + 'processDefinitionCtrl/uploadStreamAndDeployment', formData, config)
 }
-export const DeleteProcessDefinitionApi = (id: string): Promise<KWResponse.Result> => request.delete(settings.apiActiviti + 'processDefinitionCtrl/' + id)
+export const DeleteProcessDefinitionApi = (id: string, deploymentId: string): Promise<KWResponse.Result> => request.delete(settings.apiActiviti + 'processDefinitionCtrl/delDefinition/' + id + '/' + deploymentId)
