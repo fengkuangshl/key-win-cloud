@@ -80,8 +80,6 @@ import { ProcessDefinitionDetail } from '../interface/process-definition'
 import { DeleteProcessDefinitionApi, ProcessDefinitionUploadApi } from './process-definition-api'
 import { ProcessInstanceForm } from '../process-instance/interface/process-instance'
 import { StartProcessInstanceApi } from '../process-instance/process-instance-api'
-import { local } from '@/store'
-import settings from '@/settings'
 import FormValidatorRule from '@/common/form-validator/form-validator'
 @Component({
   components: {

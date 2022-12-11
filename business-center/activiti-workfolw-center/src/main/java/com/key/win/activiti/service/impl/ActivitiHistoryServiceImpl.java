@@ -86,10 +86,13 @@ public class ActivitiHistoryServiceImpl implements ActivitiHistoryService {
 
         HistoricTaskInstanceQuery historicTaskInstanceQuery = historyService.createHistoricTaskInstanceQuery();
         LoginAppUser loginAppUser = SysUserUtil.getLoginAppUser();
-        if(loginAppUser == null){
+        if (loginAppUser == null) {
             throw new RuntimeException("用户不存在！");
         }
         historicTaskInstanceQuery.taskAssignee(loginAppUser.getUsername());
+        if (StringUtil.isNotBlank(pageRequest.getT().getName())) {
+            historicTaskInstanceQuery.taskNameLikeIgnoreCase("%" + pageRequest.getT().getName() + "%");
+        }
         long count = historicTaskInstanceQuery.count();
         String order = "id";
         if (StringUtil.isNotBlank(pageRequest.getSortName())) {
@@ -102,6 +105,7 @@ public class ActivitiHistoryServiceImpl implements ActivitiHistoryService {
         } else {
             historicTaskInstanceQuery.asc();
         }
+
 
         List<HistoricTaskInstance> historicTaskInstances = historicTaskInstanceQuery.listPage(pageRequest.getHbPageNo() * pageRequest.getPageSize(), pageRequest.getPageSize());
         return PageResultUtil.constructPageResult(pageRequest, count, this.activitiHistoryToVos(historicTaskInstances));

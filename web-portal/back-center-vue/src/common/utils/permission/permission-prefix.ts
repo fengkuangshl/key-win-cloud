@@ -12,8 +12,9 @@ const PermissionPrefixUtils = {
   dataLog: 'common::data-log::DataLog::',
   customerInfo: 'business::customer::CustomerInfo::',
   deviceAuth: 'business::device::DeviceAuth::',
-  processDefinition: 'activiti:ProcessDefinition::',
-  processInstance: 'activiti:ProcessInstance::'
+  processDefinition: 'activiti::process-definition::ProcessDefinition::',
+  processInstance: 'activiti::process-instance::ProcessInstance::',
+  historyTask: 'activiti::history-task::HistoryTask'
 }
 
 export default PermissionPrefixUtils
