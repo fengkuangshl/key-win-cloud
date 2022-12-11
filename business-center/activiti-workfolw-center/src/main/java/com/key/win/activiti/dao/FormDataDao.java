@@ -19,6 +19,6 @@ public interface FormDataDao extends BaseMapper<FormData> {
     int deleteFormDataByProcDefId(@Param("procDefId") String procDefId);
 
     //读取表单
-    @Select("SELECT Control_ID_,Control_VALUE_ act_form_data formdata where PROC_INST_ID_ = #{procInstId}")
+    @Select("SELECT Control_ID_,Control_VALUE_ from act_form_data  where PROC_INST_ID_ = #{procInstId}")
     List<HashMap<String, Object>> selectFormData(@Param("procInstId") String procInstId);
 }

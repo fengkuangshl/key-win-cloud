@@ -165,7 +165,8 @@ public class ProcessTaskController {
 
             //注意!!!!!!!!:表单Key必须要任务编号一模一样，因为参数需要任务key，但是无法获取，只能获取表单key“task.getFormKey()”当做任务key
             UserTask userTask = (UserTask) repositoryService.getBpmnModel(task.getProcessDefinitionId())
-                    .getFlowElement(task.getFormKey());
+                    //.getFlowElement(task. getFormKey());
+            .getFlowElement(task.getTaskDefinitionKey());
 
             if (userTask == null) {
                 return Result.succeed("无表单");

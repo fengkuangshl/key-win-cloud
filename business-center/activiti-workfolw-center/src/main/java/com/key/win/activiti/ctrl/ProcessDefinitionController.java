@@ -76,12 +76,12 @@ public class ProcessDefinitionController {
                 ZipInputStream zip = new ZipInputStream(fileInputStream);
                 deployment = repositoryService.createDeployment()//初始化工作流
                         .addZipInputStream(zip)
-                        .name("")
+                        .name(fileName)
                         .deploy();
             } else {
                 deployment = repositoryService.createDeployment()//初始化工作流
                         .addInputStream(fileName, fileInputStream)
-                        .name("")
+                        .name(fileName)
                         .deploy();
             }
 

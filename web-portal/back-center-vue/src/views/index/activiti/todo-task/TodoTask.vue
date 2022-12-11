@@ -55,10 +55,10 @@
         <el-table-column label="操作">
           <template v-slot="scope">
             <el-tooltip effect="dark" content="办理" v-if="hasPermission(scope.row)" placement="top" :enterable="false">
-              <el-button type="primary" v-if="scope.row.status == 'SUSPENDED'" icon="el-icon-video-pause" v-hasPermissionUpdate="processTaskPermissionPrefix" size="mini" @click="processTask(scope.row.id)"></el-button>
+              <el-button type="primary" v-if="scope.row.status !== 'SUSPENDED'" icon="el-icon-video-pause" v-hasPermissionUpdate="processTaskPermissionPrefix" size="mini" @click="processTask(scope.row.id)"></el-button>
             </el-tooltip>
             <el-tooltip effect="dark" content="办理" v-if="hasPermission(scope.row)" placement="top" :enterable="false">
-              <el-button type="primary" v-if="scope.row.status !== 'SUSPENDED'" icon="el-icon-video-play" :disabled=true v-hasPermissionUpdate="processTaskPermissionPrefix" size="mini"></el-button>
+              <el-button type="primary" v-if="scope.row.status == 'SUSPENDED'" icon="el-icon-video-play" :disabled=true v-hasPermissionUpdate="processTaskPermissionPrefix" size="mini"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
