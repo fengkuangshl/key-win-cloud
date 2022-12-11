@@ -5,7 +5,8 @@ import com.key.win.activiti.model.FormData;
 import com.key.win.activiti.service.FormDataService;
 import com.key.win.activiti.service.ProcessRuntimeService;
 import com.key.win.activiti.service.ProcessTaskService;
-import com.key.win.activiti.vo.ProcessTaskResponseVo;
+import com.key.win.activiti.vo.ProcessTaskCompleteFormVo;
+import com.key.win.activiti.vo.ProcessTaskVo;
 import com.key.win.common.model.system.SysUser;
 import com.key.win.common.util.StringUtil;
 import com.key.win.common.web.PageRequest;
@@ -30,7 +31,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @RestController
@@ -60,10 +60,8 @@ public class ProcessTaskController {
 
     @GetMapping(value = "/getUsers")
     public Result getUsers() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("page",0);
-        params.put("limit",999);
-        PageResult<SysUser> users = userFeignClient.findUsers(params);
+        PageRequest<SysUser> sysUserPageRequest = new PageRequest<>();
+        PageResult<SysUser> users = userFeignClient.findUsers(sysUserPageRequest);
         return Result.succeed(users.getData(),"");
     }
 
@@ -72,7 +70,7 @@ public class ProcessTaskController {
     @PostMapping(value = "/getTasks")
     @ApiOperation(value = "获取我的代办任务分页")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
-    public PageResult<ProcessTaskResponseVo> getTasks(@RequestBody PageRequest<ProcessTaskResponseVo> t) {
+    public PageResult<ProcessTaskVo> getTasks(@RequestBody PageRequest<ProcessTaskVo> t) {
         return processTaskService.findProcessTaskByPaged(t);
     }
 
@@ -103,11 +101,37 @@ public class ProcessTaskController {
     }
 
 
+    //完成待办任务
+    @PostMapping(value = "/completeTask")
+    @ApiOperation(value = "完成待办任务")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    public Result completeTask(@RequestBody ProcessTaskCompleteFormVo processTaskCompleteForm) {
+        try {
+            Task task = taskRuntime.task(processTaskCompleteForm.getTaskId());
+            if (task.getAssignee() == null) {
+                taskRuntime.claim(TaskPayloadBuilder.claim().withTaskId(task.getId()).build());
+            }
+            if(StringUtil.isNotBlank(processTaskCompleteForm.getAudit())){
+                String str= processTaskCompleteForm.getAudit().replace("\"", "");
+                taskRuntime.updateVariable(TaskPayloadBuilder.updateVariable().withTaskId(processTaskCompleteForm.getAudit()).withVariable("audit",str).build());
+            }
+            taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(task.getId())
+                    //.withVariable("num", "2")//执行环节设置变量
+                    .build());
+
+
+            return Result.succeed("完成待办任务");
+        } catch (Exception e) {
+            log.error("完成失败:" + e.getMessage(), e);
+            return Result.failed("完成失败:" + e.getMessage());
+        }
+    }
+
     //渲染表单
-    @GetMapping(value = "/formDataShow")
+    @GetMapping(value = "/formDataShow/{taskId}")
     @ApiOperation(value = "渲染表单")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
-    public Result formDataShow(@RequestParam("taskId") String taskId) {
+    public Result formDataShow(@PathVariable("taskId") String taskId) {
         try {
 
             Task task = taskRuntime.task(taskId);

@@ -4,7 +4,7 @@ package com.key.win.activiti.ctrl;
 import com.key.win.activiti.config.GlobalMappingConfig;
 import com.key.win.activiti.service.FormDataService;
 import com.key.win.activiti.service.ProcessDefinitionService;
-import com.key.win.activiti.vo.ProcessDefinitionResponseVo;
+import com.key.win.activiti.vo.ProcessDefinitionVo;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
@@ -198,7 +198,7 @@ public class ProcessDefinitionController {
     @ApiOperation("工作流部署分页")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
     @PostMapping(value = "/getDefinitions")
-    public PageResult<ProcessDefinitionResponseVo> getDefinitions(@RequestBody PageRequest<ProcessDefinitionResponseVo> t) {
+    public PageResult<ProcessDefinitionVo> getDefinitions(@RequestBody PageRequest<ProcessDefinitionVo> t) {
         return processDefinitionService.findProcessDefinitionByPaged(t);
 
     }

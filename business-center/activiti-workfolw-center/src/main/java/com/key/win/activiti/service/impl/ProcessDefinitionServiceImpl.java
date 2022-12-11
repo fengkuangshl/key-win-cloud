@@ -2,7 +2,7 @@ package com.key.win.activiti.service.impl;
 
 import com.key.win.activiti.service.ProcessDefinitionService;
 import com.key.win.activiti.util.PageResultUtil;
-import com.key.win.activiti.vo.ProcessDefinitionResponseVo;
+import com.key.win.activiti.vo.ProcessDefinitionVo;
 import com.key.win.common.util.BeanUtils;
 import com.key.win.common.util.StringUtil;
 import com.key.win.common.web.OrderDir;
@@ -40,7 +40,7 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
     }
 
     @Override
-    public PageResult<ProcessDefinitionResponseVo> findProcessDefinitionByPaged(PageRequest<ProcessDefinitionResponseVo> pageRequest) {
+    public PageResult<ProcessDefinitionVo> findProcessDefinitionByPaged(PageRequest<ProcessDefinitionVo> pageRequest) {
         long count = repositoryService.createProcessDefinitionQuery().count();
         ProcessDefinitionQuery processDefinitionQuery = repositoryService.createProcessDefinitionQuery();
         String order = "id";
@@ -67,13 +67,13 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
         return PageResultUtil.constructPageResult(pageRequest, count, this.processDefinitionsToVos(processDefinitions));
     }
 
-    private List<ProcessDefinitionResponseVo> processDefinitionsToVos(List<ProcessDefinition> processDefinitions) {
-        List<ProcessDefinitionResponseVo> processDefinitionResponseVos = new ArrayList<>();
+    private List<ProcessDefinitionVo> processDefinitionsToVos(List<ProcessDefinition> processDefinitions) {
+        List<ProcessDefinitionVo> processDefinitionVos = new ArrayList<>();
         for (ProcessDefinition processDefinition : processDefinitions) {
-            ProcessDefinitionResponseVo vo = new ProcessDefinitionResponseVo();
+            ProcessDefinitionVo vo = new ProcessDefinitionVo();
             BeanUtils.copyProperties(processDefinition, vo);
-            processDefinitionResponseVos.add(vo);
+            processDefinitionVos.add(vo);
         }
-        return processDefinitionResponseVos;
+        return processDefinitionVos;
     }
 }

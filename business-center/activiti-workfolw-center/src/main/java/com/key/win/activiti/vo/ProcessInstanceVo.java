@@ -9,11 +9,14 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProcessTaskResponseVo {
+public class ProcessInstanceVo {
     private String id;
     private String name;
     private String status;
-    private String assignee;
-    private String instanceName;
-    private Date createTime;
+    private String processDefinitionId;
+    private String processDefinitionKey;
+    private Integer processDefinitionVersion;
+    private Date startTime;
+    private String resourceName;
+    private String deploymentId;
 }

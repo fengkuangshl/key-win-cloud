@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.HashMap;
 import java.util.Map;
 @Data
-public class ProcessInstanceRequestVo {
+public class ProcessInstanceStartFormVo {
     private String processDefinitionId;
     private String processDefinitionKey;
     private String name;

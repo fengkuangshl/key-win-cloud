@@ -3,6 +3,7 @@ package com.key.win.activiti.feign.fallback;
 import com.key.win.activiti.feign.UserFeignClient;
 import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.model.system.SysUser;
+import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +31,8 @@ public class UserFeignClientFallbackFactory implements FallbackFactory<UserFeign
 			}
 
 			@Override
-			public PageResult<SysUser> findUsers(Map<String, Object> params) {
-				log.error("查询用户列表异常:{}");
+			public PageResult<SysUser> findUsers(PageRequest<SysUser> pageRequest) {
+				log.error("查询用户列表异常:",throwable);
 				return null;
 			}
 

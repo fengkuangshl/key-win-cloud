@@ -14,7 +14,8 @@ const PermissionPrefixUtils = {
   deviceAuth: 'business::device::DeviceAuth::',
   processDefinition: 'activiti::process-definition::ProcessDefinition::',
   processInstance: 'activiti::process-instance::ProcessInstance::',
-  historyTask: 'activiti::history-task::HistoryTask'
+  historyTask: 'activiti::history-task::HistoryTask',
+  processTask: 'activiti::todo-task::TodoTask'
 }
 
 export default PermissionPrefixUtils

@@ -2,6 +2,7 @@ package com.key.win.uaa.feign.fallback;
 
 import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.model.system.SysUser;
+import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.uaa.feign.UserFeignClient;
 import feign.hystrix.FallbackFactory;
@@ -29,11 +30,11 @@ public class UserFeignClientFallbackFactory implements FallbackFactory<UserFeign
 				return new LoginAppUser();
 			}
 
-//			@Override
-//			public PageResult<SysUser> findUsers(Map<String, Object> params) {
-//				log.error("查询用户列表异常:{}");
-//				return null;
-//			}
+			@Override
+			public PageResult<SysUser> findUsers(PageRequest<SysUser> pageRequest) {
+				log.error("查询用户列表异常:",throwable);
+				return null;
+			}
 
 		};
 	}

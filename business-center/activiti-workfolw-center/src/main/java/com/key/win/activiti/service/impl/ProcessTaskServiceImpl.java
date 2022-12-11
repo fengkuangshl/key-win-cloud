@@ -2,7 +2,7 @@ package com.key.win.activiti.service.impl;
 
 import com.key.win.activiti.service.ProcessTaskService;
 import com.key.win.activiti.util.PageResultUtil;
-import com.key.win.activiti.vo.ProcessTaskResponseVo;
+import com.key.win.activiti.vo.ProcessTaskVo;
 import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.util.BeanUtils;
 import com.key.win.common.util.StringUtil;
@@ -56,18 +56,18 @@ public class ProcessTaskServiceImpl implements ProcessTaskService {
 
 
     private List processTaskToVos(List<Task> processTasks) {
-        List<ProcessTaskResponseVo> processTaskResponseVos = new ArrayList<>();
+        List<ProcessTaskVo> processTaskVos = new ArrayList<>();
         for (Task processTask : processTasks) {
-            ProcessTaskResponseVo vo = new ProcessTaskResponseVo();
+            ProcessTaskVo vo = new ProcessTaskVo();
             BeanUtils.copyProperties(processTask, vo);
-            processTaskResponseVos.add(vo);
+            processTaskVos.add(vo);
             vo.setName(processTask.getName());
             vo.setCreateTime(processTask.getCreateTime());
             ProcessInstance processInstance = processRuntime.processInstance(processTask.getProcessInstanceId());
             vo.setInstanceName(processInstance.getName());
             vo.setStatus(processInstance.getStatus().name());
         }
-        return processTaskResponseVos;
+        return processTaskVos;
     }
 
     /**
@@ -89,7 +89,7 @@ public class ProcessTaskServiceImpl implements ProcessTaskService {
      * @param pageRequest
      * @return
      */
-    public PageResult<ProcessTaskResponseVo> findProcessTaskByPaged(PageRequest<ProcessTaskResponseVo> pageRequest) {
+    public PageResult<ProcessTaskVo> findProcessTaskByPaged(PageRequest<ProcessTaskVo> pageRequest) {
 
         TaskQuery taskQuery = taskService.createTaskQuery();
         LoginAppUser loginAppUser = SysUserUtil.getLoginAppUser();

@@ -2,8 +2,8 @@ package com.key.win.activiti.ctrl;
 
 import com.key.win.activiti.service.ProcessInstanceService;
 import com.key.win.activiti.util.SecurityUtil;
-import com.key.win.activiti.vo.ProcessInstanceRequestVo;
-import com.key.win.activiti.vo.ProcessInstanceResponseVo;
+import com.key.win.activiti.vo.ProcessInstanceStartFormVo;
+import com.key.win.activiti.vo.ProcessInstanceVo;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
@@ -48,7 +48,7 @@ public class ProcessInstanceController {
     @PostMapping(value = "/getInstances")
     @ApiOperation(value = "获取工作流实例分页")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
-    public PageResult<ProcessInstanceResponseVo> getInstances(@RequestBody PageRequest<ProcessInstanceResponseVo> t) {
+    public PageResult<ProcessInstanceVo> getInstances(@RequestBody PageRequest<ProcessInstanceVo> t) {
         return processInstanceService.findProcessInstanceByPaged(t);
     }
 
@@ -80,7 +80,7 @@ public class ProcessInstanceController {
     @PostMapping(value = "/startProcess")
     @ApiOperation(value = "启动工作流实例")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
-    public Result startProcessPost(@RequestBody ProcessInstanceRequestVo processInstanceRequest) {
+    public Result startProcessPost(@RequestBody ProcessInstanceStartFormVo processInstanceRequest) {
         try {
 //            ProcessInstance processInstance = processRuntime.start(ProcessPayloadBuilder
 //                    .start()

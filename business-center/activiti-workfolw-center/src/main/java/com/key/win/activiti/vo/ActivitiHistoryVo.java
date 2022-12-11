@@ -9,7 +9,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActivitiHistoryResponseVo {
+public class ActivitiHistoryVo {
     private String id;
     private String name;
     private String assignee;

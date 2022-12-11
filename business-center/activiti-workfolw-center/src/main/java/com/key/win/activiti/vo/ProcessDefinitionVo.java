@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProcessDefinitionResponseVo {
+public class ProcessDefinitionVo {
     private String id;
     private String deploymentId;
     private String name;

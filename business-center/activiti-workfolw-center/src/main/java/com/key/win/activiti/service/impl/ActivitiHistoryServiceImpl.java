@@ -2,7 +2,7 @@ package com.key.win.activiti.service.impl;
 
 import com.key.win.activiti.service.ActivitiHistoryService;
 import com.key.win.activiti.util.PageResultUtil;
-import com.key.win.activiti.vo.ActivitiHistoryResponseVo;
+import com.key.win.activiti.vo.ActivitiHistoryVo;
 import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.util.BeanUtils;
 import com.key.win.common.util.StringUtil;
@@ -73,16 +73,16 @@ public class ActivitiHistoryServiceImpl implements ActivitiHistoryService {
 
 
     private List activitiHistoryToVos(List<HistoricTaskInstance> activitiHistorys) {
-        List<ActivitiHistoryResponseVo> processTaskVos = new ArrayList<>();
+        List<ActivitiHistoryVo> processTaskVos = new ArrayList<>();
         for (HistoricTaskInstance historicTaskInstance : activitiHistorys) {
-            ActivitiHistoryResponseVo vo = new ActivitiHistoryResponseVo();
+            ActivitiHistoryVo vo = new ActivitiHistoryVo();
             BeanUtils.copyProperties(historicTaskInstance, vo);
             processTaskVos.add(vo);
         }
         return processTaskVos;
     }
 
-    public PageResult<ActivitiHistoryResponseVo> findActivitiHistoryByPaged(PageRequest<ActivitiHistoryResponseVo> pageRequest) {
+    public PageResult<ActivitiHistoryVo> findActivitiHistoryByPaged(PageRequest<ActivitiHistoryVo> pageRequest) {
 
         HistoricTaskInstanceQuery historicTaskInstanceQuery = historyService.createHistoricTaskInstanceQuery();
         LoginAppUser loginAppUser = SysUserUtil.getLoginAppUser();
