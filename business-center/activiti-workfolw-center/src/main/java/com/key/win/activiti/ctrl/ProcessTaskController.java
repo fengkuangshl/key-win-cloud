@@ -245,7 +245,7 @@ public class ProcessTaskController {
                 //构建参数集合
                 switch (formDataItem[2]) {
                     case "f":
-                        System.out.println("控件值不作为参数");
+                        log.info("控件值不作为参数");
                         break;
                     case "s":
                         variables.put(formDataItem[0], formDataItem[1]);
@@ -261,7 +261,7 @@ public class ProcessTaskController {
                         hasVariables = true;
                         break;
                     default:
-                        System.out.println("控件参数类型配置错误：" + formDataItem[0] + "的参数类型不存在，" + formDataItem[2]);
+                        log.info("控件参数类型配置错误：" + formDataItem[0] + "的参数类型不存在，" + formDataItem[2]);
                 }
             }//for结束
 

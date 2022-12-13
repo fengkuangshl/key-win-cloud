@@ -40,7 +40,8 @@ import {
   Checkbox,
   Link,
   Notification,
-  Divider
+  Divider,
+  CheckboxGroup
 } from 'element-ui'
 
 Vue.use(Button)
@@ -80,6 +81,7 @@ Vue.use(Drawer)
 Vue.use(DatePicker)
 Vue.use(Checkbox)
 Vue.use(Link)
+Vue.use(CheckboxGroup)
 Vue.component(Notification)
 Vue.use(Divider)
 Vue.prototype.$message = Message
