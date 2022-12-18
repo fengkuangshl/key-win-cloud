@@ -51,7 +51,7 @@
           </template>
         </el-table-column>
       </KWTable>
-      <KWBpmnJsIframe :showBpmn="showBpmn" :deploymentFileUUID="deploymentFileUUID" :type="'lookBpmn'" :deploymentName="deploymentName"></KWBpmnJsIframe>
+      <KWBpmnJsIframe :showBpmn="showBpmn" :instanceId="instanceId" :deploymentFileUUID="deploymentFileUUID" :type="'lookBpmn'" :deploymentName="deploymentName"></KWBpmnJsIframe>
     </el-card>
   </div>
 </template>
@@ -84,6 +84,7 @@ export default class ProcessInstance extends Vue {
   showBpmn = false
   deploymentFileUUID = ''
   deploymentName = ''
+  instanceId = ''
 
   processInstancePermissionPrefix = PermissionPrefixUtils.processInstance
 
@@ -177,6 +178,7 @@ export default class ProcessInstance extends Vue {
   showProcessInstanceDetail(data: ProcessInstanceDetail): void {
     this.deploymentFileUUID = data.deploymentId
     this.deploymentName = data.resourceName
+    this.instanceId = data.id
     this.showBpmn = true
     setTimeout(() => {
       this.showBpmn = false

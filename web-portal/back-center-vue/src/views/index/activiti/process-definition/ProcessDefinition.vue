@@ -55,9 +55,9 @@
           <el-input v-model="processInstanceForm.name" style="max-width: 220px;">
           </el-input>
         </el-form-item>
-        <el-form-item label="实例变量" prop="variable">
+        <!-- <el-form-item label="实例变量" prop="variable">
           <el-input v-model="processInstanceForm.variable" style="max-width: 220px;"></el-input>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="processInstanceEditVisble = false">取 消</el-button>
@@ -76,7 +76,7 @@ import KWTable from '@/components/table/Table.vue'
 import KWBpmnJsIframe from '@/components/bpmn-js/BpmnJsIframe.vue'
 import PermissionUtil from '@/common/utils/permission/permission-util'
 import PermissionPrefixUtils from '@/common/utils/permission/permission-prefix'
-import { ProcessDefinitionDetail } from '../interface/process-definition'
+import { ProcessDefinitionDetail } from './interface/process-definition'
 import { DeleteProcessDefinitionApi, ProcessDefinitionUploadApi } from './process-definition-api'
 import { ProcessInstanceForm } from '../process-instance/interface/process-instance'
 import { StartProcessInstanceApi } from '../process-instance/process-instance-api'

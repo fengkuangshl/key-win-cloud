@@ -87,3 +87,4 @@ Vue.use(Divider)
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm
 Vue.prototype.$notify = Notification
+Vue.prototype.$prompt = MessageBox.prompt

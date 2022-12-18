@@ -27,6 +27,9 @@ export default class KWBpmnJsIframe extends Vue {
   @Prop({ default: '', type: String })
   deploymentName!: string
 
+  @Prop({ default: '', type: String })
+  instanceId!: string
+
   dialogVisible = false
 
   @Prop({ default: false, type: Boolean })
@@ -57,7 +60,7 @@ export default class KWBpmnJsIframe extends Vue {
 
   resetWindows(): void {
     setTimeout(() => {
-      this.bpmnUrl = this.prefix + '&type=' + this.type + '&deploymentFileUUID=' + this.deploymentFileUUID + '&deploymentName=' + encodeURI(this.deploymentName) + '&date=' + new Date().getTime()
+      this.bpmnUrl = this.prefix + '&instanceId=' + this.instanceId + '&type=' + this.type + '&deploymentFileUUID=' + this.deploymentFileUUID + '&deploymentName=' + encodeURI(this.deploymentName) + '&date=' + new Date().getTime()
       console.log('---------')
       /**
        * iframe-宽高自适应显示`

@@ -28,6 +28,16 @@
         <el-table-column prop="startTime" label="开始时间" sortable="custom">
           <template slot-scope="scope">{{ scope.row.startTime | dateTimeFormat }}</template>
         </el-table-column>
+        <el-table-column>
+          <template v-slot="scope">
+            <el-tooltip effect="dark" content="追回" placement="top" :enterable="false">
+              <el-button type="primary" icon="el-icon-bottom"></el-button>
+            </el-tooltip>
+            <el-tooltip effect="dark" content="申请作废" placement="top" :enterable="false">
+              <el-button type="primary" icon="el-icon-s-release"></el-button>
+            </el-tooltip>
+          </template>
+        </el-table-column>
       </KWTable>
     </el-card>
   </div>

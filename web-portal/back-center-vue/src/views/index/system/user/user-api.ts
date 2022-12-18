@@ -11,3 +11,4 @@ export const ResetPasswordApi = (id: string): Promise<KWResponse.Result<UserInfo
 export const UpdateMeApi = (userInfo: UserForm): Promise<KWResponse.Result<UserInfo>> => request.put(settings.apiUser + 'user/me', userInfo)
 export const UpdatePasswordApi = (modifyPassword: ModifyPassword): Promise<KWResponse.Result<UserInfo>> => request.post(settings.apiUser + 'user/modifyMyPassword', modifyPassword)
 export const LogoutApi = (token: string): Promise<KWResponse.Result> => request.post(settings.apiAuth + 'oauth/remove/token?access_token=' + token)
+export const GetUserAllApi = (): Promise<KWResponse.Result<Array<UserInfo>>> => request.get(settings.apiUser + 'user/getUserAll')

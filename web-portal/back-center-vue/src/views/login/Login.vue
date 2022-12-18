@@ -9,10 +9,10 @@
           <el-input v-model="loginForm.username" prefix-icon="iconfont icon-user"></el-input>
         </el-form-item>
         <el-form-item prop="password">
-          <el-input v-model="loginForm.password" prefix-icon="iconfont icon-password" type="password"></el-input>
+          <el-input v-model="loginForm.password" prefix-icon="iconfont icon-password" type="password" @keyup.enter.native="login()"></el-input>
         </el-form-item>
         <el-form-item class="btns">
-          <el-button type="primary" @click="login">登录</el-button>
+          <el-button type="primary" @click="login" :disabled=disableLoginBtn>{{loginText}}</el-button>
           <el-button @click="resetLoginForm">重置</el-button>
         </el-form-item>
       </el-form>
@@ -36,6 +36,9 @@ export default class Login extends Vue {
   @Ref('loginFormRef')
   readonly loginFormRef!: ElForm
 
+  disableLoginBtn = false
+  loginText = '登录'
+
   resetLoginForm(): void {
     this.loginFormRef.resetFields()
   }
@@ -46,6 +49,8 @@ export default class Login extends Vue {
         return false
       }
       console.log(valid)
+      this.disableLoginBtn = true
+      this.loginText = '登录中...'
       const { code, data, msg }: KWResponse.Result<LoginResponse> = await LoginApi(qs.stringify(this.loginForm))
       if (code === 200) {
         // 登录成功
@@ -55,6 +60,8 @@ export default class Login extends Vue {
         this.$router.push('/index')
       } else {
         console.log(msg)
+        this.disableLoginBtn = false
+        this.loginText = '登录'
         // this.$message.error(msg)
       }
     })

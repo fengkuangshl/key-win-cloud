@@ -63,8 +63,10 @@ public class ProcessTaskServiceImpl implements ProcessTaskService {
             processTaskVos.add(vo);
             vo.setName(processTask.getName());
             vo.setCreateTime(processTask.getCreateTime());
+            vo.setClaimTime(processTask.getClaimTime());
             ProcessInstance processInstance = processRuntime.processInstance(processTask.getProcessInstanceId());
             vo.setInstanceName(processInstance.getName());
+            vo.setInstanceId(processInstance.getId());
             vo.setStatus(processInstance.getStatus().name());
         }
         return processTaskVos;

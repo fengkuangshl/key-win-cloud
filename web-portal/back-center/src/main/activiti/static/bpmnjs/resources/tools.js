@@ -343,7 +343,7 @@ const tools = {
         var path = 'activitiHistoryCtrl/getHighLine';
         tools.ajax(path, 'GET', 'json', param1, function (result) {
             if (result.code == 200) {
-                var ColorJson = tools.getByColor(result.data.obj)
+                var ColorJson = tools.getByColor(result.data)
                 tools.loadDefinitionXML(bpmnModeler, param, function () {
                     setTimeout(function () {
                         for (var i in ColorJson) {

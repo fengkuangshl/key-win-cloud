@@ -1,14 +1,11 @@
 package com.key.win.activiti.ctrl;
 
-import com.key.win.activiti.feign.UserFeignClient;
 import com.key.win.activiti.model.FormData;
 import com.key.win.activiti.service.FormDataService;
 import com.key.win.activiti.service.ProcessRuntimeService;
 import com.key.win.activiti.service.ProcessTaskService;
-import com.key.win.activiti.vo.ProcessTaskCompleteFormVo;
+import com.key.win.activiti.vo.ProcessTaskFormVo;
 import com.key.win.activiti.vo.ProcessTaskVo;
-import com.key.win.common.model.system.SysUser;
-import com.key.win.common.util.StringUtil;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
@@ -21,10 +18,13 @@ import org.activiti.api.task.runtime.TaskRuntime;
 import org.activiti.bpmn.model.FormProperty;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.RepositoryService;
+import org.activiti.engine.TaskService;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
@@ -43,9 +43,6 @@ public class ProcessTaskController {
     private TaskRuntime taskRuntime;
 
     @Autowired
-    private UserFeignClient userFeignClient;
-
-    @Autowired
     private ProcessTaskService processTaskService;
 
     @Autowired
@@ -57,13 +54,8 @@ public class ProcessTaskController {
     @Autowired
     private ProcessRuntimeService runtimeService;
 
-
-    @GetMapping(value = "/getUsers")
-    public Result getUsers() {
-        PageRequest<SysUser> sysUserPageRequest = new PageRequest<>();
-        PageResult<SysUser> users = userFeignClient.findUsers(sysUserPageRequest);
-        return Result.succeed(users.getData(),"");
-    }
+    @Autowired
+    private TaskService taskService;
 
 
     //获取我的代办任务
@@ -75,18 +67,14 @@ public class ProcessTaskController {
     }
 
     //完成待办任务
-    @GetMapping(value = "/completeTask")
+    @GetMapping(value = "/completeTask/{taskId}")
     @ApiOperation(value = "完成待办任务")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
-    public Result completeTask(@RequestParam("taskId") String taskId,@RequestParam("audit") String audit) {
+    public Result completeTask(@PathVariable("taskId") String taskId) {
         try {
             Task task = taskRuntime.task(taskId);
             if (task.getAssignee() == null) {
                 taskRuntime.claim(TaskPayloadBuilder.claim().withTaskId(task.getId()).build());
-            }
-            if(StringUtil.isNotBlank(audit)){
-                String str= audit.replace("\"", "");
-                taskRuntime.updateVariable(TaskPayloadBuilder.updateVariable().withTaskId(taskId).withVariable("audit",str).build());
             }
             taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(task.getId())
                     //.withVariable("num", "2")//执行环节设置变量
@@ -100,25 +88,64 @@ public class ProcessTaskController {
         }
     }
 
+    @PostMapping(value = "/trunTask")
+    @ApiOperation(value = "转签任务")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    public Result trunTask(@RequestBody ProcessTaskFormVo processTaskForm) {
+        try {
+            if (StringUtils.isNotBlank(processTaskForm.getAudit())) {
+                taskService.addComment(processTaskForm.getTaskId(), processTaskForm.getProcessInstanceId(), processTaskForm.getAudit());
+            }
+            taskService.setAssignee(processTaskForm.getTaskId(), processTaskForm.getAssignee());
+            return Result.succeed("转签任务成功！");
+        } catch (Exception e) {
+            log.error("转签任务失败:" + e.getMessage(), e);
+            return Result.failed("转签任务失败:" + e.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/giveBackTask")
+    @ApiOperation(value = "退回任务")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    public Result giveBackTask(@RequestBody ProcessTaskFormVo processTaskForm) {
+        try {
+            Task task = taskRuntime.task(processTaskForm.getTaskId());
+            if (task.getClaimedDate() != null) {
+
+                if (StringUtils.isNotBlank(processTaskForm.getAudit())) {
+                    taskService.addComment(processTaskForm.getTaskId(), processTaskForm.getProcessInstanceId(), processTaskForm.getAudit());
+                }
+                taskService.setAssignee(processTaskForm.getTaskId(), null);
+
+                return Result.succeed("退还任务成功！");
+            }
+            return Result.failed("任务不能退还！");
+
+        } catch (Exception e) {
+            log.error("退回任务失败:" + e.getMessage(), e);
+            return Result.failed("退回任务失败:" + e.getMessage());
+        }
+    }
+
 
     //完成待办任务
     @PostMapping(value = "/completeTask")
     @ApiOperation(value = "完成待办任务")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
-    public Result completeTask(@RequestBody ProcessTaskCompleteFormVo processTaskCompleteForm) {
+    public Result completeTask(@RequestBody ProcessTaskFormVo processTaskForm) {
         try {
-            Task task = taskRuntime.task(processTaskCompleteForm.getTaskId());
+            Task task = taskRuntime.task(processTaskForm.getTaskId());
             if (task.getAssignee() == null) {
                 taskRuntime.claim(TaskPayloadBuilder.claim().withTaskId(task.getId()).build());
             }
-            if(StringUtil.isNotBlank(processTaskCompleteForm.getAudit())){
-                String str= processTaskCompleteForm.getAudit().replace("\"", "");
-                taskRuntime.updateVariable(TaskPayloadBuilder.updateVariable().withTaskId(processTaskCompleteForm.getAudit()).withVariable("audit",str).build());
+
+            if (StringUtils.isNotBlank(processTaskForm.getAudit())) {
+                taskService.addComment(processTaskForm.getTaskId(), task.getProcessInstanceId(), processTaskForm.getAudit());
             }
+
             taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(task.getId())
                     //.withVariable("num", "2")//执行环节设置变量
                     .build());
-
 
             return Result.succeed("完成待办任务");
         } catch (Exception e) {
@@ -166,12 +193,13 @@ public class ProcessTaskController {
             //注意!!!!!!!!:表单Key必须要任务编号一模一样，因为参数需要任务key，但是无法获取，只能获取表单key“task.getFormKey()”当做任务key
             UserTask userTask = (UserTask) repositoryService.getBpmnModel(task.getProcessDefinitionId())
                     //.getFlowElement(task. getFormKey());
-            .getFlowElement(task.getTaskDefinitionKey());
+                    .getFlowElement(task.getTaskDefinitionKey());
 
-            if (userTask == null) {
-                return Result.succeed("无表单");
-            }
+
             List<FormProperty> formProperties = userTask.getFormProperties();
+            if (CollectionUtils.isEmpty(formProperties)) {
+                return Result.succeed("non-from", "无表单");
+            }
             List<HashMap<String, Object>> listMap = new ArrayList<HashMap<String, Object>>();
             for (FormProperty fp : formProperties) {
                 String[] splitFP = fp.getId().split("-_!");
@@ -179,7 +207,7 @@ public class ProcessTaskController {
                 HashMap<String, Object> hashMap = new HashMap<>();
                 hashMap.put("id", splitFP[0]);
                 hashMap.put("controlType", splitFP[1]);
-                hashMap.put("controlLable", splitFP[2]);
+                hashMap.put("controlLabel", splitFP[2]);
 
 
                 //默认值如果是表单控件ID
@@ -201,10 +229,10 @@ public class ProcessTaskController {
                 listMap.add(hashMap);
             }
 
-            return Result.succeed(listMap, "渲染表单成功");
+            return Result.succeed(listMap, "获取表单数据成功");
         } catch (Exception e) {
-            log.error("渲染表单失败:" + e.getMessage(), e);
-            return Result.failed("渲染表单失败:" + e.getMessage());
+            log.error("获取表单数据失败:" + e.getMessage(), e);
+            return Result.failed("获取表单数据失败:" + e.getMessage());
         }
     }
 

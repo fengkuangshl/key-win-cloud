@@ -3,6 +3,7 @@ package com.key.win.activiti.ctrl;
 import com.google.common.collect.Lists;
 import com.key.win.activiti.service.ProcessRuntimeService;
 import com.key.win.activiti.util.ActivitiConstant;
+import com.key.win.activiti.vo.ProcessTaskFormVo;
 import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.util.SysUserUtil;
 import com.key.win.common.web.Result;
@@ -17,14 +18,14 @@ import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricActivityInstance;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -134,14 +135,39 @@ public class ProcessTaskActionController {
         }
     }
 
-    @GetMapping("/getPreOneIncomeNode")
+    public List<HistoricTaskInstance> getHistoryTaskList(String processInstanceId) {
+        return historyService.createHistoricTaskInstanceQuery().processInstanceId(processInstanceId)
+                .orderByTaskCreateTime().desc().list();
+    }
+
+    @PostMapping("/getPreOneIncomeNode")
     @ApiOperation(value = "驳回上一节点", notes = "驳回上一节点")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
-    public Result getPreOneIncomeNode(@ApiParam("流程实例id")@RequestParam String taskId) {
+    public Result getPreOneIncomeNode(@ApiParam("流程实例id")@RequestBody ProcessTaskFormVo processTaskFormVo) {
         List<Map<String, String>> incomeNodes = new ArrayList<>();
 
-        org.activiti.engine.task.Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+        org.activiti.engine.task.Task task = taskService.createTaskQuery().taskId(processTaskFormVo.getTaskId()).singleResult();
+
+        if (null == task) {
+            return Result.failed("任务不存在！");
+        }
+
         String currActivityId = task.getTaskDefinitionKey();
+
+        List<HistoricTaskInstance> htiList = getHistoryTaskList(task.getProcessInstanceId());
+
+        if (CollectionUtils.isEmpty(htiList) || htiList.size() < 2) {
+            return Result.failed("当前任务不能被驳回！");
+        }
+
+        // list里的第二条代表上一个任务
+        HistoricTaskInstance lastTask = htiList.get(1);
+        // 上个节点的taskId
+        String lastTaskId = lastTask.getId();
+
+        if (null == lastTaskId) {
+            return Result.failed("上一个节点为空无法回退到上一个节点！");
+        }
 
         // 获取当前用户任务节点
         BpmnModel bpmnModel = repositoryService.getBpmnModel(task.getProcessDefinitionId());
@@ -191,16 +217,18 @@ public class ProcessTaskActionController {
             newSequenceFlow.setTargetFlowElement(target);// 目标节点
             newSequenceFlows.add(newSequenceFlow);
         }
-        ;
 
         currFlow.setOutgoingFlows(newSequenceFlows);
 
+        if (StringUtils.isNotBlank(processTaskFormVo.getAudit())) {
+            taskService.addComment(processTaskFormVo.getTaskId(), processTaskFormVo.getProcessInstanceId(), processTaskFormVo.getAudit());
+            //taskService.resolveTask(processTaskForm.getTaskId());
+        }
         // 拒接、通过、驳回指定节点
-        taskService.complete(taskId);
-
+        taskService.complete(processTaskFormVo.getTaskId());
         //恢复原方向
         currFlow.setOutgoingFlows(oriSequenceFlows);
-        return Result.result(true);
+        return Result.succeed("驳回成功");
     }
 
     /**
@@ -274,17 +302,17 @@ public class ProcessTaskActionController {
         return Result.result(true);
     }
 
-    @GetMapping(value = "/handleCancellation")
+    @PostMapping(value = "/handleCancellation")
     @ApiOperation(value = "申请作废")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
-    public Result handleCancellation(@RequestParam("processInstanceId") String instanceId) {
+    public Result handleCancellation(@RequestBody ProcessTaskFormVo processTaskFormVo) {
         LoginAppUser loginAppUser = SysUserUtil.getLoginAppUser();
         if(loginAppUser == null){
             throw new RuntimeException("用户不存在！");
         }
 
         // 获取当前执行任务节点
-        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(instanceId).singleResult();
+        ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processTaskFormVo.getProcessInstanceId()).singleResult();
         List<Execution> list = runtimeService.createExecutionQuery().processInstanceId(processInstance.getId()).list();
         Set<Execution> executions = list.stream().filter(execution -> execution.getActivityId() != null).collect(Collectors.toSet());
 
@@ -294,15 +322,18 @@ public class ProcessTaskActionController {
             // 获取当前执行任务
             Task task = taskService.createTaskQuery().executionId(execution.getId()).singleResult();
             String comment = "【" + loginAppUser.getNickname() + "】作废了该申请";
-            handleResult(task.getId(), instanceId, ActivitiConstant.HANDLE_STATUS_YZF, comment, task.getTaskDefinitionKey(), loginAppUser.getUsername(), execution.getId());
+            if(StringUtils.isNotBlank(processTaskFormVo.getAudit())){
+                comment+=":\\n\\r"+processTaskFormVo.getAudit();
+            }
+            handleResult(task.getId(), processTaskFormVo.getProcessInstanceId(), ActivitiConstant.HANDLE_STATUS_YZF, comment, task.getTaskDefinitionKey(), loginAppUser.getUsername(), execution.getId());
         }
 
-        runtimeService.deleteProcessInstance(instanceId, ActivitiConstant.HANDEL_RESULT_ZF);
+        runtimeService.deleteProcessInstance(processTaskFormVo.getProcessInstanceId(), ActivitiConstant.HANDEL_RESULT_ZF);
         return Result.result(true);
     }
 
     private void handleResult(String id, String instanceId, Integer handleStatus, String comment, String taskDefinitionKey, String username, String executionId) {
-
+        taskService.addComment(id,instanceId,comment);
     }
 
 

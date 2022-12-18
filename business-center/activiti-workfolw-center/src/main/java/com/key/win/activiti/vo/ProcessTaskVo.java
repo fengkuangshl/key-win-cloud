@@ -15,5 +15,7 @@ public class ProcessTaskVo {
     private String status;
     private String assignee;
     private String instanceName;
+    private String instanceId;
     private Date createTime;
+    private Date claimTime;
 }

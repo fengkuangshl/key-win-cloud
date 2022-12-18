@@ -9,14 +9,18 @@
     </el-dialog>
     <el-dialog :visible.sync="dialogDynamicFormVisible" title="动态表单" style="height:auto;" :before-close="handleClose1" width="20%">
       <div style="height:auto;">
-        <KWDynamicForm :formItems='formItems' :dynamicFormRules='rules' ref='FormItems' :inputFormData='inputFormData'></KWDynamicForm>
+        <KWDynamicForm :formItems='formItems' :dynamicFormRules='rules' ref='dynamicForm' :inputFormData='inputFormData'></KWDynamicForm>
       </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogDynamicFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="getDynamicFormDatas()">确 定</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Ref } from 'vue-property-decorator'
 import { local } from '@/store'
 import settings from '@/settings'
 import KWDynamicForm from '@/components/dynamic-form/DynamicForm.vue'
@@ -99,6 +103,9 @@ export default class BpmnJsHome extends Vue {
     cityName: [{ required: true, message: '请输入cityName', trigger: 'blur' }]
   }
 
+  @Ref('dynamicForm')
+  readonly dynamicForm!: KWDynamicForm
+
   handleClose(): void {
     this.$confirm('确认关闭？')
       .then(value => {
@@ -111,14 +118,14 @@ export default class BpmnJsHome extends Vue {
   }
 
   handleClose1(): void {
-    this.$confirm('确认关闭？')
-      .then(value => {
-        this.dialogDynamicFormVisible = false
-        console.log(value)
-      })
-      .catch(err => {
-        console.log(err)
-      })
+    this.dialogDynamicFormVisible = false
+    // this.$confirm('确认关闭？')
+    //   .then(value => {
+    //     console.log(value)
+    //   })
+    //   .catch(err => {
+    //     console.log(err)
+    //   })
   }
 
   edit(): void {
@@ -141,6 +148,18 @@ export default class BpmnJsHome extends Vue {
 
   showDynamicForm(): void {
     this.dialogDynamicFormVisible = true
+  }
+
+  getDynamicFormDatas(): void {
+    console.log('get...')
+    this.dynamicForm.dynamicFormRef.validate(valid => {
+      console.log(valid)
+      if (!valid) {
+        return false
+      }
+      console.log(this.dynamicForm.dynamicFormData)
+      // this.dialogDynamicFormVisible = false
+    })
   }
 }
 </script>

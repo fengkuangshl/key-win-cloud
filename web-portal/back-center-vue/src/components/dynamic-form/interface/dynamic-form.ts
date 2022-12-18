@@ -13,6 +13,7 @@ export interface DynamicFormItem {
   label: string
   type: string
   model: string
+  isParam: string
   pickerDate?: DynamicPickerDate
   isFun?: boolean
   opts?: Array<DynamicOptions>
