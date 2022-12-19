@@ -4,9 +4,9 @@
     <el-form :model="dynamicFormData" ref="dynamicFormRef" :inline='false' :rules="dynamicFormRules" label-width="auto" class="dynamicForm">
       <template v-for="(item,index) in formItems">
         <el-form-item :key="index" v-show="item.type !== 'hidden'" :label="item.label+'：'" :prop="item.model">
-          <el-input v-if="item.type == null || item.type == undefined || item.type == 'text' " type="text" :placeholder="'请填写'+item.label" v-model="dynamicFormData[item.model]" style="max-width: 220px;"></el-input>
+          <el-input v-if="item.type == null || item.type == undefined || item.type == 'text' " type="text" :placeholder="'请填写'+item.label" @change="onAction(dynamicFormData[item.model])" v-model="dynamicFormData[item.model]" style="max-width: 220px;"></el-input>
 
-          <el-input v-else-if="item.type == 'number'" :placeholder="'请填写'+item.label" type="number" v-model="dynamicFormData[item.model]" style="max-width: 220px;"></el-input>
+          <el-input v-else-if="item.type == 'number'" :placeholder="'请填写'+item.label" type="number" v-model="dynamicFormData[item.model]" @change="onAction(dynamicFormData[item.model])" style="max-width: 220px;"></el-input>
 
           <el-input v-else-if="item.type == 'textarea'" :placeholder="'请填写'+item.label" type="textarea" v-model="dynamicFormData[item.model]" style="max-width: 220px;"></el-input>
 
@@ -35,7 +35,7 @@
 
 <script lang="ts">
 import { ElForm } from 'element-ui/types/form'
-import { Component, Prop, Vue, Ref } from 'vue-property-decorator'
+import { Component, Prop, Vue, Ref, Watch } from 'vue-property-decorator'
 import { DynamicFormItem, DynamicFormRule, DynamicInputFormData } from './interface/dynamic-form'
 @Component({
   components: {}
@@ -58,6 +58,11 @@ export default class KWDynamicForm extends Vue {
 
   @Ref('dynamicFormRef')
   readonly dynamicFormRef!: ElForm
+
+  @Watch('inputFormData')
+  onInputFormData(): void {
+    this.dynamicFormData = this.inputFormData
+  }
 
   created(): void {
     this.dynamicFormData = this.inputFormData

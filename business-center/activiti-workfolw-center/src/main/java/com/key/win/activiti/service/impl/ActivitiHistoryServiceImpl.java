@@ -11,11 +11,14 @@ import com.key.win.common.web.OrderDir;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import org.activiti.engine.HistoryService;
+import org.activiti.engine.RuntimeService;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricTaskInstanceQuery;
 import org.activiti.engine.impl.HistoricTaskInstanceQueryProperty;
+import org.activiti.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +30,9 @@ public class ActivitiHistoryServiceImpl implements ActivitiHistoryService {
 
     @Autowired
     private HistoryService historyService;
+
+    @Autowired
+    private RuntimeService runtimeService;
 
     private static Map<String, HistoricTaskInstanceQueryProperty> activitiHistoryMapping = new HashMap<>();
 
@@ -77,6 +83,19 @@ public class ActivitiHistoryServiceImpl implements ActivitiHistoryService {
         for (HistoricTaskInstance historicTaskInstance : activitiHistorys) {
             ActivitiHistoryVo vo = new ActivitiHistoryVo();
             BeanUtils.copyProperties(historicTaskInstance, vo);
+            ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(vo.getProcessInstanceId()).singleResult();
+            if (processInstance != null) {
+                List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery().processInstanceId(vo.getProcessInstanceId())
+                        .orderByTaskCreateTime().asc().listPage(0,1);
+                if(!CollectionUtils.isEmpty(list)){
+                    HistoricTaskInstance historicTaskInstance1 = list.get(0);
+                    if(historicTaskInstance1.getAssignee().equals(historicTaskInstance.getAssignee()) && historicTaskInstance.getId().equals(historicTaskInstance1.getId())){
+                        vo.setIsRecover(true);
+                        vo.setIsAbandon(true);
+                    }
+                }
+
+            }
             processTaskVos.add(vo);
         }
         return processTaskVos;

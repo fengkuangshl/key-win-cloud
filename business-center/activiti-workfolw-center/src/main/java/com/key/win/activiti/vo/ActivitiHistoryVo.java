@@ -17,4 +17,6 @@ public class ActivitiHistoryVo {
     private Date startTime;
     private String taskDefinitionKey;
     private String processInstanceId;
+    private Boolean isRecover;
+    private Boolean isAbandon;
 }

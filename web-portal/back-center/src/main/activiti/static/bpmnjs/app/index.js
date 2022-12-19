@@ -47,7 +47,6 @@ $(function () {
         if (param.type === 'addBpmn') {
             tools.createDiagram(diagramXML, bpmnModeler, container);
         } else if (param.type === 'lookBpmn') { //编辑bpmn
-            debugger
             $('.item').hide()
             $('.download').show()
             const Id = param.deploymentFileUUID || '6d4af2dc-bab0-11ea-b584-3cf011eaafca'

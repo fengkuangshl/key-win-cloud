@@ -20,7 +20,7 @@ export interface DynamicFormItem {
 }
 
 export interface DynamicFormRule {
-  [x: string]: Array<KWRule.MessageRule>
+  [x: string]: Array<KWRule.Rule>
 }
 
 export interface DynamicInputFormData {

@@ -4,6 +4,7 @@ import com.key.win.activiti.model.FormData;
 import com.key.win.activiti.service.FormDataService;
 import com.key.win.activiti.service.ProcessRuntimeService;
 import com.key.win.activiti.service.ProcessTaskService;
+import com.key.win.activiti.vo.DynamicFormVo;
 import com.key.win.activiti.vo.ProcessTaskFormVo;
 import com.key.win.activiti.vo.ProcessTaskVo;
 import com.key.win.common.web.PageRequest;
@@ -240,12 +241,11 @@ public class ProcessTaskController {
     @PostMapping(value = "/formDataSave")
     @ApiOperation(value = "保存表单")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
-    public Result formDataSave(@RequestParam("taskId") String taskId,
-                               @RequestParam("formData") String formData) {
+    public Result formDataSave(@RequestBody DynamicFormVo dynamicFormVo) {
         try {
 
 
-            Task task = taskRuntime.task(taskId);
+            Task task = taskRuntime.task(dynamicFormVo.getTaskId());
 
             //formData:控件id-_!控件值-_!是否参数!_!控件id-_!控件值-_!是否参数
             //FormProperty_0lovri0-_!不是参数-_!f!_!FormProperty_1iu6onu-_!数字参数-_!s
@@ -258,8 +258,8 @@ public class ProcessTaskController {
             List<FormData> list = new ArrayList<>();
 
             //前端传来的字符串，拆分成每个控件
-            String[] formDataList = formData.split("!_!");//
-            for (String controlItem : formDataList) {
+            //String[] formDataList = formData.split("!_!");//
+            for (String controlItem : dynamicFormVo.getFormData()) {
                 String[] formDataItem = controlItem.split("-_!");
 
                 FormData fd = new FormData();
@@ -295,11 +295,11 @@ public class ProcessTaskController {
 
             if (hasVariables) {
                 //带参数完成任务
-                taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(taskId)
+                taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(dynamicFormVo.getTaskId())
                         .withVariables(variables)
                         .build());
             } else {
-                taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(taskId)
+                taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(dynamicFormVo.getTaskId())
                         .build());
             }
 

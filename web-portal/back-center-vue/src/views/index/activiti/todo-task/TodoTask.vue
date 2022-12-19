@@ -69,16 +69,13 @@
             <el-tooltip effect="dark" content="驳回" v-if="hasPermission(scope.row)" placement="top" :enterable="false">
               <el-button type="primary" v-if="scope.row.status !== 'SUSPENDED'" icon="el-icon-back" v-hasPermissionUpdate="processTaskPermissionPrefix" size="mini" @click="getPreOneIncomeNode(scope.row)"></el-button>
             </el-tooltip>
-            <el-tooltip effect="dark" content="申请作废" v-if="hasPermission(scope.row)" placement="top" :enterable="false">
-              <el-button type="primary" v-if="scope.row.status !== 'SUSPENDED'" icon="el-icon-s-release" v-hasPermissionUpdate="processTaskPermissionPrefix" size="mini" @click="handleCancellation(scope.row)"></el-button>
-            </el-tooltip>
           </template>
         </el-table-column>
       </KWTable>
     </el-card>
     <el-dialog :visible.sync="dialogDynamicFormVisible" title="动态表单" style="height:auto;" :before-close="()=>{dialogDynamicFormVisible = false}" width="20%">
       <div style="height:auto;">
-        <KWDynamicForm :formItems='formItems' :dynamicFormRules='rules' ref='dynamicForm' :inputFormData='inputFormData'></KWDynamicForm>
+        <KWDynamicForm :formItems='dynamicFormItems' :dynamicFormRules='dynamicRules' ref='dynamicForm' :inputFormData='dynamicInputFormData'></KWDynamicForm>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogDynamicFormVisible = false">取 消</el-button>
@@ -112,9 +109,9 @@ import KWTable from '@/components/table/Table.vue'
 import KWDynamicForm from '@/components/dynamic-form/DynamicForm.vue'
 import PermissionUtil from '@/common/utils/permission/permission-util'
 import PermissionPrefixUtils from '@/common/utils/permission/permission-prefix'
-import { Name, ProcessTaskDetail, FromData, SubmitFormData, ProcessTaskForm } from './interface/todo-task'
-import { GetShowFormData, TrunTaskApi, GiveBackTaskApi, SaveFormData, CompleteProcessTaskPostApi, GetPreOneIncomeNode } from './todo-task-api'
-import { DynamicFormItem, DynamicInputFormData } from '@/components/dynamic-form/interface/dynamic-form'
+import { Name, ProcessTaskDetail, FromData, DynamicFromData, ProcessTaskForm } from './interface/todo-task'
+import { GetShowFormData, TrunTaskApi, GiveBackTaskApi, SaveFormData, CompleteProcessTaskPostApi, GetPreOneIncomeNodeApi } from './todo-task-api'
+import { DynamicFormItem, DynamicFormRule, DynamicInputFormData } from '@/components/dynamic-form/interface/dynamic-form'
 import { GetUserAllApi } from '../../system/user/user-api'
 import { MessageBoxData, MessageBoxInputData } from 'node_modules/_element-ui@2.15.10@element-ui/types/message-box'
 @Component({
@@ -148,18 +145,19 @@ export default class TodoTask extends Vue {
   @Ref('giveBackForm')
   readonly giveBackForm!: KWDynamicForm
 
-  formItems: Array<DynamicFormItem> = new Array<DynamicFormItem>()
+  dynamicFormItems: Array<DynamicFormItem> = new Array<DynamicFormItem>()
 
   transferFormItems: Array<DynamicFormItem> = new Array<DynamicFormItem>()
 
   giveBackFormItems: Array<DynamicFormItem> = new Array<DynamicFormItem>()
 
-  inputFormData: DynamicInputFormData = {}
+  dynamicInputFormData: DynamicInputFormData = {}
   transferInputFormData: DynamicInputFormData = {}
   giveBackInputFormData: DynamicInputFormData = {}
 
-  rules = {}
-  transferRules = {}
+  dynamicRules: DynamicFormRule = {}
+  transferRules: DynamicFormRule = {}
+  giveBackRules: DynamicFormRule = {}
 
   hasPermissionEnabled(): boolean {
     return PermissionUtil.hasPermissionForEnabled(this.processTaskPermissionPrefix)
@@ -175,16 +173,18 @@ export default class TodoTask extends Vue {
       if (data === 'non-from') {
         this.doTask(processTaskDetail.id)
       } else {
-        this.renderDynamicForm(data as Array<FromData>)
+        this.renderDynamicForm(data as Array<FromData>, processTaskDetail)
+        this.dialogDynamicFormVisible = true
       }
     } else {
       this.$message.error(msg || '获取代办数据失败!')
     }
   }
 
-  renderDynamicForm(datas: Array<FromData>): void {
-    this.formItems = []
-    this.inputFormData = {}
+  renderDynamicForm(datas: Array<FromData>, processTaskDetail: ProcessTaskDetail): void {
+    this.dynamicFormItems = []
+    this.dynamicInputFormData = {}
+    this.dynamicRules = {}
     if (datas && datas.length > 0) {
       datas.forEach(item => {
         let type = item.controlType
@@ -203,16 +203,31 @@ export default class TodoTask extends Vue {
           case 'checkbox':
             break
         }
-        if (item.controlDefValue !== '无') {
-          this.inputFormData[item.id] = item.controlDefValue
-        }
-        this.formItems.push({
+        this.dynamicFormItems.push({
           label: item.controlLabel,
           type: type,
           model: item.id,
           isParam: item.controlIsParam
         })
+        if (item.controlDefValue !== '无') {
+          this.$set(this.dynamicInputFormData, item.id, item.controlDefValue)
+          // this.dynamicInputFormData[item.id] = item.controlDefValue
+          if (!this.dynamicRules[item.id]) {
+            this.dynamicRules[item.id] = []
+          }
+          this.dynamicRules[item.id].push({ required: true, message: '不能为空!', trigger: 'blur' })
+        } else {
+          // this.dynamicInputFormData[item.id] = ''
+          this.$set(this.dynamicInputFormData, item.id, item.controlDefValue)
+        }
       })
+      this.transferFormItems.push({
+        label: '',
+        type: 'hidden',
+        model: 'taskId',
+        isParam: ''
+      })
+      this.$set(this.dynamicInputFormData, 'taskId', processTaskDetail.id)
     }
   }
 
@@ -369,42 +384,12 @@ export default class TodoTask extends Vue {
           taskId: data.id,
           processInstanceId: data.instanceId
         }
-        const { code, msg } = await GetPreOneIncomeNode(completeProcessTaskForm)
+        const { code, msg } = await GetPreOneIncomeNodeApi(completeProcessTaskForm)
         if (code !== 200) {
           this.$message.error(msg || '驳回失败!')
         } else {
           this.searchProcessTask()
           this.$message.success('驳回成功!')
-        }
-      })
-      .catch(e => {
-        console.log(e)
-        this.$message({
-          type: 'info',
-          message: '已取消'
-        })
-      })
-  }
-
-  handleCancellation(data: ProcessTaskDetail): void {
-    this.$prompt('确认要作废', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      inputType: 'textarea'
-    })
-      .then(async (messageBoxInputData: MessageBoxData) => {
-        messageBoxInputData = messageBoxInputData as MessageBoxInputData
-        var completeProcessTaskForm: ProcessTaskForm = {
-          audit: messageBoxInputData.value,
-          taskId: data.id,
-          processInstanceId: data.instanceId
-        }
-        const { code, msg } = await GetPreOneIncomeNode(completeProcessTaskForm)
-        if (code !== 200) {
-          this.$message.error(msg || '作废失败!')
-        } else {
-          this.searchProcessTask()
-          this.$message.success('作废成功!')
         }
       })
       .catch(e => {
@@ -422,7 +407,7 @@ export default class TodoTask extends Vue {
 
   getFormItemsToMap(): Map<string, DynamicFormItem> {
     const map = new Map<string, DynamicFormItem>()
-    this.formItems.forEach(item => {
+    this.dynamicFormItems.forEach(item => {
       map.set(item.model, item)
     })
     return map
@@ -437,19 +422,20 @@ export default class TodoTask extends Vue {
       }
       const map = this.getFormItemsToMap()
       const formDatas = this.dynamicForm.dynamicFormData
-      let param = ''
+      const param: Array<string> = []
       for (const key in formDatas) {
+        if (key === 'taskId') {
+          continue
+        }
         const formItem = map.get(key) as DynamicFormItem
         const val = formDatas[key]
         const str = key + '-_!' + val + '-_!' + formItem.isParam
-        param += str + '!_!'
+        param.push(str)
       }
       console.log('param:{}', param)
-      const params = param.slice(0, param.length - 3)
-      console.log('params:{}', params)
-      const formData: SubmitFormData = {
-        taskId: '',
-        formData: params
+      const formData: DynamicFromData = {
+        taskId: formDatas.taskId as string,
+        formData: param
       }
       const { code, msg } = await SaveFormData(formData)
       if (code !== 200) {

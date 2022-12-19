@@ -23,7 +23,7 @@ export interface FromData extends Model.Id {
   controlIsParam: string
 }
 
-export interface SubmitFormData {
+export interface DynamicFromData {
   taskId: string
-  formData: string
+  formData: Array<string>
 }

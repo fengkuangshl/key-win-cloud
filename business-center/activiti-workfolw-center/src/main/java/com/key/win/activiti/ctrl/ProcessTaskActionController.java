@@ -275,17 +275,17 @@ public class ProcessTaskActionController {
     }
 
     //获取参数
-    @GetMapping(value = "/revocation")
+    @PostMapping(value = "/revocation")
     @ApiOperation(value = "申请追回")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
-    public Result revocation(@RequestParam("instanceId") String instanceId) {
+    public Result revocation(@RequestBody ProcessTaskFormVo processTaskFormVo) {
         LoginAppUser loginAppUser = SysUserUtil.getLoginAppUser();
         if(loginAppUser == null){
             throw new RuntimeException("用户不存在！");
         }
 
         // 获取当前执行任务节点
-        org.activiti.engine.runtime.ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(instanceId).singleResult();
+        org.activiti.engine.runtime.ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(processTaskFormVo.getProcessInstanceId()).singleResult();
         List<Execution> list = runtimeService.createExecutionQuery().processInstanceId(processInstance.getId()).list();
         Set<Execution> executions = list.stream().filter(execution -> execution.getActivityId() != null).collect(Collectors.toSet());
 
@@ -295,10 +295,10 @@ public class ProcessTaskActionController {
             // 获取当前执行任务
             Task task = taskService.createTaskQuery().executionId(execution.getId()).singleResult();
             String comment = "【" + loginAppUser.getNickname() + "】追回了该申请";
-            handleResult(task.getId(), instanceId, ActivitiConstant.HANDLE_STATUS_YCX, comment, task.getTaskDefinitionKey(), loginAppUser.getUsername(), execution.getId());
+            handleResult(task.getId(), processTaskFormVo.getProcessInstanceId(), ActivitiConstant.HANDLE_STATUS_YCX, comment, task.getTaskDefinitionKey(), loginAppUser.getUsername(), execution.getId());
         }
 
-        runtimeService.deleteProcessInstance(instanceId, ActivitiConstant.HANDEL_RESULT_CX);
+        runtimeService.deleteProcessInstance(processTaskFormVo.getProcessInstanceId(), ActivitiConstant.HANDEL_RESULT_CX);
         return Result.result(true);
     }
 
