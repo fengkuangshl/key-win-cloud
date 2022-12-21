@@ -7,6 +7,8 @@ import com.key.win.activiti.service.ProcessTaskService;
 import com.key.win.activiti.vo.DynamicFormVo;
 import com.key.win.activiti.vo.ProcessTaskFormVo;
 import com.key.win.activiti.vo.ProcessTaskVo;
+import com.key.win.common.auth.details.LoginAppUser;
+import com.key.win.common.util.SysUserUtil;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
@@ -160,6 +162,11 @@ public class ProcessTaskController {
     @ApiOperation(value = "渲染表单")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
     public Result formDataShow(@PathVariable("taskId") String taskId) {
+
+        LoginAppUser loginAppUser = SysUserUtil.getLoginAppUser();
+        if(loginAppUser == null){
+            throw new RuntimeException("用户不存在！");
+        }
         try {
 
             Task task = taskRuntime.task(taskId);
@@ -181,13 +188,14 @@ public class ProcessTaskController {
             //
 
 /*  ------------------------------------------------------------------------------
-            FormProperty_0ueitp2-_!类型-_!名称-_!默认值-_!是否参数
+            FormProperty_0ueitp2-_!类型-_!名称-_!默认值-_!是否参数-_!是否只读
             例子：
-            FormProperty_0lovri0-_!string-_!姓名-_!请输入姓名-_!f
-            FormProperty_1iu6onu-_!int-_!年龄-_!请输入年龄-_!s
+            FormProperty_0lovri0-_!string-_!姓名-_!请输入姓名-_!f-_!f
+            FormProperty_1iu6onu-_!int-_!年龄-_!请输入年龄-_!s-_!t
 
             默认值：无、字符常量、FormProperty_开头定义过的控件ID
             是否参数：f为不是参数，s是字符，t是时间(不需要int，因为这里int等价于string)
+            是否只读:t只读，f:可写(默认f，可以不写)
             注：类型是可以获取到的，但是为了统一配置原则，都配置到
             */
 
@@ -220,13 +228,25 @@ public class ProcessTaskController {
                         //控件ID不存在
                         hashMap.put("controlDefValue", "读取失败，检查" + splitFP[0] + "配置");
                     }
-                } else {
+                } else if(splitFP[3].toLowerCase().equals("c_username")){
+                    hashMap.put("controlDefValue", loginAppUser.getUsername());
+                }
+                else{
                     //默认值如果不是表单控件ID则写入默认值
                     hashMap.put("controlDefValue", splitFP[3]);
                 }
 
 
                 hashMap.put("controlIsParam", splitFP[4]);
+                if (splitFP.length == 6) {
+                    if (splitFP[5].toLowerCase().equals("t") || splitFP[5].toLowerCase().equals("true")) {
+                        hashMap.put("controlIsReadOnly", splitFP[5]);
+                    } else {
+                        hashMap.put("controlIsReadOnly", false);
+                    }
+                } else {
+                    hashMap.put("controlIsReadOnly", false);
+                }
                 listMap.add(hashMap);
             }
 

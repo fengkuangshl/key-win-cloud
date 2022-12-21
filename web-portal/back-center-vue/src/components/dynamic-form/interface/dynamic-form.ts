@@ -14,6 +14,7 @@ export interface DynamicFormItem {
   type: string
   model: string
   isParam: string
+  isReadOnly?: boolean
   pickerDate?: DynamicPickerDate
   isFun?: boolean
   opts?: Array<DynamicOptions>

@@ -4,6 +4,8 @@ import com.key.win.activiti.service.ProcessInstanceService;
 import com.key.win.activiti.util.SecurityUtil;
 import com.key.win.activiti.vo.ProcessInstanceStartFormVo;
 import com.key.win.activiti.vo.ProcessInstanceVo;
+import com.key.win.common.auth.details.LoginAppUser;
+import com.key.win.common.util.SysUserUtil;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
@@ -22,7 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/processInstanceCtrl")
@@ -81,16 +85,14 @@ public class ProcessInstanceController {
     @ApiOperation(value = "启动工作流实例")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
     public Result startProcessPost(@RequestBody ProcessInstanceStartFormVo processInstanceRequest) {
+        LoginAppUser loginAppUser = SysUserUtil.getLoginAppUser();
+        if(loginAppUser == null){
+            throw new RuntimeException("用户不存在！");
+        }
         try {
-//            ProcessInstance processInstance = processRuntime.start(ProcessPayloadBuilder
-//                    .start()
-//                    .withProcessDefinitionId(processInstanceRequest.getProcessDefinitionId())
-//                    .withProcessDefinitionKey(processInstanceRequest.getProcessDefinitionKey())
-//                    .withName(processInstanceRequest.getName())
-//                    .withVariables(processInstanceRequest.getVariables())
-//                    .withBusinessKey(processInstanceRequest.getBusinessKey())
-//                    .build());
-            org.activiti.engine.runtime.ProcessInstance processInstance = runtimeService.startProcessInstanceById(processInstanceRequest.getProcessDefinitionId());
+            Map<String,Object> map = new HashMap<>();
+            map.put("createUser",loginAppUser.getUsername());
+            org.activiti.engine.runtime.ProcessInstance processInstance = runtimeService.startProcessInstanceById(processInstanceRequest.getProcessDefinitionId(),map);
             runtimeService.setProcessInstanceName(processInstance.getId(),processInstanceRequest.getName());
             if(!CollectionUtils.isEmpty(processInstanceRequest.getVariables())){
                 runtimeService.setVariables(processInstance.getId(),processInstanceRequest.getVariables());
@@ -170,7 +172,6 @@ public class ProcessInstanceController {
                 .variables()
                 .withProcessInstanceId(instanceId)
                 .build());
-
         return Result.succeed(variableInstance);
     }
 

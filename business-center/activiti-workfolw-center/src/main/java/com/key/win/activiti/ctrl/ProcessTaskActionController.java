@@ -336,5 +336,77 @@ public class ProcessTaskActionController {
         taskService.addComment(id,instanceId,comment);
     }
 
+    @ApiOperation("撤销:强制结束一个流程")
+    @GetMapping(value = "/forceEnd/{taskId}")
+    @ResponseBody
+    public Result forceEnd(@PathVariable String taskId) {
+        Task t = taskService.createTaskQuery().taskId(taskId).singleResult();
+        String processDefinitionId = runtimeService.createProcessInstanceQuery().processInstanceId(t.getProcessInstanceId()).singleResult().getProcessDefinitionId();
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
+        // 寻找流程实例当前任务的activeId
+        Execution execution = runtimeService.createExecutionQuery().executionId(t.getExecutionId()).singleResult();
+        String activityId = execution.getActivityId();
+        FlowNode currentNode = (FlowNode)bpmnModel.getMainProcess().getFlowElement(activityId);
+        // 创建结束节点和连接线
+        EndEvent end = new EndEvent();
+        end.setName("强制结束");
+        end.setId("forceEnd");
+        List<SequenceFlow> newSequenceFlowList = new ArrayList<SequenceFlow>();
+        SequenceFlow newSequenceFlow = new SequenceFlow();
+        newSequenceFlow.setId("newFlow");
+        newSequenceFlow.setSourceFlowElement(currentNode);
+        newSequenceFlow.setTargetFlowElement(end);
+        newSequenceFlowList.add(newSequenceFlow);
+        // 备份原有方向
+        List<SequenceFlow> dataflows = currentNode.getOutgoingFlows();
+        List<SequenceFlow> oriSequenceFlows = new ArrayList<SequenceFlow>();
+        oriSequenceFlows.addAll(dataflows);
+        // 清空原有方向
+        currentNode.getOutgoingFlows().clear();
+        // 设置新方向
+        currentNode.setOutgoingFlows(newSequenceFlowList);
+        // 完成当前任务
+        taskService.addComment(taskId, t.getProcessInstanceId(), "comment", "撤销流程");
+        taskService.complete(taskId);
+        // 恢复原有方向
+        currentNode.setOutgoingFlows(oriSequenceFlows);
+        return Result.succeed();
+    }
+
+    @ApiOperation("驳回或跳转到指定节点")
+    @GetMapping(value = "/jump/{taskId}/{sid}")
+    @ResponseBody
+    public Result jump(@PathVariable String taskId, @PathVariable String sid) {
+        Task t = taskService.createTaskQuery().taskId(taskId).singleResult();
+        String processDefinitionId = runtimeService.createProcessInstanceQuery().processInstanceId(t.getProcessInstanceId()).singleResult().getProcessDefinitionId();
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
+        // 寻找流程实例当前任务的activeId
+        Execution execution = runtimeService.createExecutionQuery().executionId(t.getExecutionId()).singleResult();
+        String activityId = execution.getActivityId();
+        FlowNode currentNode = (FlowNode)bpmnModel.getMainProcess().getFlowElement(activityId);
+        FlowNode targetNode = (FlowNode)bpmnModel.getMainProcess().getFlowElement(sid);
+        // 创建连接线
+        List<SequenceFlow> newSequenceFlowList = new ArrayList<SequenceFlow>();
+        SequenceFlow newSequenceFlow = new SequenceFlow();
+        newSequenceFlow.setId("newFlow");
+        newSequenceFlow.setSourceFlowElement(currentNode);
+        newSequenceFlow.setTargetFlowElement(targetNode);
+        newSequenceFlowList.add(newSequenceFlow);
+        // 备份原有方向
+        List<SequenceFlow> dataflows = currentNode.getOutgoingFlows();
+        List<SequenceFlow> oriSequenceFlows = new ArrayList<SequenceFlow>();
+        oriSequenceFlows.addAll(dataflows);
+        // 清空原有方向
+        currentNode.getOutgoingFlows().clear();
+        // 设置新方向
+        currentNode.setOutgoingFlows(newSequenceFlowList);
+        // 完成当前任务
+        taskService.addComment(taskId, t.getProcessInstanceId(), "comment", "跳转节点");
+        taskService.complete(taskId);
+        // 恢复原有方向
+        currentNode.setOutgoingFlows(oriSequenceFlows);
+        return Result.succeed();
+    }
+
 
 }

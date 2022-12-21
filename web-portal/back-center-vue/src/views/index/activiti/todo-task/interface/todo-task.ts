@@ -21,6 +21,7 @@ export interface FromData extends Model.Id {
   controlLabel: string
   controlDefValue: string
   controlIsParam: string
+  controlIsReadOnly?: boolean
 }
 
 export interface DynamicFromData {

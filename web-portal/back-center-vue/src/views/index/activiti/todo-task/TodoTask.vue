@@ -207,6 +207,7 @@ export default class TodoTask extends Vue {
           label: item.controlLabel,
           type: type,
           model: item.id,
+          isReadOnly: item.controlIsReadOnly,
           isParam: item.controlIsParam
         })
         if (item.controlDefValue !== '无') {
