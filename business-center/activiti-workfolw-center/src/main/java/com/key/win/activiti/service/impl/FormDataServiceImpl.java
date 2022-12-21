@@ -49,6 +49,8 @@ public class FormDataServiceImpl extends ServiceImpl<FormDataDao, FormData> impl
         if(formData != null && StringUtils.isNotBlank(formData.getControlValue())){
             lqw.like(FormData::getControlValue, formData.getControlValue());
         }
+        lqw.orderByAsc(FormData::getCreateDate);
         return this.baseMapper.selectList(lqw);
     }
+
 }

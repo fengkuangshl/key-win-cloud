@@ -1,5 +1,6 @@
 package com.key.win.activiti.vo;
 
+import com.key.win.activiti.model.FormData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,5 +14,5 @@ import java.util.List;
 public class DynamicFormVo {
     //任务id
     private String taskId;
-    private List<String> formData = new ArrayList<>();
+    private List<FormData> formData = new ArrayList<>();
 }

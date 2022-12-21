@@ -22,10 +22,20 @@ public class FormData extends MybatisID {
     private String procDefId;
     @TableField("PROC_INST_ID_")
     private String procInstId;
+    @TableField("PROC_TASK_ID_")
+    private String procTaskId;
     @TableField("FORM_KEY_")
     private String formKey;
-    @TableField("Control_ID_")
+    @TableField("CONTROL_ID_")
     private String controlId;
-    @TableField("Control_VALUE_")
+    @TableField("CONTROL_LABEL_")
+    private String controlLabel;
+    @TableField("CONTROL_VALUE_")
     private String controlValue;
+    @TableField("CONTROL_TYPE_")
+    private String controlType;
+    @TableField("CONTROL_VALUE_PARAM_TYPE_")
+    private String controlValueParamType;
+    @TableField("READ_ONLY_CONTROL_")
+    private Boolean isReadOnlyControl = Boolean.FALSE;
 }

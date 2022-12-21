@@ -109,7 +109,7 @@ import KWTable from '@/components/table/Table.vue'
 import KWDynamicForm from '@/components/dynamic-form/DynamicForm.vue'
 import PermissionUtil from '@/common/utils/permission/permission-util'
 import PermissionPrefixUtils from '@/common/utils/permission/permission-prefix'
-import { Name, ProcessTaskDetail, FromData, DynamicFromData, ProcessTaskForm } from './interface/todo-task'
+import { Name, ProcessTaskDetail, FromDataDetail, DynamicFromData, ProcessTaskForm, FromData } from './interface/todo-task'
 import { GetShowFormData, TrunTaskApi, GiveBackTaskApi, SaveFormData, CompleteProcessTaskPostApi, GetPreOneIncomeNodeApi } from './todo-task-api'
 import { DynamicFormItem, DynamicFormRule, DynamicInputFormData } from '@/components/dynamic-form/interface/dynamic-form'
 import { GetUserAllApi } from '../../system/user/user-api'
@@ -173,7 +173,7 @@ export default class TodoTask extends Vue {
       if (data === 'non-from') {
         this.doTask(processTaskDetail.id)
       } else {
-        this.renderDynamicForm(data as Array<FromData>, processTaskDetail)
+        this.renderDynamicForm(data as Array<FromDataDetail>, processTaskDetail)
         this.dialogDynamicFormVisible = true
       }
     } else {
@@ -181,7 +181,7 @@ export default class TodoTask extends Vue {
     }
   }
 
-  renderDynamicForm(datas: Array<FromData>, processTaskDetail: ProcessTaskDetail): void {
+  renderDynamicForm(datas: Array<FromDataDetail>, processTaskDetail: ProcessTaskDetail): void {
     this.dynamicFormItems = []
     this.dynamicInputFormData = {}
     this.dynamicRules = {}
@@ -206,20 +206,20 @@ export default class TodoTask extends Vue {
         this.dynamicFormItems.push({
           label: item.controlLabel,
           type: type,
-          model: item.id,
+          model: item.controlId,
           isReadOnly: item.controlIsReadOnly,
-          isParam: item.controlIsParam
+          isParam: item.controlValueParamType
         })
-        if (item.controlDefValue !== '无') {
-          this.$set(this.dynamicInputFormData, item.id, item.controlDefValue)
+        if (item.controlValue !== '无') {
+          this.$set(this.dynamicInputFormData, item.controlId, item.controlValue)
           // this.dynamicInputFormData[item.id] = item.controlDefValue
-          if (!this.dynamicRules[item.id]) {
-            this.dynamicRules[item.id] = []
+          if (!this.dynamicRules[item.controlId]) {
+            this.dynamicRules[item.controlId] = []
           }
-          this.dynamicRules[item.id].push({ required: true, message: '不能为空!', trigger: 'blur' })
+          this.dynamicRules[item.controlId].push({ required: true, message: '不能为空!', trigger: 'blur' })
         } else {
           // this.dynamicInputFormData[item.id] = ''
-          this.$set(this.dynamicInputFormData, item.id, item.controlDefValue)
+          this.$set(this.dynamicInputFormData, item.controlId, item.controlValue)
         }
       })
       this.transferFormItems.push({
@@ -423,15 +423,26 @@ export default class TodoTask extends Vue {
       }
       const map = this.getFormItemsToMap()
       const formDatas = this.dynamicForm.dynamicFormData
-      const param: Array<string> = []
+      const param: Array<FromData> = []
       for (const key in formDatas) {
         if (key === 'taskId') {
           continue
         }
         const formItem = map.get(key) as DynamicFormItem
         const val = formDatas[key]
-        const str = key + '-_!' + val + '-_!' + formItem.isParam
-        param.push(str)
+        const formData: FromData = {
+          procDefId: '',
+          procInstId: '',
+          procTaskId: '',
+          controlType: formItem.type,
+          formKey: '',
+          controlId: key,
+          controlLabel: formItem.label,
+          controlValue: val as string,
+          controlValueParamType: formItem.isParam,
+          controlIsReadOnly: formItem.isReadOnly
+        }
+        param.push(formData)
       }
       console.log('param:{}', param)
       const formData: DynamicFromData = {
