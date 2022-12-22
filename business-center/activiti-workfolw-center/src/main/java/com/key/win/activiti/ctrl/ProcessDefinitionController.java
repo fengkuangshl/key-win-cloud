@@ -5,6 +5,7 @@ import com.key.win.activiti.config.GlobalMappingConfig;
 import com.key.win.activiti.service.FormDataService;
 import com.key.win.activiti.service.ProcessDefinitionService;
 import com.key.win.activiti.vo.ProcessDefinitionVo;
+import com.key.win.common.util.BeanUtils;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import com.key.win.common.web.Result;
@@ -14,6 +15,7 @@ import io.swagger.annotations.ApiOperation;
 import org.activiti.api.process.runtime.ProcessRuntime;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Deployment;
+import org.activiti.engine.repository.ProcessDefinition;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -251,6 +253,26 @@ public class ProcessDefinitionController {
         } catch (Exception e) {
             log.error("删除失败:" + e.getMessage(), e);
             return Result.failed("删除失败:" + e.getMessage());
+        }
+    }
+
+    //删除工作流定义
+    @GetMapping(value = "/get/{processDefinitionId}")
+    @ApiOperation(value = "根据定义Id获取工作流")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    public Result getProcessDefinition(@PathVariable("processDefinitionId") String processDefinitionId) {
+        try {
+            //删除数据
+            ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
+                    .processDefinitionId(processDefinitionId)
+                    .singleResult();
+            ProcessDefinitionVo vo = new ProcessDefinitionVo();
+            BeanUtils.copyProperties(processDefinition, vo);
+            return Result.succeed(vo);
+
+        } catch (Exception e) {
+            log.error("获取失败:" + e.getMessage(), e);
+            return Result.failed("获取失败:" + e.getMessage());
         }
     }
 

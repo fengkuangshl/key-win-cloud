@@ -31,11 +31,11 @@ public class FormDataServiceImpl extends ServiceImpl<FormDataDao, FormData> impl
         LambdaQueryWrapper<FormData> lqw = new LambdaQueryWrapper<FormData>();
 
         if(formData != null && StringUtils.isNotBlank(formData.getProcDefId())){
-            lqw.like(FormData::getProcDefId, formData.getProcDefId());
+            lqw.eq(FormData::getProcDefId, formData.getProcDefId());
         }
 
         if(formData != null && StringUtils.isNotBlank(formData.getProcInstId())){
-            lqw.like(FormData::getProcInstId, formData.getProcInstId());
+            lqw.eq(FormData::getProcInstId, formData.getProcInstId());
         }
 
         if(formData != null && StringUtils.isNotBlank(formData.getFormKey())){
@@ -43,7 +43,7 @@ public class FormDataServiceImpl extends ServiceImpl<FormDataDao, FormData> impl
         }
 
         if(formData != null && StringUtils.isNotBlank(formData.getControlId())){
-            lqw.like(FormData::getControlId, formData.getControlId());
+            lqw.eq(FormData::getControlId, formData.getControlId());
         }
 
         if(formData != null && StringUtils.isNotBlank(formData.getControlValue())){

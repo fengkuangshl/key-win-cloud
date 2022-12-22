@@ -73,10 +73,48 @@
         </el-table-column>
       </KWTable>
     </el-card>
-    <el-dialog :visible.sync="dialogDynamicFormVisible" title="动态表单" style="height:auto;" :before-close="()=>{dialogDynamicFormVisible = false}" width="20%">
-      <div style="height:auto;">
-        <KWDynamicForm :formItems='dynamicFormItems' :dynamicFormRules='dynamicRules' ref='dynamicForm' :inputFormData='dynamicInputFormData'></KWDynamicForm>
-      </div>
+    <el-dialog :visible.sync="dialogDynamicFormVisible" title="审批表单" class="dynamicForm" style="height:auto;" :before-close="()=>{dialogDynamicFormVisible = false}" width="30%">
+      <el-tabs v-model="activeTabName">
+        <el-tab-pane name="approvalPage">
+          <span slot="label"><i class="el-icon-s-check"></i>审批</span>
+          <div style="height:auto;">
+            <KWDynamicForm :formItems='dynamicFormItems' :dynamicFormRules='dynamicRules' ref='dynamicForm' :inputFormData='dynamicInputFormData'></KWDynamicForm>
+          </div>
+        </el-tab-pane>
+        <el-tab-pane name="approvalHistoryListPage">
+          <span slot="label"><i class="el-icon-s-operation"></i>审批历史</span>
+          <div class="block" style="margin: 0px 1px">
+            <el-timeline>
+              <el-timeline-item v-for="(value,key) in approvalHistoryMap" :key="key" :timestamp="value[0]" placement="top">
+                <!-- <el-collapse>
+                  <el-collapse-item :title="value[0]+ (key ===0 ? '发起':'审批')" :name="value[0]">
+                    <el-card class="box-card">
+                      <el-form label-width="120px">
+                        <el-form-item v-for="(item,index) in value[1]" :key="index" :label="item.controlLabel+'：'">
+                          <div class="el-form-item-div">{{item.controlValue}}</div>
+                        </el-form-item>
+                      </el-form>
+                    </el-card>
+                  </el-collapse-item>
+                </el-collapse> -->
+                <el-card class="box-card" style="box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%) !important;border: 1px solid #EBEEF5 !important;">
+                  <!-- <el-form label-width="120px">
+                    <el-form-item v-for="(item,index) in value[1]" :key="index" :label="item.controlLabel+'：'">
+                      <div class="el-form-item-div">{{item.controlValue}}</div>
+                    </el-form-item>
+                  </el-form> -->
+                  <template v-for="(item,index) in value[1]">
+                    <div :key="index">
+                      <h4 v-if="index===0" style="padding:5px">{{item.createUserName+' ' + (key ===0 ? '发起':'审批')}}&nbsp;&nbsp;&nbsp;&nbsp;<a style="color:#409EFF;cursor: pointer;" title="查看流程图" @click="showProcessInstance(item)"><i class="el-icon-view"></i></a></h4>
+                      <p class="el-form-item-div" v-if="index!==0 || key !==0" style="padding:5px">{{item.controlLabel+'：'+item.controlValue}}</p>
+                    </div>
+                  </template>
+                </el-card>
+              </el-timeline-item>
+            </el-timeline>
+          </div>
+        </el-tab-pane>
+      </el-tabs>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogDynamicFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="getDynamicFormDatas()">确 定</el-button>
@@ -100,6 +138,7 @@
         <el-button type="primary" @click="getGiveBackFormDatas()">确 定</el-button>
       </span>
     </el-dialog>
+    <KWBpmnJsIframe :showBpmn="showBpmn" :instanceId="instanceId" :deploymentFileUUID="deploymentFileUUID" :type="'lookBpmn'" :deploymentName="deploymentName"></KWBpmnJsIframe>
   </div>
 </template>
 
@@ -107,17 +146,21 @@
 import { Component, Vue, Ref } from 'vue-property-decorator'
 import KWTable from '@/components/table/Table.vue'
 import KWDynamicForm from '@/components/dynamic-form/DynamicForm.vue'
+import KWBpmnJsIframe from '@/components/bpmn-js/BpmnJsIframe.vue'
 import PermissionUtil from '@/common/utils/permission/permission-util'
 import PermissionPrefixUtils from '@/common/utils/permission/permission-prefix'
 import { Name, ProcessTaskDetail, FromDataDetail, DynamicFromData, ProcessTaskForm, FromData } from './interface/todo-task'
-import { GetShowFormData, TrunTaskApi, GiveBackTaskApi, SaveFormData, CompleteProcessTaskPostApi, GetPreOneIncomeNodeApi } from './todo-task-api'
+import { GetShowFormData, TrunTaskApi, GiveBackTaskApi, SaveFormData, CompleteProcessTaskPostApi, GetPreOneIncomeNodeApi, GetApprovalHistoryList } from './todo-task-api'
 import { DynamicFormItem, DynamicFormRule, DynamicInputFormData } from '@/components/dynamic-form/interface/dynamic-form'
 import { GetUserAllApi } from '../../system/user/user-api'
 import { MessageBoxData, MessageBoxInputData } from 'node_modules/_element-ui@2.15.10@element-ui/types/message-box'
+import dateFormat from '@/common/utils/date-util/date-format'
+import { GetProcessDefinitionApi } from '../process-definition/process-definition-api'
 @Component({
   components: {
     KWTable,
-    KWDynamicForm
+    KWDynamicForm,
+    KWBpmnJsIframe
   }
 })
 export default class TodoTask extends Vue {
@@ -128,10 +171,12 @@ export default class TodoTask extends Vue {
   showBpmn = false
   deploymentFileUUID = ''
   deploymentName = ''
+  instanceId = ''
   dialogDynamicFormVisible = false
   dialogTransferFormVisible = false
   dialogGiveBackFormVisible = false
   processTaskPermissionPrefix = PermissionPrefixUtils.processTask
+  activeTabName = 'approvalPage'
 
   @Ref('kwTableRef')
   readonly kwTableRef!: KWTable<Name, ProcessTaskDetail>
@@ -159,6 +204,8 @@ export default class TodoTask extends Vue {
   transferRules: DynamicFormRule = {}
   giveBackRules: DynamicFormRule = {}
 
+  approvalHistoryMap: Map<string, Array<FromDataDetail>> = new Map()
+
   hasPermissionEnabled(): boolean {
     return PermissionUtil.hasPermissionForEnabled(this.processTaskPermissionPrefix)
   }
@@ -178,6 +225,30 @@ export default class TodoTask extends Vue {
       }
     } else {
       this.$message.error(msg || '获取代办数据失败!')
+    }
+    if (this.approvalHistoryMap.size === 0) {
+      this.getApprovalHistoryList(processTaskDetail.instanceId)
+    } else {
+      console.log('获取审批列表已加载过，不需要再次加载!')
+    }
+  }
+
+  async getApprovalHistoryList(instanceId: string): Promise<void> {
+    const { code, msg, data } = await GetApprovalHistoryList(instanceId)
+    if (code === 200) {
+      data.forEach(item => {
+        const key = dateFormat(item.createDate) // + '由用户[' + item.createUserName + ']' // + '::' + (this.approvalHistoryMap.size === 0 ? '发起' : '审批')
+        let fromDataDetails: Array<FromDataDetail> = this.approvalHistoryMap.get(key) as Array<FromDataDetail>
+        if (fromDataDetails === undefined) {
+          fromDataDetails = []
+          this.approvalHistoryMap.set(key, fromDataDetails)
+          // fromDataDetails = this.approvalHistoryMap.get(key) as Array<FromDataDetail>
+        }
+        fromDataDetails.push(item)
+      })
+      console.log(this.approvalHistoryMap)
+    } else {
+      this.$message.error(msg || '获取审批列表失败!')
     }
   }
 
@@ -459,10 +530,25 @@ export default class TodoTask extends Vue {
       }
     })
   }
+
+  async showProcessInstance(fromDataDetail: FromDataDetail): Promise<void> {
+    const { code, msg, data } = await GetProcessDefinitionApi(fromDataDetail.procDefId)
+    if (code !== 200) {
+      this.$message.error(msg || '获取流程实例信息失败!')
+    } else {
+      this.deploymentFileUUID = data.deploymentId
+      this.deploymentName = data.resourceName
+      this.instanceId = fromDataDetail.procInstId
+      this.showBpmn = true
+      setTimeout(() => {
+        this.showBpmn = false
+      }, 1000)
+    }
+  }
 }
 </script>
 
-<style lang="less" scoped >
+<style lang="less"   >
 .search-primary {
   background: #409eff !important;
   border-color: #409eff !important;
@@ -473,5 +559,28 @@ export default class TodoTask extends Vue {
   background: #66b1ff !important;
   border-color: #66b1ff !important;
   color: #fff !important;
+}
+.dynamicForm {
+  // .el-timeline-item__timestamp.is-top {
+  //   margin-bottom: 0px;
+  //   padding-top: 0px;
+  // }
+  // .el-timeline-item {
+  //   position: relative;
+  //   padding-bottom: 0px;
+  // }
+
+  .el-dialog__body {
+    padding: 0px 30px;
+    color: #606266;
+    font-size: 14px;
+    word-break: break-all;
+  }
+  .el-card__body {
+    padding: 10px 20px;
+  }
+  .box-card {
+    box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%) !important;
+  }
 }
 </style>

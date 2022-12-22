@@ -41,7 +41,14 @@ import {
   Link,
   Notification,
   Divider,
-  CheckboxGroup
+  CheckboxGroup,
+  Tabs,
+  TabPane,
+  Timeline,
+  TimelineItem,
+  Collapse,
+  CollapseItem
+
 } from 'element-ui'
 
 Vue.use(Button)
@@ -83,7 +90,13 @@ Vue.use(Checkbox)
 Vue.use(Link)
 Vue.use(CheckboxGroup)
 Vue.component(Notification)
+Vue.use(Tabs)
+Vue.use(TabPane)
 Vue.use(Divider)
+Vue.use(Timeline)
+Vue.use(TimelineItem)
+Vue.use(Collapse)
+Vue.use(CollapseItem)
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm
 Vue.prototype.$notify = Notification

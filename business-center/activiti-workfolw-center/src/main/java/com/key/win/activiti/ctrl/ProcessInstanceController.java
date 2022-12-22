@@ -174,6 +174,13 @@ public class ProcessInstanceController {
                 .build());
         return Result.succeed(variableInstance);
     }
-
+    //获取参数
+    @GetMapping(value = "/get/{instanceId}")
+    @ApiOperation(value = "获取工作流实例")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    public Result getInstance(@PathVariable("instanceId") String instanceId) {
+        ProcessInstance processInstance = processRuntime.processInstance(instanceId);
+        return Result.succeed(processInstance);
+    }
 
 }
