@@ -74,6 +74,30 @@ export default class BpmnJsHome extends Vue {
       ]
     },
     {
+      label: '选择城市',
+      type: 'radio',
+      model: 'city',
+      func: true,
+      opts: [
+        {
+          label: '哈尔滨',
+          value: '1'
+        },
+        {
+          label: '齐齐哈尔',
+          value: '2'
+        },
+        {
+          label: '牡丹江',
+          value: '3'
+        },
+        {
+          label: '佳木斯',
+          value: '4'
+        }
+      ]
+    },
+    {
       label: '喜欢的运动',
       type: 'checkbox',
       model: 'sports',

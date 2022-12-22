@@ -13,5 +13,7 @@ public interface FormDataService extends IService<FormData> {
 
     int deleteFormDataByProcDefId(String procDefId);
 
-    public List<FormData> getFormDataByCondition(FormData formData);
+     List<FormData> getFormDataByCondition(FormData formData);
+
+    boolean completeTaskToDynamicForm(String taskId,String operationResult,String notes);
 }

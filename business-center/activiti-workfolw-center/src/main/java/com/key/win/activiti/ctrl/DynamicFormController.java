@@ -8,6 +8,7 @@ import com.key.win.activiti.vo.DynamicFormVo;
 import com.key.win.activiti.vo.ProcessTaskFormVo;
 import com.key.win.activiti.vo.ProcessTaskVo;
 import com.key.win.common.auth.details.LoginAppUser;
+import com.key.win.common.util.JsonUtils;
 import com.key.win.common.util.SysUserUtil;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
@@ -34,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -98,6 +100,7 @@ public class DynamicFormController {
             例子：
             FormProperty_0lovri0-_!string-_!姓名-_!请输入姓名-_!f-_!f
             FormProperty_1iu6onu-_!int-_!年龄-_!请输入年龄-_!s-_!t
+            FormProperty_07nklqv-_!radio-_!审批-_!无-_!s-_!f-_!同意-_-Y!_!拒绝-_-N!_!驳回-_-GB
 
             默认值：无、字符常量、FormProperty_开头定义过的控件ID
             是否参数：f为不是参数，s是字符，t是时间(不需要int，因为这里int等价于string)
@@ -146,16 +149,39 @@ public class DynamicFormController {
                 }
 
                 formData.setControlValueParamType(splitFP[4]);
-                if (splitFP.length == 6) {
-                    if (splitFP[5].toLowerCase().equals("t") || splitFP[5].toLowerCase().equals("true")) {
-
-                        formData.setIsReadOnlyControl(true);
+                if (!splitFP[1].toLowerCase().equals("radio")
+                        && !splitFP[1].toLowerCase().equals("checkbox")
+                        && !splitFP[1].toLowerCase().equals("select")) {
+                    if (splitFP.length == 6) {
+                        if (splitFP[5].toLowerCase().equals("t") || splitFP[5].toLowerCase().equals("true")) {
+                            formData.setIsReadOnlyControl(true);
+                        } else {
+                            formData.setIsReadOnlyControl(true);
+                        }
                     } else {
                         formData.setIsReadOnlyControl(true);
                     }
                 } else {
-                    formData.setIsReadOnlyControl(true);
+                    if (splitFP[5].toLowerCase().equals("t") || splitFP[5].toLowerCase().equals("true")) {
+                        formData.setIsReadOnlyControl(true);
+                    } else {
+                        formData.setIsReadOnlyControl(true);
+                    }
+                    List<Map<String, String>> list = new ArrayList<>();
+                    String[] options = splitFP[6].split("!_!");
+                    for (String option : options) {
+                        Map<String, String> map = new HashMap<>();
+                        String[] kv = option.split("-_-");
+                        map.put("value", kv[1]);
+                        map.put("label", kv[0]);
+                        if (splitFP[1].toLowerCase().equals("checkbox")) {
+                            map.put("name", kv[2]);
+                        }
+                        list.add(map);
+                    }
+                    formData.setControlValueOptions(JsonUtils.toJsonNoException(list));
                 }
+
                 formDataList.add(formData);
             }
 
@@ -182,7 +208,6 @@ public class DynamicFormController {
 
             List<FormData> list = new ArrayList<>();
             for (FormData controlItem : dynamicFormVo.getFormData()) {
-                FormData fd = new FormData();
                 controlItem.setProcTaskId(task.getId());
                 controlItem.setProcDefId(task.getProcessDefinitionId());
                 controlItem.setProcInstId(task.getProcessInstanceId());

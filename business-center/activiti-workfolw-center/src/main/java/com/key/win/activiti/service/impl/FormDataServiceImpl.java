@@ -7,14 +7,21 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.key.win.activiti.dao.FormDataDao;
 import com.key.win.activiti.model.FormData;
 import com.key.win.activiti.service.FormDataService;
+import org.activiti.api.task.model.Task;
+import org.activiti.api.task.runtime.TaskRuntime;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 @Service
 public class FormDataServiceImpl extends ServiceImpl<FormDataDao, FormData> implements FormDataService {
+
+    @Autowired
+    private TaskRuntime taskRuntime;
 
     @Override
     public List<HashMap<String, Object>> selectFormData(String procInstId) {
@@ -51,6 +58,31 @@ public class FormDataServiceImpl extends ServiceImpl<FormDataDao, FormData> impl
         }
         lqw.orderByAsc(FormData::getCreateDate);
         return this.baseMapper.selectList(lqw);
+    }
+
+    @Override
+    public boolean completeTaskToDynamicForm(String taskId,String operationResult,String notes) {
+        Task task = taskRuntime.task(taskId);
+        List<FormData> list = new ArrayList();
+        FormData formDataResult = new FormData();
+        formDataResult.setProcInstId(task.getProcessInstanceId());
+        formDataResult.setProcTaskId(taskId);
+        formDataResult.setProcDefId(task.getProcessDefinitionId());
+        formDataResult.setFormKey(task.getFormKey());
+        formDataResult.setControlLabel("操作结果");
+        formDataResult.setControlValue(operationResult);
+        list.add(formDataResult);
+        if(StringUtils.isNotBlank(notes)){
+            FormData formDataNotes = new FormData();
+            formDataNotes.setProcInstId(task.getProcessInstanceId());
+            formDataNotes.setProcTaskId(taskId);
+            formDataNotes.setProcDefId(task.getProcessDefinitionId());
+            formDataNotes.setFormKey(task.getFormKey());
+            formDataNotes.setControlLabel("备注内容");
+            formDataNotes.setControlValue(notes);
+            list.add(formDataNotes);
+        }
+        return super.saveBatch(list);
     }
 
 }

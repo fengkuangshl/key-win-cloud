@@ -38,4 +38,6 @@ public class FormData extends MybatisID {
     private String controlValueParamType;
     @TableField("READ_ONLY_CONTROL_")
     private Boolean isReadOnlyControl = Boolean.FALSE;
+    @TableField("CONTROL_VALUE_OPTIONS")
+    private String controlValueOptions;
 }

@@ -26,6 +26,7 @@ export interface FromData {
   controlLabel: string
   controlValue: string
   controlValueParamType: string
+  controlValueOptions?: string
   controlIsReadOnly?: boolean
 }
 

@@ -73,12 +73,16 @@
         </el-table-column>
       </KWTable>
     </el-card>
-    <el-dialog :visible.sync="dialogDynamicFormVisible" title="审批表单" class="dynamicForm" style="height:auto;" :before-close="()=>{dialogDynamicFormVisible = false}" width="30%">
+    <el-dialog :visible.sync="dialogDynamicFormVisible" title="审批表单" class="dynamicForm" style="height:auto;" :before-close="()=>{dialogDynamicFormVisible = false}" width="25%">
       <el-tabs v-model="activeTabName">
         <el-tab-pane name="approvalPage">
           <span slot="label"><i class="el-icon-s-check"></i>审批</span>
           <div style="height:auto;">
             <KWDynamicForm :formItems='dynamicFormItems' :dynamicFormRules='dynamicRules' ref='dynamicForm' :inputFormData='dynamicInputFormData'></KWDynamicForm>
+            <div style="padding:0px 10px 20px 0px;float:right">
+              <el-button @click="dialogDynamicFormVisible = false">取 消</el-button>
+              <el-button type="primary" @click="getDynamicFormDatas()">确 定</el-button>
+            </div>
           </div>
         </el-tab-pane>
         <el-tab-pane name="approvalHistoryListPage">
@@ -86,23 +90,7 @@
           <div class="block" style="margin: 0px 1px">
             <el-timeline>
               <el-timeline-item v-for="(value,key) in approvalHistoryMap" :key="key" :timestamp="value[0]" placement="top">
-                <!-- <el-collapse>
-                  <el-collapse-item :title="value[0]+ (key ===0 ? '发起':'审批')" :name="value[0]">
-                    <el-card class="box-card">
-                      <el-form label-width="120px">
-                        <el-form-item v-for="(item,index) in value[1]" :key="index" :label="item.controlLabel+'：'">
-                          <div class="el-form-item-div">{{item.controlValue}}</div>
-                        </el-form-item>
-                      </el-form>
-                    </el-card>
-                  </el-collapse-item>
-                </el-collapse> -->
                 <el-card class="box-card" style="box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%) !important;border: 1px solid #EBEEF5 !important;">
-                  <!-- <el-form label-width="120px">
-                    <el-form-item v-for="(item,index) in value[1]" :key="index" :label="item.controlLabel+'：'">
-                      <div class="el-form-item-div">{{item.controlValue}}</div>
-                    </el-form-item>
-                  </el-form> -->
                   <template v-for="(item,index) in value[1]">
                     <div :key="index">
                       <h4 v-if="index===0" style="padding:5px">{{item.createUserName+' ' + (key ===0 ? '发起':'审批')}}&nbsp;&nbsp;&nbsp;&nbsp;<a style="color:#409EFF;cursor: pointer;" title="查看流程图" @click="showProcessInstance(item)"><i class="el-icon-view"></i></a></h4>
@@ -115,10 +103,6 @@
           </div>
         </el-tab-pane>
       </el-tabs>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogDynamicFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="getDynamicFormDatas()">确 定</el-button>
-      </span>
     </el-dialog>
     <el-dialog :visible.sync="dialogTransferFormVisible" title="转办表单" style="height:auto;" :before-close="()=>{dialogTransferFormVisible = false}" width="20%">
       <div style="height:auto;">
@@ -151,7 +135,7 @@ import PermissionUtil from '@/common/utils/permission/permission-util'
 import PermissionPrefixUtils from '@/common/utils/permission/permission-prefix'
 import { Name, ProcessTaskDetail, FromDataDetail, DynamicFromData, ProcessTaskForm, FromData } from './interface/todo-task'
 import { GetShowFormData, TrunTaskApi, GiveBackTaskApi, SaveFormData, CompleteProcessTaskPostApi, GetPreOneIncomeNodeApi, GetApprovalHistoryList } from './todo-task-api'
-import { DynamicFormItem, DynamicFormRule, DynamicInputFormData } from '@/components/dynamic-form/interface/dynamic-form'
+import { DynamicFormItem, DynamicFormRule, DynamicInputFormData, DynamicOptions } from '@/components/dynamic-form/interface/dynamic-form'
 import { GetUserAllApi } from '../../system/user/user-api'
 import { MessageBoxData, MessageBoxInputData } from 'node_modules/_element-ui@2.15.10@element-ui/types/message-box'
 import dateFormat from '@/common/utils/date-util/date-format'
@@ -244,6 +228,23 @@ export default class TodoTask extends Vue {
           this.approvalHistoryMap.set(key, fromDataDetails)
           // fromDataDetails = this.approvalHistoryMap.get(key) as Array<FromDataDetail>
         }
+        if (item.controlValueOptions !== undefined && item.controlValueOptions !== '') {
+          const opts: Array<DynamicOptions> = JSON.parse(item.controlValueOptions as string)
+          for (const key in opts) {
+            if (Object.prototype.hasOwnProperty.call(opts, key)) {
+              const element = opts[key]
+              if (element.value === item.controlValue) {
+                item.controlValue = element.label
+                break
+              }
+            }
+          }
+          // const kv: Map<string, string> = new Map()
+          // opts.forEach(opt => {
+          //   kv.set(opt.value, opt.label)
+          // })
+          // item.controlValue = kv.get(item.controlValue) as string
+        }
         fromDataDetails.push(item)
       })
       console.log(this.approvalHistoryMap)
@@ -279,7 +280,8 @@ export default class TodoTask extends Vue {
           type: type,
           model: item.controlId,
           isReadOnly: item.controlIsReadOnly,
-          isParam: item.controlValueParamType
+          isParam: item.controlValueParamType,
+          opts: item.controlValueOptions !== undefined ? JSON.parse(item.controlValueOptions as string) : undefined
         })
         if (item.controlValue !== '无') {
           this.$set(this.dynamicInputFormData, item.controlId, item.controlValue)
@@ -511,6 +513,7 @@ export default class TodoTask extends Vue {
           controlLabel: formItem.label,
           controlValue: val as string,
           controlValueParamType: formItem.isParam,
+          controlValueOptions: formItem.opts !== undefined ? JSON.stringify(formItem.opts) : '',
           controlIsReadOnly: formItem.isReadOnly
         }
         param.push(formData)
