@@ -19,12 +19,13 @@
         <el-table-column type="index" width="80" label="序号"></el-table-column>
         <el-table-column prop="id" sortable="custom" label="实例ID"> </el-table-column>
         <el-table-column prop="taskDefinitionKey" sortable="custom" label="KEY"> </el-table-column>
-        <el-table-column prop="name" label="流程名称" sortable="custom"></el-table-column>
-        <el-table-column prop="processInstanceId" label="实例ID" sortable="custom"></el-table-column>
+        <el-table-column prop="name" label="审批节点名称" sortable="custom"></el-table-column>
+        <el-table-column prop="processInstanceName" label="实例名称" sortable="custom"></el-table-column>
+        <!-- <el-table-column prop="processInstanceId" label="实例ID" sortable="custom"></el-table-column> -->
         <el-table-column prop="assignee" label="办理人" sortable="custom"></el-table-column>
-        <el-table-column prop="createTime" label="创建时间" sortable="custom">
+        <!-- <el-table-column prop="createTime" label="创建时间" sortable="custom">
           <template slot-scope="scope">{{ scope.row.createTime | dateTimeFormat }}</template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column prop="startTime" label="开始时间" sortable="custom">
           <template slot-scope="scope">{{ scope.row.startTime | dateTimeFormat }}</template>
         </el-table-column>
@@ -36,9 +37,35 @@
             <el-tooltip effect="dark" content="申请作废" placement="top" :enterable="false">
               <el-button type="primary" v-if="scope.row.isAbandon === true" icon="el-icon-s-release" @click="getAbandon(scope.row)"></el-button>
             </el-tooltip>
+            <el-tooltip effect="dark" content="查看历史" placement="top" :enterable="false">
+              <el-button type="warning" icon="el-icon-view" size="mini" @click="showApprovalHistory(scope.row)"></el-button>
+            </el-tooltip>
           </template>
         </el-table-column>
       </KWTable>
+      <KWBpmnJsIframe :showBpmn="showBpmn" :instanceId="instanceId" :deploymentFileUUID="deploymentFileUUID" :type="'lookBpmn'" :deploymentName="deploymentName"></KWBpmnJsIframe>
+      <el-dialog :visible.sync="dialogApprovalHistoryVisible" title="审批表单历史" style="height:auto;" :before-close="()=>{dialogApprovalHistoryVisible = false}" width="30%">
+        <el-scrollbar>
+          <div class="block" style="margin: 0px 1px;max-height:400px;">
+            <el-timeline>
+              <el-timeline-item v-for="(value,key) in approvalHistoryMap" :key="key" :timestamp="value[0]" placement="top">
+                <el-card class="box-card" style="box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%) !important;border: 1px solid #EBEEF5 !important;">
+                  <template v-for="(item,index) in value[1]">
+                    <div :key="index">
+                      <h4 v-if="index===0" style="padding:5px">{{item.createUserName+' ' + (key ===0 ? '发起':'审批')}}&nbsp;&nbsp;&nbsp;&nbsp;<a style="color:#409EFF;cursor: pointer;" title="查看流程图" @click="showBpmnDialog(item)"><i class="el-icon-view"></i></a></h4>
+                      <p class="el-form-item-div" v-if="index!==0 || key !==0" style="padding:5px">{{item.controlLabel+'：'+item.controlValue}}</p>
+                    </div>
+                  </template>
+                </el-card>
+              </el-timeline-item>
+            </el-timeline>
+          </div>
+        </el-scrollbar>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogApprovalHistoryVisible = false">取 消</el-button>
+          <el-button type="primary" @click="dialogApprovalHistoryVisible = false">关 闭</el-button>
+        </span>
+      </el-dialog>
     </el-card>
   </div>
 </template>
@@ -46,14 +73,19 @@
 <script lang="ts">
 import { Component, Vue, Ref } from 'vue-property-decorator'
 import KWTable from '@/components/table/Table.vue'
+import KWBpmnJsIframe from '@/components/bpmn-js/BpmnJsIframe.vue'
 import PermissionPrefixUtils from '@/common/utils/permission/permission-prefix'
 import { HistoryTaskDetail, Name } from './interface/history-task'
 import { MessageBoxData, MessageBoxInputData } from 'node_modules/_element-ui@2.15.10@element-ui/types/message-box'
-import { ProcessTaskForm } from '../todo-task/interface/todo-task'
-import { GetRevocationApi, GetHandleCancellationApi } from '../todo-task/todo-task-api'
+import { FromDataDetail, ProcessTaskForm } from '../todo-task/interface/todo-task'
+import { GetRevocationApi, GetHandleCancellationApi, GetApprovalHistoryList } from '../todo-task/todo-task-api'
+import { GetProcessDefinitionApi } from '../process-definition/process-definition-api'
+import dateFormat from '@/common/utils/date-util/date-format'
+import { DynamicOptions } from '@/components/dynamic-form/interface/dynamic-form'
 @Component({
   components: {
-    KWTable
+    KWTable,
+    KWBpmnJsIframe
   }
 })
 export default class HistoryTask extends Vue {
@@ -62,9 +94,16 @@ export default class HistoryTask extends Vue {
   }
 
   historyTaskPermissionPrefix = PermissionPrefixUtils.historyTask
+  showBpmn = false
+  deploymentFileUUID = ''
+  deploymentName = ''
+  instanceId = ''
+  dialogApprovalHistoryVisible = false
 
   @Ref('kwTableRef')
   readonly kwTableRef!: KWTable<Name, HistoryTaskDetail>
+
+  approvalHistoryMap: Map<string, Array<FromDataDetail>> = new Map()
 
   searchHistoryTask(): void {
     this.kwTableRef.loadByCondition(this.t)
@@ -128,6 +167,59 @@ export default class HistoryTask extends Vue {
           message: '已取消'
         })
       })
+  }
+
+  async showBpmnDialog(fromDataDetail: FromDataDetail): Promise<void> {
+    const { code, msg, data } = await GetProcessDefinitionApi(fromDataDetail.procDefId)
+    if (code !== 200) {
+      this.$message.error(msg || '获取流程实例信息失败!')
+    } else {
+      this.deploymentFileUUID = data.deploymentId
+      this.deploymentName = data.resourceName
+      this.instanceId = fromDataDetail.procInstId
+      this.showBpmn = true
+      setTimeout(() => {
+        this.showBpmn = false
+      }, 1000)
+    }
+  }
+
+  async showApprovalHistory(historyTaskDetail: HistoryTaskDetail): Promise<void> {
+    const { code, msg, data } = await GetApprovalHistoryList(historyTaskDetail.processInstanceId)
+    if (code === 200) {
+      this.approvalHistoryMap = new Map()
+      data.forEach(item => {
+        const key = dateFormat(item.createDate) // + '由用户[' + item.createUserName + ']' // + '::' + (this.approvalHistoryMap.size === 0 ? '发起' : '审批')
+        let fromDataDetails: Array<FromDataDetail> = this.approvalHistoryMap.get(key) as Array<FromDataDetail>
+        if (fromDataDetails === undefined) {
+          fromDataDetails = []
+          this.approvalHistoryMap.set(key, fromDataDetails)
+          // fromDataDetails = this.approvalHistoryMap.get(key) as Array<FromDataDetail>
+        }
+        if (item.controlValueOptions !== undefined && item.controlValueOptions !== '') {
+          const opts: Array<DynamicOptions> = JSON.parse(item.controlValueOptions as string)
+          for (const key in opts) {
+            if (Object.prototype.hasOwnProperty.call(opts, key)) {
+              const element = opts[key]
+              if (element.value === item.controlValue) {
+                item.controlValue = element.label
+                break
+              }
+            }
+          }
+          // const kv: Map<string, string> = new Map()
+          // opts.forEach(opt => {
+          //   kv.set(opt.value, opt.label)
+          // })
+          // item.controlValue = kv.get(item.controlValue) as string
+        }
+        fromDataDetails.push(item)
+      })
+      console.log(this.approvalHistoryMap)
+      this.dialogApprovalHistoryVisible = true
+    } else {
+      this.$message.error(msg || '获取审批列表失败!')
+    }
   }
 }
 </script>

@@ -63,6 +63,23 @@ public class ActivitiHistoryController {
 
     }
 
+    //任务实例历史
+    @PostMapping(value = "/getHistoryProcessDefinition/{instanceId}")
+    @ApiOperation(value = "任务实例历史")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    public Result getHistoryProcessDefinition(@PathVariable("instanceId") String instanceId) {
+
+        //--------------------------------------------另一种写法-------------------------
+        List<HistoricTaskInstance> historicTaskInstances = historyService.createHistoricTaskInstanceQuery()
+                .orderByHistoricTaskInstanceEndTime().asc()
+                .processInstanceId(instanceId)
+                .list();
+
+        return Result.succeed(historicTaskInstances);
+
+
+    }
+
 
     //流程图高亮
     @GetMapping("/getHighLine")

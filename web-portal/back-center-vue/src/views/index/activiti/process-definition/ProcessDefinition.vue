@@ -134,7 +134,7 @@ export default class ProcessDefinition extends Vue {
   }
 
   readonly processInstanceFormRules: { name: Array<KWRule.Rule | KWRule.MixinRule> } = {
-    name: [FormValidatorRule.requiredRule('请输入实例名称'), FormValidatorRule.mixinRul(2, 10, '实例名称的长度2~10个字符之间')]
+    name: [FormValidatorRule.requiredRule('请输入实例名称'), FormValidatorRule.mixinRul(2, 20, '实例名称的长度2~20个字符之间')]
   }
 
   aditFileClosed(): void {

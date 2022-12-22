@@ -4,6 +4,8 @@ export interface HistoryTaskDetail extends Model.Id, Model.Name {
   resourceName: string
   taskDefinitionKey: string
   processInstanceId: string
+  processInstanceName: string
+  processDefinitionId: string
   createTime: Date
   startTime: Date
   isRecover: boolean

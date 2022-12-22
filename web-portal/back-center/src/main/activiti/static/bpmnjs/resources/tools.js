@@ -190,7 +190,7 @@ const tools = {
                 var token = tools.getToken();
                 if (token) {
                     // xhr.setRequestHeader('Authorization', 'Basic ' + token.access_token);
-                    xhr.setRequestHeader('Authorization', 'Bearer ' + token.access_token);
+                    xhr.setRequestHeader('Authorization', 'Bearer ' +  token);
                 }
             },
             success: function (result) {

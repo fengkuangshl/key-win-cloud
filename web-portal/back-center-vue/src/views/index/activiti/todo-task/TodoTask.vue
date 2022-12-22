@@ -87,20 +87,22 @@
         </el-tab-pane>
         <el-tab-pane name="approvalHistoryListPage">
           <span slot="label"><i class="el-icon-s-operation"></i>审批历史</span>
-          <div class="block" style="margin: 0px 1px">
-            <el-timeline>
-              <el-timeline-item v-for="(value,key) in approvalHistoryMap" :key="key" :timestamp="value[0]" placement="top">
-                <el-card class="box-card" style="box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%) !important;border: 1px solid #EBEEF5 !important;">
-                  <template v-for="(item,index) in value[1]">
-                    <div :key="index">
-                      <h4 v-if="index===0" style="padding:5px">{{item.createUserName+' ' + (key ===0 ? '发起':'审批')}}&nbsp;&nbsp;&nbsp;&nbsp;<a style="color:#409EFF;cursor: pointer;" title="查看流程图" @click="showProcessInstance(item)"><i class="el-icon-view"></i></a></h4>
-                      <p class="el-form-item-div" v-if="index!==0 || key !==0" style="padding:5px">{{item.controlLabel+'：'+item.controlValue}}</p>
-                    </div>
-                  </template>
-                </el-card>
-              </el-timeline-item>
-            </el-timeline>
-          </div>
+          <el-scrollbar>
+            <div class="block" style="margin: 0px 1px;max-height:400px;">
+              <el-timeline>
+                <el-timeline-item v-for="(value,key) in approvalHistoryMap" :key="key" :timestamp="value[0]" placement="top">
+                  <el-card class="box-card" style="box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%) !important;border: 1px solid #EBEEF5 !important;">
+                    <template v-for="(item,index) in value[1]">
+                      <div :key="index">
+                        <h4 v-if="index===0" style="padding:5px">{{item.createUserName+' ' + (key ===0 ? '发起':'审批')}}&nbsp;&nbsp;&nbsp;&nbsp;<a style="color:#409EFF;cursor: pointer;" title="查看流程图" @click="showProcessInstance(item)"><i class="el-icon-view"></i></a></h4>
+                        <p class="el-form-item-div" v-if="index!==0 || key !==0" style="padding:5px">{{item.controlLabel+'：'+item.controlValue}}</p>
+                      </div>
+                    </template>
+                  </el-card>
+                </el-timeline-item>
+              </el-timeline>
+            </div>
+          </el-scrollbar>
         </el-tab-pane>
       </el-tabs>
     </el-dialog>

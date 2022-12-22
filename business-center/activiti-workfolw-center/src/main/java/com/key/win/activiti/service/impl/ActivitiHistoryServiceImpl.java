@@ -12,6 +12,8 @@ import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.history.HistoricActivityInstance;
+import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricTaskInstanceQuery;
 import org.activiti.engine.impl.HistoricTaskInstanceQueryProperty;
@@ -83,19 +85,24 @@ public class ActivitiHistoryServiceImpl implements ActivitiHistoryService {
         for (HistoricTaskInstance historicTaskInstance : activitiHistorys) {
             ActivitiHistoryVo vo = new ActivitiHistoryVo();
             BeanUtils.copyProperties(historicTaskInstance, vo);
-            ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(vo.getProcessInstanceId()).singleResult();
-            if (processInstance != null) {
-                List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery().processInstanceId(vo.getProcessInstanceId())
-                        .orderByTaskCreateTime().asc().listPage(0,1);
-                if(!CollectionUtils.isEmpty(list)){
-                    HistoricTaskInstance historicTaskInstance1 = list.get(0);
-                    if(historicTaskInstance1.getAssignee().equals(historicTaskInstance.getAssignee()) && historicTaskInstance.getId().equals(historicTaskInstance1.getId())){
-                        vo.setIsRecover(true);
-                        vo.setIsAbandon(true);
-                    }
-                }
-
+            HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery().processInstanceId(vo.getProcessInstanceId()).singleResult();
+            if(historicProcessInstance!=null){
+                vo.setProcessInstanceName(historicProcessInstance.getName());
             }
+//            ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(vo.getProcessInstanceId()).singleResult();
+//            if (processInstance != null) {
+//                vo.setProcessInstanceName(processInstance.getName());
+//                List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery().processInstanceId(vo.getProcessInstanceId())
+//                        .orderByTaskCreateTime().asc().listPage(0,1);
+//                if(!CollectionUtils.isEmpty(list)){
+//                    HistoricTaskInstance historicTaskInstance1 = list.get(0);
+//                    if(historicTaskInstance1.getAssignee().equals(historicTaskInstance.getAssignee()) && historicTaskInstance.getId().equals(historicTaskInstance1.getId())){
+//                        vo.setIsRecover(true);
+//                        vo.setIsAbandon(true);
+//                    }
+//                }
+//
+//            }
             processTaskVos.add(vo);
         }
         return processTaskVos;
