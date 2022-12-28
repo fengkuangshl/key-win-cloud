@@ -51,6 +51,9 @@ public class ProcessTaskController {
     @Autowired
     private TaskService taskService;
 
+    @Autowired
+    private FormDataService formDataService;
+
 
     //获取我的代办任务
     @PostMapping(value = "/getTasks")
@@ -85,18 +88,60 @@ public class ProcessTaskController {
     @PostMapping(value = "/trunTask")
     @ApiOperation(value = "转签任务")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
-    public Result trunTask(@RequestBody ProcessTaskFormVo processTaskForm) {
+    public Result trunTask(@RequestBody DynamicFormVo dynamicFormVo) {
         try {
-            if (StringUtils.isNotBlank(processTaskForm.getAudit())) {
-                taskService.addComment(processTaskForm.getTaskId(), processTaskForm.getProcessInstanceId(), processTaskForm.getAudit());
+            String userName = processTask(dynamicFormVo, "转签");
+            if (StringUtils.isBlank(userName)) {
+                return Result.succeed("转签任务失败,没有找到对应的对人员信息！");
             }
-            taskService.setAssignee(processTaskForm.getTaskId(), processTaskForm.getAssignee());
+            taskService.setAssignee(dynamicFormVo.getTaskId(), userName);
             return Result.succeed("转签任务成功！");
         } catch (Exception e) {
             log.error("转签任务失败:" + e.getMessage(), e);
             return Result.failed("转签任务失败:" + e.getMessage());
         }
     }
+
+    @PostMapping(value = "/delegateTask")
+    @ApiOperation(value = "委派任务")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    public Result delegateTask(@RequestBody DynamicFormVo dynamicFormVo) {
+        try {
+            String userName = processTask(dynamicFormVo, "委派");
+            if (StringUtils.isBlank(userName)) {
+                return Result.succeed("委派任务失败,没有找到对应的对人员信息！");
+            }
+            taskService.delegateTask(dynamicFormVo.getTaskId(), userName);
+            return Result.succeed("委派任务成功！");
+        } catch (Exception e) {
+            log.error("委派任务失败:" + e.getMessage(), e);
+            return Result.failed("委派任务失败:" + e.getMessage());
+        }
+    }
+
+    private String processTask(@RequestBody DynamicFormVo dynamicFormVo, String tipInfo) {
+        String userName = "";
+        List<FormData> list = new ArrayList<>();
+        Task task = taskRuntime.task(dynamicFormVo.getTaskId());
+        for (FormData controlItem : dynamicFormVo.getFormData()) {
+            controlItem.setProcTaskId(task.getId());
+            controlItem.setProcDefId(task.getProcessDefinitionId());
+            controlItem.setProcInstId(task.getProcessInstanceId());
+            controlItem.setFormKey(task.getFormKey());
+            list.add(controlItem);
+            if (controlItem.getControlType().toLowerCase().equals("user_list")) {
+                userName = controlItem.getControlValue();
+            }
+        }
+        if (StringUtils.isNotBlank(userName)) {
+            //写入数据库
+            formDataService.saveBatch(list);
+        } else {
+            log.error(tipInfo + "的userName没有找到!");
+        }
+        return userName;
+    }
+
 
     @PostMapping(value = "/giveBackTask")
     @ApiOperation(value = "退回任务")
@@ -136,7 +181,6 @@ public class ProcessTaskController {
             if (StringUtils.isNotBlank(processTaskForm.getAudit())) {
                 taskService.addComment(processTaskForm.getTaskId(), task.getProcessInstanceId(), processTaskForm.getAudit());
             }
-
             taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(task.getId())
                     //.withVariable("num", "2")//执行环节设置变量
                     .build());

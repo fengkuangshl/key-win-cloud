@@ -26,8 +26,11 @@ export interface FromData {
   controlLabel: string
   controlValue: string
   controlValueParamType: string
+  isShowControl: boolean
   controlValueOptions?: string
   controlIsReadOnly?: boolean
+  controlEvent?: string
+  controlEventType: string
 }
 
 export interface FromDataDetail extends Model.BaseField, FromData {}

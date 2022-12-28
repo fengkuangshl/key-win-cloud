@@ -1,9 +1,9 @@
 
 <template>
   <div>
-    <el-form :model="dynamicFormData" ref="dynamicFormRef" :inline='false' :rules="dynamicFormRules" label-width="auto" class="dynamicForm">
+    <el-form id="dynamicForm" :model="dynamicFormData" ref="dynamicFormRef" :inline='false' :rules="dynamicFormRules" label-width="auto" class="dynamicForm">
       <template v-for="(item,index) in formItems">
-        <el-form-item :key="index" v-show="item.type !== 'hidden'" :label="item.label+'：'" :prop="item.model">
+        <el-form-item :key="index" v-show="item.isShowControl" :label="item.label+'：'" :prop="item.model">
           <el-input v-if="item.type == null || item.type == undefined || item.type == 'text' " :disabled="item.isReadOnly" type="text" :placeholder="'请填写'+item.label" @change="onAction(dynamicFormData[item.model])" v-model="dynamicFormData[item.model]" style="max-width: 220px;"></el-input>
 
           <el-input v-else-if="item.type == 'number'" :placeholder="'请填写'+item.label" type="number" :disabled="item.isReadOnly" v-model="dynamicFormData[item.model]" @change="onAction(dynamicFormData[item.model])" style="max-width: 220px;"></el-input>
@@ -16,12 +16,11 @@
 
           <el-switch v-else-if="item.type == 'switch'" v-model="dynamicFormData[item.model]" :disabled="item.isReadOnly" style="max-width: 220px;"></el-switch>
 
-          <el-radio-group v-else-if="item.type == 'radio'" v-model="dynamicFormData[item.model]" :disabled="item.isReadOnly">
+          <el-radio-group v-else-if="item.type == 'radio'" @[item.eventType]="item.eventFn" v-model="dynamicFormData[item.model]" :disabled="item.isReadOnly">
             <el-radio v-for="(it,index) in item.opts" :key="index" :label="it.value">{{it.label}}</el-radio>
           </el-radio-group>
 
           <el-checkbox-group v-else-if="item.type == 'checkbox'" v-model="dynamicFormData[item.model]" :disabled="item.isReadOnly">
-            {{dynamicFormData[item.model]}}
             <el-checkbox v-for="(it,index) in item.opts" :key="index" :label="it.value" :name='it.name'>{{it.label}}</el-checkbox>
           </el-checkbox-group>
 

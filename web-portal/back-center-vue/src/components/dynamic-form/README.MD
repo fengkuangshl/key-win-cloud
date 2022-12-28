@@ -1,4 +1,33 @@
+(val)=>{
+        debugger ;
+        var todoTaskMain = document.querySelector("#todoTaskMain").__vue__;
+        var vueDiv = document.querySelector("#dynamicForm").parentElement.__vue__;
+        var formItems = vueDiv.formItems;
+        var map = new Map();
+        for (var item in formItems) {
+            var formItem = formItems[item];
+            map.set(formItem.model, formItem);
+        }
+        if (val === 'TT') {
+            map.get('FormProperty_23taa76').isShowControl = true;
+            todoTaskMain.trunTaskBtn = true;
+            todoTaskMain.delegatelTaskBtn = false;
+            todoTaskMain.approvalTaskBtn = false;
+        } else if(val === 'DT'){
+            map.get('FormProperty_23taa76').isShowControl = true;
+            todoTaskMain.trunTaskBtn = false;
+            todoTaskMain.delegatelTaskBtn = true;
+            todoTaskMain.approvalTaskBtn = false;
+        }else{
+            map.get('FormProperty_23taa76').isShowControl = false;
+            todoTaskMain.trunTaskBtn = false;
+            todoTaskMain.delegatelTaskBtn = false;
+            todoTaskMain.approvalTaskBtn = true;
+        }
+    }
 
+
+FormProperty_0ueitp2-_!类型-_!名称-_!默认值-_!是否参数-_!是否只读-_!是否展示控件-_!控件选项-_!控件事件
 
 FormProperty_06q23s6-_!string-_!姓名-_!请输入姓名-_!f
 FormProperty_07nklqv-_!radio-_!审批-_!无-_!s-_!f-_!同意-_-Y!_!拒绝-_-N!_!驳回-_-GB
@@ -34,3 +63,57 @@ FormProperty_3u4v0od-_!textarea-_!备注-_!无-_!f
 
 FormProperty_07nklqv-_!radio-_!审批-_!无-_!s-_!f-_!同意-_-Y!_!拒绝-_-N!_!驳回-_-GB
 FormProperty_0jh5dho-_!textarea-_!备注-_!无-_!f
+
+
+
+FormProperty_07nklqv-_!radio-_!审批-_!无-_!s-_!false-_!true-_!同意-_-Y!_!拒绝-_-N!_!驳回-_-GB-_!change!_!(val)=>{alert(val)}
+
+
+FormProperty_07nklqv-_!radio-_!审批-_!Y-_!s-_!false-_!true-_!同意-_-Y!_!拒绝-_-N!_!驳回-_-GB!_!转办-_-TT!_!委派-_-DT-_!change!_!(val)=>{        debugger ;        var todoTaskMain = document.querySelector("#todoTaskMain").__vue__;        var vueDiv = document.querySelector("#dynamicForm").parentElement.__vue__;        var formItems = vueDiv.formItems;        var map = new Map();        for (var item in formItems) {            var formItem = formItems[item];            map.set(formItem.model, formItem);        }        if (val === 'TT') {            map.get('FormProperty_23taa76').isShowControl = true;            todoTaskMain.trunTaskBtn = true;            todoTaskMain.delegatelTaskBtn = false;            todoTaskMain.approvalTaskBtn = false;        } else if(val === 'DT'){            map.get('FormProperty_23taa76').isShowControl = true;            todoTaskMain.trunTaskBtn = false;            todoTaskMain.delegatelTaskBtn = true;            todoTaskMain.approvalTaskBtn = false;        }else{            map.get('FormProperty_23taa76').isShowControl = false;            todoTaskMain.trunTaskBtn = false;            todoTaskMain.delegatelTaskBtn = false;            todoTaskMain.approvalTaskBtn = true;        }    }
+FormProperty_23taa76-_!user_list-_!请选择用户-_!f-_!false-_!true
+
+
+
+(val) => {
+	debugger;
+	var todoTaskMain = document.querySelector("#todoTaskMain").__vue__;
+	var vueDiv = document.querySelector("#dynamicForm").parentElement.__vue__;
+  todoTaskMain.controlEventType = '';
+	var formItems = vueDiv.formItems;
+	var map = new Map();
+	for (var item in formItems) {
+		var formItem = formItems[item];
+		map.set(formItem.model, formItem);
+	}
+  const radioModel =  map.get('FormProperty_07nklqv');
+  if(radioModel !== undefined && radioModel !== null){
+    const options =  radioModel.opts;
+    for (var item in options) {
+		var opt = options[item];
+        if(opt.value === val){
+            todoTaskMain.controlEventType = opt.label;
+        }
+	}
+  }
+	if (val === 'TT') {
+		map.get('FormProperty_23taa76')
+			.isShowControl = true;
+		todoTaskMain.trunTaskBtn = true;
+		todoTaskMain.delegatelTaskBtn = false;
+		todoTaskMain.approvalTaskBtn = false;
+	} else if (val === 'DT') {
+		map.get('FormProperty_23taa76')
+			.isShowControl = true;
+		todoTaskMain.trunTaskBtn = false;
+		todoTaskMain.delegatelTaskBtn = true;
+		todoTaskMain.approvalTaskBtn = false;
+	} else {
+		map.get('FormProperty_23taa76')
+			.isShowControl = false;
+		todoTaskMain.trunTaskBtn = false;
+		todoTaskMain.delegatelTaskBtn = false;
+		todoTaskMain.approvalTaskBtn = true;
+	}
+}
+
+FormProperty_07nklqv-_!radio-_!审批-_!Y-_!s-_!false-_!true-_!同意-_-Y!_!拒绝-_-N!_!驳回-_-GB!_!转办-_-TT!_!委派-_-DT-_!change!_!(val) => {	debugger;	var todoTaskMain = document.querySelector("#todoTaskMain").__vue__;	var vueDiv = document.querySelector("#dynamicForm").parentElement.__vue__;  todoTaskMain.controlEventType = '';	var formItems = vueDiv.formItems;	var map = new Map();	for (var item in formItems) {		var formItem = formItems[item];		map.set(formItem.model, formItem);	}  const radioModel =  map.get('FormProperty_07nklqv');  if(radioModel !== undefined && radioModel !== null){    const options =  radioModel.opts;    for (var item in options) {		var opt = options[item];        if(opt.value === val){            todoTaskMain.controlEventType = opt.label;        }	}  }	if (val === 'TT') {		map.get('FormProperty_23taa76')			.isShowControl = true;		todoTaskMain.trunTaskBtn = true;		todoTaskMain.delegatelTaskBtn = false;		todoTaskMain.approvalTaskBtn = false;	} else if (val === 'DT') {		map.get('FormProperty_23taa76')			.isShowControl = true;		todoTaskMain.trunTaskBtn = false;		todoTaskMain.delegatelTaskBtn = true;		todoTaskMain.approvalTaskBtn = false;	} else {		map.get('FormProperty_23taa76')			.isShowControl = false;		todoTaskMain.trunTaskBtn = false;		todoTaskMain.delegatelTaskBtn = false;		todoTaskMain.approvalTaskBtn = true;	}}

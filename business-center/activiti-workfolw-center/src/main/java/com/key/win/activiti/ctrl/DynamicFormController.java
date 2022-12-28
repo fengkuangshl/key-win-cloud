@@ -23,6 +23,8 @@ import org.activiti.bpmn.model.FormProperty;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.impl.persistence.entity.TaskEntityImpl;
+import org.activiti.engine.task.DelegationState;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -53,6 +55,10 @@ public class DynamicFormController {
     @Autowired
     private FormDataService formDataService;
 
+    @Autowired
+    private TaskService taskService;
+
+
     //渲染表单
     @GetMapping(value = "/getFormData/{instanceId}")
     @ApiOperation(value = "渲染表单")
@@ -79,6 +85,7 @@ public class DynamicFormController {
 
             Task task = taskRuntime.task(taskId);
 
+
 //-----------------------构建表单控件历史数据字典------------------------------------------------
             //本实例所有保存的表单数据HashMap，为了快速读取控件以前环节存储的值
             HashMap<String, String> controlistMap = new HashMap<>();
@@ -96,11 +103,11 @@ public class DynamicFormController {
             //
 
 /*  ------------------------------------------------------------------------------
-            FormProperty_0ueitp2-_!类型-_!名称-_!默认值-_!是否参数-_!是否只读
+            FormProperty_0ueitp2-_!类型-_!名称-_!默认值-_!是否参数-_!是否只读-_!是否展示控件-_!控件选项-_!控件事件
             例子：
-            FormProperty_0lovri0-_!string-_!姓名-_!请输入姓名-_!f-_!f
-            FormProperty_1iu6onu-_!int-_!年龄-_!请输入年龄-_!s-_!t
-            FormProperty_07nklqv-_!radio-_!审批-_!无-_!s-_!f-_!同意-_-Y!_!拒绝-_-N!_!驳回-_-GB
+            FormProperty_0lovri0-_!string-_!姓名-_!请输入姓名-_!f-_!false-_!true
+            FormProperty_1iu6onu-_!int-_!年龄-_!请输入年龄-_!s-_!false-_!true
+            FormProperty_07nklqv-_!radio-_!审批-_!无-_!s-_!f-_!false-_!true-_!同意-_-Y!_!拒绝-_-N!_!驳回-_-GB!_!
 
             默认值：无、字符常量、FormProperty_开头定义过的控件ID
             是否参数：f为不是参数，s是字符，t是时间(不需要int，因为这里int等价于string)
@@ -153,33 +160,44 @@ public class DynamicFormController {
                         && !splitFP[1].toLowerCase().equals("checkbox")
                         && !splitFP[1].toLowerCase().equals("select")) {
                     if (splitFP.length == 6) {
-                        if (splitFP[5].toLowerCase().equals("t") || splitFP[5].toLowerCase().equals("true")) {
-                            formData.setIsReadOnlyControl(true);
-                        } else {
-                            formData.setIsReadOnlyControl(true);
-                        }
+                        formData.setIsReadOnlyControl(Boolean.parseBoolean(splitFP[5]));
+                        formData.setIsShowControl(true);
+                    } else if (splitFP.length == 7) {
+                        formData.setIsReadOnlyControl(Boolean.parseBoolean(splitFP[5]));
+                        formData.setIsShowControl(Boolean.parseBoolean(splitFP[6]));
                     } else {
                         formData.setIsReadOnlyControl(true);
+                        formData.setIsShowControl(true);
                     }
                 } else {
-                    if (splitFP[5].toLowerCase().equals("t") || splitFP[5].toLowerCase().equals("true")) {
-                        formData.setIsReadOnlyControl(true);
-                    } else {
-                        formData.setIsReadOnlyControl(true);
-                    }
+                    formData.setIsReadOnlyControl(Boolean.parseBoolean(splitFP[5]));//控件是否只读
+                    formData.setIsShowControl(Boolean.parseBoolean(splitFP[6]));//是否展示控件
                     List<Map<String, String>> list = new ArrayList<>();
-                    String[] options = splitFP[6].split("!_!");
+
+                    String[] options = splitFP[7].split("!_!");//选项
                     for (String option : options) {
                         Map<String, String> map = new HashMap<>();
                         String[] kv = option.split("-_-");
-                        map.put("value", kv[1]);
-                        map.put("label", kv[0]);
-                        if (splitFP[1].toLowerCase().equals("checkbox")) {
-                            map.put("name", kv[2]);
+                        if (splitFP[1].toLowerCase().equals("date")) {
+                            map.put("type", kv[0]);
+                            map.put("formatValue", kv[1]);
+                        } else {
+                            map.put("value", kv[1]);
+                            map.put("label", kv[0]);
+                            if (splitFP[1].toLowerCase().equals("checkbox")) {
+                                map.put("name", kv[2]);
+                            }
                         }
                         list.add(map);
                     }
                     formData.setControlValueOptions(JsonUtils.toJsonNoException(list));
+                    if (splitFP.length == 9) {
+                        Map<String, String> map = new HashMap<>();
+                        String[] kv = splitFP[8].split("!_!");//事件
+                        map.put("eventType", kv[0]);
+                        map.put("eventFn", kv[1]);
+                        formData.setControlEvent(JsonUtils.toJsonNoException(map));
+                    }
                 }
 
                 formDataList.add(formData);
@@ -200,7 +218,9 @@ public class DynamicFormController {
         try {
 
 
-            Task task = taskRuntime.task(dynamicFormVo.getTaskId());
+            TaskEntityImpl task = (TaskEntityImpl) taskService.createTaskQuery()
+                    .taskId(dynamicFormVo.getTaskId())
+                    .singleResult();
 
 
             HashMap<String, Object> variables = new HashMap<String, Object>();
@@ -237,15 +257,26 @@ public class DynamicFormController {
                 }
             }//for结束
 
-            if (hasVariables) {
-                //带参数完成任务
-                taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(dynamicFormVo.getTaskId())
-                        .withVariables(variables)
-                        .build());
+
+            if (task.getDelegationState() != null && task.getDelegationState().equals(DelegationState.PENDING)) {
+                if (hasVariables) {
+                    taskService.resolveTask(task.getId(), variables);
+                } else {
+                    taskService.resolveTask(task.getId());
+                }
+
             } else {
-                taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(dynamicFormVo.getTaskId())
-                        .build());
+                if (hasVariables) {
+                    //带参数完成任务
+                    taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(dynamicFormVo.getTaskId())
+                            .withVariables(variables)
+                            .build());
+                } else {
+                    taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(dynamicFormVo.getTaskId())
+                            .build());
+                }
             }
+
 
             //写入数据库
             boolean result = formDataService.saveBatch(list);
