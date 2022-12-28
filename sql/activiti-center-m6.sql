@@ -39,6 +39,7 @@ create table act_form_data (
     `CONTROL_ID_`VARCHAR(100) DEFAULT NULL COMMENT '控件ID',
     `CONTROL_VALUE_` VARCHAR(2000) DEFAULT NULL COMMENT '控件值',
     `CONTROL_VALUE_OPTIONS` VARCHAR(2000) DEFAULT NULL COMMENT '控件值',
+    `CONTROL_VALUE_VALIDATE_` VARCHAR(2000) DEFAULT NULL COMMENT '控件值的验证规则',
     `CONTROL_EVENT` VARCHAR(2000) DEFAULT NULL COMMENT '控件事件',
     `CONTROL_EVENT_TYPE` VARCHAR(255) DEFAULT NULL COMMENT '控件事件类型',
     `CONTROL_TYPE_` VARCHAR(64) DEFAULT NULL COMMENT '控件值类型',
@@ -48,7 +49,6 @@ create table act_form_data (
     `SHOW_CONTROL_` bit(1) DEFAULT NULL COMMENT '控件是否为显示1:显示，0：隐藏',
     primary key (id)
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
-
 -- ----------------------------
 -- Table structure for act_evt_log
 -- ----------------------------

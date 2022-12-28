@@ -266,6 +266,32 @@ export default class TodoTask extends Vue {
            */
           fun = new Fun('return ' + et.eventFn)()
         }
+        if (item.controlValue !== '无') {
+          this.$set(this.dynamicInputFormData, item.controlId, item.controlValue)
+          // this.dynamicInputFormData[item.id] = item.controlDefValue
+          if (!this.dynamicRules[item.controlId]) {
+            this.dynamicRules[item.controlId] = []
+          }
+          // rule = { required: true, message: '不能为空!', trigger: triggerType }
+          // this.dynamicRules[item.controlId].push({ required: true, message: '不能为空!', trigger: triggerType })
+        } else {
+          // this.dynamicInputFormData[item.id] = ''
+          // this.$set(this.dynamicInputFormData, item.controlId, item.controlValue)
+          this.$set(this.dynamicInputFormData, item.controlId, '')
+        }
+        let rule = { required: false, message: '', trigger: triggerType }
+        if (item.controlValueValidate) {
+          if (item.controlValueValidate === 'false' || item.controlValueValidate === '无') {
+            console.log('什么也不做')
+          } else if (item.controlValueValidate === 'true') {
+            rule = { required: true, message: '不能为空!', trigger: triggerType }
+          } else {
+            var Fun1 = Function // 一个变量指向Function，防止有些前端编译工具报错
+            // rule = eval('(' + item.controlValueValidate + ')')
+            rule = new Fun1('return ' + item.controlValueValidate)()
+          }
+        }
+
         this.dynamicFormItems.push({
           label: item.controlLabel,
           type: type,
@@ -276,25 +302,10 @@ export default class TodoTask extends Vue {
           isParam: item.controlValueParamType,
           eventType: eventType,
           eventFn: fun,
+          rule: rule,
           pickerDate: type === 'date' && item.controlValueOptions !== undefined ? JSON.parse(item.controlValueOptions as string) : undefined,
           opts: type !== 'date' && item.controlValueOptions !== undefined ? JSON.parse(item.controlValueOptions as string) : undefined
         })
-        if (item.controlValue !== '无') {
-          this.$set(this.dynamicInputFormData, item.controlId, item.controlValue)
-          // this.dynamicInputFormData[item.id] = item.controlDefValue
-          if (!this.dynamicRules[item.controlId]) {
-            this.dynamicRules[item.controlId] = []
-          }
-          // this.dynamicRules[item.controlId].push({ required: true, message: '不能为空!', trigger: triggerType })
-          this.$set(this.dynamicRules[item.controlId], index, {})
-          this.$set(this.dynamicRules[item.controlId][index], 'required', true)
-          this.$set(this.dynamicRules[item.controlId][index], 'message', '不能为空')
-          this.$set(this.dynamicRules[item.controlId][index], 'trigger', triggerType)
-        } else {
-          // this.dynamicInputFormData[item.id] = ''
-          // this.$set(this.dynamicInputFormData, item.controlId, item.controlValue)
-          this.$set(this.dynamicInputFormData, item.controlId, '')
-        }
       })
       this.dynamicFormItems.push({
         label: '',
@@ -389,6 +400,7 @@ export default class TodoTask extends Vue {
           controlId: key,
           controlLabel: formItem.label,
           controlValue: val as string,
+          controlValueValidate: formItem.rule !== undefined ? JSON.stringify(formItem.rule) : '',
           controlValueParamType: formItem.isParam,
           controlValueOptions: formItem.opts !== undefined ? JSON.stringify(formItem.opts) : '',
           controlIsReadOnly: formItem.isReadOnly,
@@ -403,14 +415,14 @@ export default class TodoTask extends Vue {
         taskId: formDatas.taskId as string,
         formData: param
       }
-      // const { code, msg } = await SaveFormData(formData)
-      // if (code !== 200) {
-      //   this.$message.error(msg || '审批失败!')
-      // } else {
-      //   this.searchProcessTask()
-      //   this.dialogDynamicFormVisible = false
-      //   this.$message.success('审批成功!')
-      // }
+      const { code, msg } = await SaveFormData(formData)
+      if (code !== 200) {
+        this.$message.error(msg || '审批失败!')
+      } else {
+        this.searchProcessTask()
+        this.dialogDynamicFormVisible = false
+        this.$message.success('审批成功!')
+      }
     })
   }
 
@@ -452,6 +464,10 @@ export default class TodoTask extends Vue {
         }
         const formItem = map.get(key) as DynamicFormItem
         const val = formDatas[key]
+        if (formItem.originType === 'user_list' && val === '') {
+          this.$message.error('请选择用户!')
+          return false
+        }
         let eventFn = ''
         if (formItem.eventFn !== undefined) {
           eventFn = formItem.eventFn?.toString()
@@ -465,6 +481,7 @@ export default class TodoTask extends Vue {
           controlId: key,
           controlLabel: formItem.label,
           controlValue: val as string,
+          controlValueValidate: formItem.rule !== undefined ? JSON.stringify(formItem.rule) : '',
           controlValueParamType: formItem.isParam,
           controlValueOptions: formItem.opts !== undefined ? JSON.stringify(formItem.opts) : '',
           controlIsReadOnly: formItem.isReadOnly,
@@ -479,14 +496,14 @@ export default class TodoTask extends Vue {
         taskId: formDatas.taskId as string,
         formData: param
       }
-      // const { code, msg } = tipInfo === '转签' ? await TrunTaskApi(formData) : await DelegateTaskApi(formData)
-      // if (code !== 200) {
-      //   this.$message.error(msg || '任务' + tipInfo + '失败!')
-      // } else {
-      //   this.searchProcessTask()
-      //   this.dialogDynamicFormVisible = false
-      //   this.$message.success('任务' + tipInfo + '成功!')
-      // }
+      const { code, msg } = tipInfo === '转签' ? await TrunTaskApi(formData) : await DelegateTaskApi(formData)
+      if (code !== 200) {
+        this.$message.error(msg || '任务' + tipInfo + '失败!')
+      } else {
+        this.searchProcessTask()
+        this.dialogDynamicFormVisible = false
+        this.$message.success('任务' + tipInfo + '成功!')
+      }
     })
   }
 }

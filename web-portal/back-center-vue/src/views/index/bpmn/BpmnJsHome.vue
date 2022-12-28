@@ -9,7 +9,7 @@
     </el-dialog>
     <el-dialog :visible.sync="dialogDynamicFormVisible" title="动态表单" style="height:auto;" :before-close="handleClose1" width="20%">
       <div style="height:auto;">
-        <KWDynamicForm :formItems='formItems' :dynamicFormRules='rules' ref='dynamicForm' :inputFormData='inputFormData'></KWDynamicForm>
+        <KWDynamicForm :formItems='formItems' ref='dynamicForm' :inputFormData='inputFormData'></KWDynamicForm>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogDynamicFormVisible = false">取 消</el-button>
@@ -135,7 +135,8 @@ export default class BpmnJsHome extends Vue {
       ],
       eventType: this.eventType,
       eventFn: this.fun,
-      isShowControl: true
+      isShowControl: true,
+      rule: { required: true, message: '请输入cityName', trigger: 'blur' }
     },
     {
       label: '审批',
@@ -151,7 +152,8 @@ export default class BpmnJsHome extends Vue {
       ],
       eventType: this.eventType,
       eventFn: this.fun,
-      isShowControl: true
+      isShowControl: true,
+      rule: { required: true, message: '请选择审批项', trigger: 'change' }
     }
   ]
 

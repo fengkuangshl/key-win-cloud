@@ -103,11 +103,12 @@ public class DynamicFormController {
             //
 
 /*  ------------------------------------------------------------------------------
-            FormProperty_0ueitp2-_!类型-_!名称-_!默认值-_!是否参数-_!是否只读-_!是否展示控件-_!控件选项-_!控件事件
+            FormProperty_0ueitp2-_!类型-_!名称-_!默认值-_!是否验证-_!是否参数-_!是否只读-_!是否展示控件-_!控件选项-_!控件事件
             例子：
-            FormProperty_0lovri0-_!string-_!姓名-_!请输入姓名-_!f-_!false-_!true
-            FormProperty_1iu6onu-_!int-_!年龄-_!请输入年龄-_!s-_!false-_!true
-            FormProperty_07nklqv-_!radio-_!审批-_!无-_!s-_!f-_!false-_!true-_!同意-_-Y!_!拒绝-_-N!_!驳回-_-GB!_!
+            FormProperty_0lovri0-_!string-_!姓名-_!无-_!true-_!f-_!false-_!true
+            FormProperty_1iu6onu-_!int-_!年龄-_!18-_!false-_!s-_!false-_!true
+            FormProperty_07nklqv-_!radio-_!审批-_!无-_!true-_!s-_!false-_!false-_!true-_!同意-_-Y!_!拒绝-_-N!_!驳回-_-GB!_!
+            FormProperty_07nklqv-_!radio-_!审批-_!Y-_![{ required: true, message: '请选择审批项', trigger: 'change' }]-_!s-_!false-_!true-_!同意-_-Y!_!拒绝-_-N!_!驳回-_-GB!_!转办-_-TT!_!委派-_-DT-_!change!_!(val) => {	debugger;	var todoTaskMain = document.querySelector("#todoTaskMain").__vue__;	var vueDiv = document.querySelector("#dynamicForm").parentElement.__vue__;  todoTaskMain.controlEventType = '';	var formItems = vueDiv.formItems;	var map = new Map();	for (var item in formItems) {		var formItem = formItems[item];		map.set(formItem.model, formItem);	}  const radioModel =  map.get('FormProperty_07nklqv');  if(radioModel !== undefined && radioModel !== null){    const options =  radioModel.opts;    for (var item in options) {		var opt = options[item];        if(opt.value === val){            todoTaskMain.controlEventType = opt.label;        }	}  }	if (val === 'TT') {		map.get('FormProperty_23taa76')			.isShowControl = true;		todoTaskMain.trunTaskBtn = true;		todoTaskMain.delegatelTaskBtn = false;		todoTaskMain.approvalTaskBtn = false;	} else if (val === 'DT') {		map.get('FormProperty_23taa76')			.isShowControl = true;		todoTaskMain.trunTaskBtn = false;		todoTaskMain.delegatelTaskBtn = true;		todoTaskMain.approvalTaskBtn = false;	} else {		map.get('FormProperty_23taa76')			.isShowControl = false;		todoTaskMain.trunTaskBtn = false;		todoTaskMain.delegatelTaskBtn = false;		todoTaskMain.approvalTaskBtn = true;	}}
 
             默认值：无、字符常量、FormProperty_开头定义过的控件ID
             是否参数：f为不是参数，s是字符，t是时间(不需要int，因为这里int等价于string)
@@ -154,27 +155,27 @@ public class DynamicFormController {
                     //默认值如果不是表单控件ID则写入默认值
                     formData.setControlValue(splitFP[3]);
                 }
-
-                formData.setControlValueParamType(splitFP[4]);
+                formData.setControlValueValidate(splitFP[4]);
+                formData.setControlValueParamType(splitFP[5]);
                 if (!splitFP[1].toLowerCase().equals("radio")
                         && !splitFP[1].toLowerCase().equals("checkbox")
                         && !splitFP[1].toLowerCase().equals("select")) {
-                    if (splitFP.length == 6) {
-                        formData.setIsReadOnlyControl(Boolean.parseBoolean(splitFP[5]));
+                    if (splitFP.length == 7) {
+                        formData.setIsReadOnlyControl(Boolean.parseBoolean(splitFP[6]));
                         formData.setIsShowControl(true);
-                    } else if (splitFP.length == 7) {
-                        formData.setIsReadOnlyControl(Boolean.parseBoolean(splitFP[5]));
-                        formData.setIsShowControl(Boolean.parseBoolean(splitFP[6]));
+                    } else if (splitFP.length == 8) {
+                        formData.setIsReadOnlyControl(Boolean.parseBoolean(splitFP[6]));
+                        formData.setIsShowControl(Boolean.parseBoolean(splitFP[7]));
                     } else {
                         formData.setIsReadOnlyControl(true);
                         formData.setIsShowControl(true);
                     }
                 } else {
-                    formData.setIsReadOnlyControl(Boolean.parseBoolean(splitFP[5]));//控件是否只读
-                    formData.setIsShowControl(Boolean.parseBoolean(splitFP[6]));//是否展示控件
+                    formData.setIsReadOnlyControl(Boolean.parseBoolean(splitFP[6]));//控件是否只读
+                    formData.setIsShowControl(Boolean.parseBoolean(splitFP[7]));//是否展示控件
                     List<Map<String, String>> list = new ArrayList<>();
 
-                    String[] options = splitFP[7].split("!_!");//选项
+                    String[] options = splitFP[8].split("!_!");//选项
                     for (String option : options) {
                         Map<String, String> map = new HashMap<>();
                         String[] kv = option.split("-_-");
@@ -191,9 +192,9 @@ public class DynamicFormController {
                         list.add(map);
                     }
                     formData.setControlValueOptions(JsonUtils.toJsonNoException(list));
-                    if (splitFP.length == 9) {
+                    if (splitFP.length == 10) {
                         Map<String, String> map = new HashMap<>();
-                        String[] kv = splitFP[8].split("!_!");//事件
+                        String[] kv = splitFP[9].split("!_!");//事件
                         map.put("eventType", kv[0]);
                         map.put("eventFn", kv[1]);
                         formData.setControlEvent(JsonUtils.toJsonNoException(map));

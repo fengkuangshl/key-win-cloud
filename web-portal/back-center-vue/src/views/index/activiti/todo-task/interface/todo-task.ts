@@ -25,6 +25,7 @@ export interface FromData {
   controlId: string
   controlLabel: string
   controlValue: string
+  controlValueValidate: string
   controlValueParamType: string
   isShowControl: boolean
   controlValueOptions?: string

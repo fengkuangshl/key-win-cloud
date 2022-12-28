@@ -32,6 +32,8 @@ public class FormData extends MybatisID {
     private String controlLabel;
     @TableField("CONTROL_VALUE_")
     private String controlValue;
+    @TableField("CONTROL_VALUE_VALIDATE_")
+    private String controlValueValidate;
     @TableField("CONTROL_TYPE_")
     private String controlType;
     @TableField("CONTROL_VALUE_PARAM_TYPE_")

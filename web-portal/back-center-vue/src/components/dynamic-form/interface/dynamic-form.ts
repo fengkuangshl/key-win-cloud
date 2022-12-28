@@ -1,5 +1,9 @@
 export type EvnetFn = (val: string) => void
 
+export interface DynamicFormRule {
+  [x: string]: Array<KWRule.Rule>
+}
+
 export interface DynamicPickerDate {
   type: string
   formatValue: string
@@ -24,10 +28,7 @@ export interface DynamicFormItem {
   pickerDate?: DynamicPickerDate // 日期控件
   isFun?: boolean
   opts?: Array<DynamicOptions> // checkbox radio select 的选项
-}
-
-export interface DynamicFormRule {
-  [x: string]: Array<KWRule.Rule>
+  rule?: Array<KWRule.Rule> | KWRule.Rule
 }
 
 export interface DynamicInputFormData {
