@@ -24,6 +24,7 @@ import { Component, Vue, Ref } from 'vue-property-decorator'
 import { local } from '@/store'
 import settings from '@/settings'
 import KWDynamicForm from '@/components/dynamic-form/DynamicForm.vue'
+import { EvnetFn } from '@/components/dynamic-form/interface/dynamic-form'
 @Component({
   components: {
     KWDynamicForm
@@ -32,13 +33,18 @@ import KWDynamicForm from '@/components/dynamic-form/DynamicForm.vue'
 export default class BpmnJsHome extends Vue {
   dialogVisible = false
   dialogDynamicFormVisible = false
+  eventType = 'change'
+  fun: EvnetFn = val => console.log(val)
   bpmnUrl = 'http://localhost:9013?serviceUrl=http://127.0.0.1:9200/api-activiti/&access_token=' + local.getStr(settings.accessToken)
 
   formItems = [
     {
       label: '省份名称',
       type: 'text',
-      model: 'cityName'
+      model: 'cityName',
+      eventType: this.eventType,
+      eventFn: this.fun,
+      isShowControl: true
     },
     {
       label: '选择时间',
@@ -47,7 +53,10 @@ export default class BpmnJsHome extends Vue {
       pickerDate: {
         type: 'daterange',
         formatValue: 'yyyy-MM-dd'
-      }
+      },
+      eventType: this.eventType,
+      eventFn: this.fun,
+      isShowControl: true
     },
     {
       label: '选择城市',
@@ -71,7 +80,10 @@ export default class BpmnJsHome extends Vue {
           label: '佳木斯',
           value: '4'
         }
-      ]
+      ],
+      eventType: this.eventType,
+      eventFn: this.fun,
+      isShowControl: true
     },
     {
       label: '选择城市',
@@ -95,7 +107,10 @@ export default class BpmnJsHome extends Vue {
           label: '佳木斯',
           value: '4'
         }
-      ]
+      ],
+      eventType: this.eventType,
+      eventFn: this.fun,
+      isShowControl: true
     },
     {
       label: '喜欢的运动',
@@ -117,14 +132,34 @@ export default class BpmnJsHome extends Vue {
           value: '3',
           name: 'ball'
         }
-      ]
+      ],
+      eventType: this.eventType,
+      eventFn: this.fun,
+      isShowControl: true
+    },
+    {
+      label: '审批',
+      type: 'radio',
+      model: 'approval',
+      func: true,
+      opts: [
+        { label: '同意', value: 'Y' },
+        { label: '拒绝', value: 'N' },
+        { label: '驳回', value: 'GB' },
+        { label: '转办', value: 'TT' },
+        { label: '委派', value: 'DT' }
+      ],
+      eventType: this.eventType,
+      eventFn: this.fun,
+      isShowControl: true
     }
   ]
 
-  inputFormData = { cityName: 'test', time1: '2022-12-12', city: '4', sports: ['1'] }
+  inputFormData = { cityName: 'test', time1: '2022-12-12', city: '4', sports: ['1'], approval: '' }
 
   rules = {
-    cityName: [{ required: true, message: '请输入cityName', trigger: 'blur' }]
+    cityName: [{ required: true, message: '请输入cityName', trigger: 'blur' }],
+    approval: [{ required: true, message: '请选择审批项', trigger: 'change' }]
   }
 
   @Ref('dynamicForm')

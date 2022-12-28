@@ -348,7 +348,7 @@
             <properties>
                 <spring.profiles.active>dev</spring.profiles.active>
                 <!--1192.168.1.14:30153-->
-                <spring.cloud.nacos.config.server-addr>192.168.1.14:30153</spring.cloud.nacos.config.server-addr>
+                <spring.cloud.nacos.config.server-addr>127.0.0.1:8848</spring.cloud.nacos.config.server-addr>
                 <spring.cloud.nacos.config.file-extension>yaml</spring.cloud.nacos.config.file-extension>
                 <spring.cloud.nacos.config.namespace>key-win-dev</spring.cloud.nacos.config.namespace>
                 <spring.cloud.nacos.config.shared-configs.data-id>common-dev.yaml

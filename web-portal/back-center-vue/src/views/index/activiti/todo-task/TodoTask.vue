@@ -229,7 +229,7 @@ export default class TodoTask extends Vue {
     this.dynamicInputFormData = {}
     this.dynamicRules = {}
     if (datas && datas.length > 0) {
-      datas.forEach(item => {
+      datas.forEach((item: FromDataDetail, index: number) => {
         let type = item.controlType
         let triggerType = 'blur'
         switch (item.controlType) {
@@ -269,6 +269,7 @@ export default class TodoTask extends Vue {
         this.dynamicFormItems.push({
           label: item.controlLabel,
           type: type,
+          originType: item.controlType,
           model: item.controlId,
           isShowControl: item.isShowControl,
           isReadOnly: item.controlIsReadOnly,
@@ -284,7 +285,11 @@ export default class TodoTask extends Vue {
           if (!this.dynamicRules[item.controlId]) {
             this.dynamicRules[item.controlId] = []
           }
-          this.dynamicRules[item.controlId].push({ required: true, message: '不能为空!', trigger: triggerType })
+          // this.dynamicRules[item.controlId].push({ required: true, message: '不能为空!', trigger: triggerType })
+          this.$set(this.dynamicRules[item.controlId], index, {})
+          this.$set(this.dynamicRules[item.controlId][index], 'required', true)
+          this.$set(this.dynamicRules[item.controlId][index], 'message', '不能为空')
+          this.$set(this.dynamicRules[item.controlId][index], 'trigger', triggerType)
         } else {
           // this.dynamicInputFormData[item.id] = ''
           // this.$set(this.dynamicInputFormData, item.controlId, item.controlValue)
@@ -296,6 +301,7 @@ export default class TodoTask extends Vue {
         type: 'hidden',
         model: 'taskId',
         isParam: '',
+        originType: '',
         isShowControl: false
       })
       this.$set(this.dynamicInputFormData, 'taskId', processTaskDetail.id)
@@ -378,7 +384,7 @@ export default class TodoTask extends Vue {
           procDefId: '',
           procInstId: '',
           procTaskId: '',
-          controlType: formItem.type,
+          controlType: formItem.originType,
           formKey: '',
           controlId: key,
           controlLabel: formItem.label,
@@ -397,14 +403,14 @@ export default class TodoTask extends Vue {
         taskId: formDatas.taskId as string,
         formData: param
       }
-      const { code, msg } = await SaveFormData(formData)
-      if (code !== 200) {
-        this.$message.error(msg || '审批失败!')
-      } else {
-        this.searchProcessTask()
-        this.dialogDynamicFormVisible = false
-        this.$message.success('审批成功!')
-      }
+      // const { code, msg } = await SaveFormData(formData)
+      // if (code !== 200) {
+      //   this.$message.error(msg || '审批失败!')
+      // } else {
+      //   this.searchProcessTask()
+      //   this.dialogDynamicFormVisible = false
+      //   this.$message.success('审批成功!')
+      // }
     })
   }
 
@@ -454,7 +460,7 @@ export default class TodoTask extends Vue {
           procDefId: '',
           procInstId: '',
           procTaskId: '',
-          controlType: 'user_list',
+          controlType: formItem.originType,
           formKey: '',
           controlId: key,
           controlLabel: formItem.label,
@@ -473,14 +479,14 @@ export default class TodoTask extends Vue {
         taskId: formDatas.taskId as string,
         formData: param
       }
-      const { code, msg } = tipInfo === '转签' ? await TrunTaskApi(formData) : DelegateTaskApi(formData)
-      if (code !== 200) {
-        this.$message.error(msg || '任务' + tipInfo + '失败!')
-      } else {
-        this.searchProcessTask()
-        this.dialogDynamicFormVisible = false
-        this.$message.success('任务' + tipInfo + '成功!')
-      }
+      // const { code, msg } = tipInfo === '转签' ? await TrunTaskApi(formData) : await DelegateTaskApi(formData)
+      // if (code !== 200) {
+      //   this.$message.error(msg || '任务' + tipInfo + '失败!')
+      // } else {
+      //   this.searchProcessTask()
+      //   this.dialogDynamicFormVisible = false
+      //   this.$message.success('任务' + tipInfo + '成功!')
+      // }
     })
   }
 }

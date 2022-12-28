@@ -14,6 +14,7 @@ export interface DynamicOptions {
 export interface DynamicFormItem {
   label: string // 控件名称
   type: string // 控件类型
+  originType: string // 原始控件类型
   model: string // 控件id
   isParam: string // 是否作为其它控件的参数
   isShowControl: boolean // 是否控件展示控件

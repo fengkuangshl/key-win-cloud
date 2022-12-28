@@ -105,7 +105,7 @@ FormProperty_23taa76-_!user_list-_!请选择用户-_!f-_!false-_!true
 		map.get('FormProperty_23taa76')
 			.isShowControl = true;
 		todoTaskMain.trunTaskBtn = false;
-		todoTaskMain.delegatelTaskBtn = true;
+		todoTaskMain.delegateTaskBtn = true;
 		todoTaskMain.approvalTaskBtn = false;
 	} else {
 		map.get('FormProperty_23taa76')
