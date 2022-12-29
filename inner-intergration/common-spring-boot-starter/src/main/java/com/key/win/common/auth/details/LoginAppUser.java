@@ -46,6 +46,16 @@ public class LoginAppUser extends SysUser implements UserDetails {
             });
         }
 
+        if (!CollectionUtils.isEmpty(super.getSysGroups())) {
+            super.getSysGroups().parallelStream().forEach(group -> {
+                if (group.getCode().startsWith("GROUP_")) {
+                    synchronizedCollection.add(new SimpleGrantedAuthority(group.getCode()));
+                } else {
+                    synchronizedCollection.add(new SimpleGrantedAuthority("GROUP_" + group.getCode()));
+                }
+            });
+        }
+
         if (!CollectionUtils.isEmpty(super.getPermissions())) {
             super.getPermissions().parallelStream().forEach(per -> {
                 synchronizedCollection.add(new SimpleGrantedAuthority(per.getPermissionCode()));

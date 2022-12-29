@@ -128,10 +128,7 @@ public class ActivitiUserDetailsManager implements UserDetailsManager, UserDetai
 
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         LoginAppUser loginAppUser = SysUserUtil.getLoginAppUser();
-
-        Set<SimpleGrantedAuthority> collect = Arrays.stream(loginAppUser.getSysRoles().toArray(new SysRole[loginAppUser.getSysRoles().size()])).map(e -> new SimpleGrantedAuthority(e.getCode())).collect(Collectors.toSet());
-
-        return new User(loginAppUser.getUsername(), loginAppUser.getPassword(), loginAppUser.isEnabled(), loginAppUser.isAccountNonExpired(), loginAppUser.isCredentialsNonExpired(), loginAppUser.isAccountNonLocked(), collect);
+        return loginAppUser;
     }
 
     public void setAuthenticationManager(AuthenticationManager authenticationManager) {

@@ -268,6 +268,10 @@ public class DynamicFormController {
 
             } else {
                 if (hasVariables) {
+                    
+                    if (task.getAssignee() == null) {
+                        taskRuntime.claim(TaskPayloadBuilder.claim().withTaskId(task.getId()).build());
+                    }
                     //带参数完成任务
                     taskRuntime.complete(TaskPayloadBuilder.complete().withTaskId(dynamicFormVo.getTaskId())
                             .withVariables(variables)

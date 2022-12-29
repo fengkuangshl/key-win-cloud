@@ -151,8 +151,6 @@ export default class TodoTask extends Vue {
 
   dynamicInputFormData: DynamicInputFormData = {}
 
-  dynamicRules: DynamicFormRule = {}
-
   users: Array<{ label: string; value: string }> = []
   approvalHistoryMap: Map<string, Array<FromDataDetail>> = new Map()
 
@@ -227,9 +225,8 @@ export default class TodoTask extends Vue {
   renderDynamicForm(datas: Array<FromDataDetail>, processTaskDetail: ProcessTaskDetail): void {
     this.dynamicFormItems = []
     this.dynamicInputFormData = {}
-    this.dynamicRules = {}
     if (datas && datas.length > 0) {
-      datas.forEach((item: FromDataDetail, index: number) => {
+      datas.forEach(item => {
         let type = item.controlType
         let triggerType = 'blur'
         switch (item.controlType) {
@@ -268,15 +265,7 @@ export default class TodoTask extends Vue {
         }
         if (item.controlValue !== '无') {
           this.$set(this.dynamicInputFormData, item.controlId, item.controlValue)
-          // this.dynamicInputFormData[item.id] = item.controlDefValue
-          if (!this.dynamicRules[item.controlId]) {
-            this.dynamicRules[item.controlId] = []
-          }
-          // rule = { required: true, message: '不能为空!', trigger: triggerType }
-          // this.dynamicRules[item.controlId].push({ required: true, message: '不能为空!', trigger: triggerType })
         } else {
-          // this.dynamicInputFormData[item.id] = ''
-          // this.$set(this.dynamicInputFormData, item.controlId, item.controlValue)
           this.$set(this.dynamicInputFormData, item.controlId, '')
         }
         let rule = { required: false, message: '', trigger: triggerType }
@@ -286,9 +275,9 @@ export default class TodoTask extends Vue {
           } else if (item.controlValueValidate === 'true') {
             rule = { required: true, message: '不能为空!', trigger: triggerType }
           } else {
-            var Fun1 = Function // 一个变量指向Function，防止有些前端编译工具报错
+            var FunRule = Function // 一个变量指向Function，防止有些前端编译工具报错
             // rule = eval('(' + item.controlValueValidate + ')')
-            rule = new Fun1('return ' + item.controlValueValidate)()
+            rule = new FunRule('return ' + item.controlValueValidate)()
           }
         }
 

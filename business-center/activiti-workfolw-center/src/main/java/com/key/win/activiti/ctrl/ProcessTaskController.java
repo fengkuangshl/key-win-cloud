@@ -174,6 +174,7 @@ public class ProcessTaskController {
     public Result completeTask(@RequestBody ProcessTaskFormVo processTaskForm) {
         try {
             Task task = taskRuntime.task(processTaskForm.getTaskId());
+
             if (task.getAssignee() == null) {
                 taskRuntime.claim(TaskPayloadBuilder.claim().withTaskId(task.getId()).build());
             }

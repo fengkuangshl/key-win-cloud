@@ -1,9 +1,5 @@
 export type EvnetFn = (val: string) => void
 
-export interface DynamicFormRule {
-  [x: string]: Array<KWRule.Rule>
-}
-
 export interface DynamicPickerDate {
   type: string
   formatValue: string
