@@ -9,7 +9,7 @@ import * as qs from 'qs'
 
 const instance: AxiosInstance = axios.create({
   baseURL: getHttpDomain(),
-  timeout: 3000
+  timeout: 30000
 })
 
 function errorHandle(err: AxiosError): Promise<unknown> {

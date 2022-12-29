@@ -73,6 +73,12 @@
             <el-option v-for="item in roleOptions" :key="item.id" :label="item.name" :value="item.id"> </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="组" prop="groupIds">
+          <el-select v-model="userForm.groupIds" clearable multiple filterable placeholder="请选择">
+            <el-option v-for="item in groupOptions" :key="item.id" :label="item.name" :value="item.id"> </el-option>
+          </el-select>
+        </el-form-item>
+
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="userDialogVisble = false">取 消</el-button>
@@ -94,6 +100,8 @@ import FormValidatorRule from '@/common/form-validator/form-validator'
 import PermissionPrefixUtils from '@/common/utils/permission/permission-prefix'
 import PermissionCodeUtils from '@/common/utils/permission/permission-code'
 import PermissionUtil from '@/common/utils/permission/permission-util'
+import { SysGroup } from '../group/interface/sys-group'
+import { FindAllSysGroupApi } from '../group/group-api'
 
 @Component({
   components: {
@@ -106,7 +114,7 @@ export default class User extends Vue {
   title = ''
   userDialogVisble = false
   usernameDisabled = true
-  userForm: UserForm = { nickname: '', phone: '', sex: '男', username: '', roleIds: new Array<string>(), type: Type.普通 }
+  userForm: UserForm = { nickname: '', phone: '', sex: '男', username: '', roleIds: new Array<string>(), groupIds: new Array<string>(), type: Type.普通 }
   @Ref('userFormRef')
   readonly userFormRef!: ElForm
 
@@ -116,7 +124,7 @@ export default class User extends Vue {
   @Ref('kwTableRef')
   readonly kwTableRef!: KWTable<UserSearchRequest, UserInfo>
 
-  readonly userFormRules: { username: Array<KWRule.Rule | KWRule.MixinRule>; nickname: Array<KWRule.Rule | KWRule.MixinRule>; phone: Array<KWRule.Rule | KWRule.ValidatorRule>; roleIds: Array<KWRule.Rule> } = {
+  readonly userFormRules: { username: Array<KWRule.Rule | KWRule.MixinRule>; nickname: Array<KWRule.Rule | KWRule.MixinRule>; phone: Array<KWRule.Rule | KWRule.ValidatorRule>; roleIds: Array<KWRule.Rule>; groupIds: Array<KWRule.Rule> } = {
     username: [
       { required: true, message: '请输入帐号', trigger: 'blur' },
       { min: 3, max: 10, message: '用户名的长度3~10个字符之间', trigger: 'blur' }
@@ -129,10 +137,12 @@ export default class User extends Vue {
       { required: true, message: '请输入手机', trigger: 'blur' },
       { validator: FormValidatorRule.checkMobeli, trigger: 'blur' }
     ],
-    roleIds: [{ required: true, message: '请选择角色', trigger: ['blur', 'change'] }]
+    roleIds: [{ required: true, message: '请选择角色', trigger: ['blur', 'change'] }],
+    groupIds: [{ required: true, message: '请选择角色', trigger: ['blur', 'change'] }]
   }
 
   roleOptions: Array<SysRole> | [] = []
+  groupOptions: Array<SysGroup> | [] = []
   userRolePage: KWRequest.PageRequest<SysRoleSearchRequest> = {
     pageSize: 1000000, // 每页的数据条数
     pageNo: 1 // 默认开始页面
@@ -174,8 +184,20 @@ export default class User extends Vue {
         }
       }
     }
+    const groupDatas = res.data.sysGroups
+    console.log(groupDatas)
+    this.userForm.groupIds = new Array<string>()
+    if (groupDatas && groupDatas.length > 0) {
+      for (const key in groupDatas) {
+        if (Object.hasOwnProperty.call(groupDatas, key)) {
+          const element = groupDatas[key]
+          this.userForm.groupIds.push(element.id)
+        }
+      }
+    }
     console.log(res)
     this.getUserRole()
+    this.getUserGroup()
     this.userDialogVisble = true
   }
 
@@ -183,6 +205,12 @@ export default class User extends Vue {
     const { data: res } = await FindAllSysRoleApi()
     console.log('1111', res)
     this.roleOptions = res
+  }
+
+  async getUserGroup(): Promise<void> {
+    const { data: res } = await FindAllSysGroupApi()
+    console.log('1111', res)
+    this.groupOptions = res
   }
 
   aditUserClosed(): void {
@@ -222,9 +250,10 @@ export default class User extends Vue {
     this.usernameDisabled = false
     this.userDialogVisble = true
     this.getUserRole()
+    this.getUserGroup()
     this.$nextTick(() => {
       this.userFormRef.resetFields()
-      this.userForm = { nickname: '', phone: '', sex: '男', username: '', roleIds: new Array<string>(), type: Type.普通 }
+      this.userForm = { nickname: '', phone: '', sex: '男', username: '', roleIds: new Array<string>(), groupIds: new Array<string>(), type: Type.普通 }
     })
   }
 

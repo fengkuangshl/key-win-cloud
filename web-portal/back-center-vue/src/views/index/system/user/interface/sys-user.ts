@@ -1,3 +1,4 @@
+import { SysGroup } from '../../group/interface/sys-group'
 import { MenuPermissionDetail } from '../../menu-permission/interface/sys-menu-permission'
 import { SysRole } from '../../sys-role/interface/sys-role'
 
@@ -17,6 +18,7 @@ export interface UserSearchRequest {
 
 export interface UserForm extends UserSearchRequest {
   roleIds: Array<string>
+  groupIds: Array<string>
   sex: Sex | string | Model.EnumEntity
   phone: string
   username: string
@@ -43,6 +45,7 @@ export interface UserInfo extends UserForm, Model.BaseField, UserPassword, Enabl
   email: string
   isOnLine: boolean
   sysRoles: Array<SysRole>
+  sysGroups: Array<SysGroup>
 }
 
 export interface UserExt extends UserInfo {

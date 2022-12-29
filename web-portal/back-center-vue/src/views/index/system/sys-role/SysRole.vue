@@ -86,21 +86,15 @@ export default class Role extends Vue {
   @Ref('kwTableRef')
   readonly kwTableRef!: KWTable<SysRoleSearchRequest, SysRole>
 
-  defaultProps: { children: string; label: string } = { children: 'children', label: 'name' }
-
   readonly sysRoleFormRules: { name: Array<KWRule.Rule | KWRule.MixinRule>; code: Array<KWRule.Rule | KWRule.MixinRule> } = {
     name: [
-      { required: true, message: '请输入帐号', trigger: 'blur' },
-      { min: 3, max: 20, message: '用户名的长度3~20个字符之间', trigger: 'blur' }
+      { required: true, message: '请输入角色名称', trigger: 'blur' },
+      { min: 3, max: 20, message: '角色名称的长度3~20个字符之间', trigger: 'blur' }
     ],
     code: [
-      { required: true, message: '请输入用户名', trigger: 'blur' },
-      { min: 3, max: 20, message: '用户名的长度3~20个字符之间', trigger: 'blur' }
+      { required: true, message: '请输入角色code', trigger: 'blur' },
+      { min: 3, max: 20, message: '角色code的长度3~20个字符之间', trigger: 'blur' }
     ]
-  }
-
-  readonly rolePermissionFormRules: { authIds: Array<KWRule.Rule> } = {
-    authIds: [{ required: true, message: '请选择权限', trigger: ['blur', 'change'] }]
   }
 
   // 展示编辑用于的对话框
@@ -173,7 +167,7 @@ export default class Role extends Vue {
   grantPermission(data: SysRole): void {
     this.$router.push({
       path: '/sysrmpc',
-      query: { id: data.id + '', roleName: data.name }
+      query: { id: data.id, roleName: data.name }
     })
   }
 }

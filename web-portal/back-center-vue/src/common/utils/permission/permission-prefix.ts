@@ -1,5 +1,6 @@
 const PermissionPrefixUtils = {
   user: 'system::user::SysUser::',
+  group: 'system::group::SysGroup::',
   role: 'system::sys-role::SysRole::',
   roleMenuPermission: 'system::role-menu-permission::SysRoleMenuPermission::',
   permission: 'system::permission::SysPermission::',

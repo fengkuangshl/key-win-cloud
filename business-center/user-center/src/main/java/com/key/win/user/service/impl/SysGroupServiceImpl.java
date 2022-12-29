@@ -151,17 +151,6 @@ public class SysGroupServiceImpl extends ServiceImpl<SysGroupDao, SysGroup> impl
         }
         boolean b = this.saveOrUpdate(sysGroup);
         if (sysGroup.getUserId() != null) {
-            //Set<String> userIds = Arrays.asList(sysGroup.getUserId().split(",")).stream().collect(Collectors.toSet());
-//            if (!CollectionUtils.isEmpty(userIds)) {
-//                sysUserGroupDao.deleteUserGroup(null, sysGroup.getStringId());
-//                sysUserGroupDao.saveBatchUserIdsAndGroupId(userIds, sysGroup.getStringId());
-//                /*userIds.forEach(userId -> {
-//                    SysUserGroup sysUserGroup = new SysUserGroup();
-//                    sysUserGroup.setUserId(userId);
-//                    sysUserGroup.setGroupId(sysGroup.getId());
-//                    sysUserGroupDao.insert(sysUserGroup);
-//                });*/
-//            }
             if (!CollectionUtils.isEmpty(sysGroup.getUserIds())) {
                 sysUserGroupDao.deleteUserGroup(null, sysGroup.getId());
                 sysUserGroupDao.saveBatchUserIdsAndGroupId(sysGroup.getUserIds(), sysGroup.getId());

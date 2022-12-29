@@ -1,1 +1,3 @@
-export interface GroupResponse extends Model.CodeField, Model.BaseField, Model.ParentId {}
+export type SysGroupSearchRequest = Model.Name
+export interface SysGroupForm extends Model.CodeField, Model.ParentId {}
+export interface SysGroup extends Model.BaseField, SysGroupForm {}
