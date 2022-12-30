@@ -110,7 +110,8 @@ export default class KWText extends Vue {
     d.style.top = top
     d.style.left = left
     d.classList.add('active')
-    this.scrollWrap.addEventListener('scroll', this.scrollFun)
+    const sw = this.scrollWrap as Window | Element
+    sw.addEventListener('scroll', this.scrollFun)
   }
 
   mouseleave(e: MouseEvent): void {
@@ -132,7 +133,8 @@ export default class KWText extends Vue {
     d.style.top = '0px'
     d.style.left = '0px'
     d.classList.remove('active')
-    this.scrollWrap.removeEventListener('scroll', this.scrollFun)
+    const sw = this.scrollWrap as Window | Element
+    sw.removeEventListener('scroll', this.scrollFun)
   }
 }
 </script>

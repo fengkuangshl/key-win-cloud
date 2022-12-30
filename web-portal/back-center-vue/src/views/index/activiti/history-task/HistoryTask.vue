@@ -76,7 +76,6 @@ import KWTable from '@/components/table/Table.vue'
 import KWBpmnJsIframe from '@/components/bpmn-js/BpmnJsIframe.vue'
 import PermissionPrefixUtils from '@/common/utils/permission/permission-prefix'
 import { HistoryTaskDetail, Name } from './interface/history-task'
-import { MessageBoxData, MessageBoxInputData } from 'node_modules/_element-ui@2.15.10@element-ui/types/message-box'
 import { FromDataDetail, ProcessTaskForm } from '../todo-task/interface/todo-task'
 import { GetRevocationApi, GetHandleCancellationApi, GetApprovalHistoryList } from '../todo-task/todo-task-api'
 import { GetProcessDefinitionApi } from '../process-definition/process-definition-api'
@@ -110,15 +109,14 @@ export default class HistoryTask extends Vue {
   }
 
   getRecover(data: HistoryTaskDetail): void {
-    this.$prompt('追回原因', '提示', {
+    this.$confirm('确定要追回, 是否继续?', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
-      inputType: 'textarea'
+      type: 'warning'
     })
-      .then(async (messageBoxInputData: MessageBoxData) => {
-        messageBoxInputData = messageBoxInputData as MessageBoxInputData
+      .then(async () => {
         var completeProcessTaskForm: ProcessTaskForm = {
-          audit: messageBoxInputData.value,
+          audit: '',
           taskId: data.id,
           processInstanceId: data.processInstanceId
         }
@@ -140,15 +138,14 @@ export default class HistoryTask extends Vue {
   }
 
   getAbandon(data: HistoryTaskDetail): void {
-    this.$prompt('申请作废内容原因', '提示', {
+    this.$confirm('确定要作废, 是否继续?', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
-      inputType: 'textarea'
+      type: 'warning'
     })
-      .then(async (messageBoxInputData: MessageBoxData) => {
-        messageBoxInputData = messageBoxInputData as MessageBoxInputData
+      .then(async () => {
         var completeProcessTaskForm: ProcessTaskForm = {
-          audit: messageBoxInputData.value,
+          audit: '',
           taskId: data.id,
           processInstanceId: data.processInstanceId
         }

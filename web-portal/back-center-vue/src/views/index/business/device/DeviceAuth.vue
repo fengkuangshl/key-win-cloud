@@ -20,8 +20,7 @@
           </el-button> -->
         </el-col>
       </el-row>
-      <KWTable url="deviceAuth/findDeviceAuthByPaged" v-hasPermissionQueryPage="deviceAuthPermissionPrefix"
-        :callbackFn="callbackFn" style="width: 100%" ref="kwTableRef">
+      <KWTable url="deviceAuth/findDeviceAuthByPaged" v-hasPermissionQueryPage="deviceAuthPermissionPrefix" :callbackFn="callbackFn" style="width: 100%" ref="kwTableRef">
         <el-table-column type="index" width="80" label="序号"></el-table-column>
         <!-- <el-table-column prop="sequence" sortable="custom" label="客户编号">
           <template slot-scope="scope">
@@ -58,8 +57,7 @@
           }
         "></el-table-column>
         <el-table-column prop="expireDeviceDate" label="授权到期日期" sortable="custom">
-          <template slot-scope="scope"
-            v-if="scope.row.expireDeviceDate!== null">{{ scope.row.expireDeviceDate | dateFormat }}</template>
+          <template slot-scope="scope" v-if="scope.row.expireDeviceDate!== null">{{ scope.row.expireDeviceDate | dateFormat }}</template>
         </el-table-column>
         <!-- <el-table-column prop="createDate" label="创建时间" sortable="custom">
           <template slot-scope="scope">{{ scope.row.createDate | dateTimeFormat }}</template>
@@ -75,18 +73,15 @@
         </el-table-column>
         <el-table-column label="操作">
           <template v-slot="scope">
-            <el-button type="primary" v-hasPermissionUpdate="deviceAuthPermissionPrefix" icon="el-icon-edit" size="mini"
-              @click="showEditDialog(scope.row)"></el-button>
-            <el-button type="danger" v-hasPermissionDelete="deviceAuthPermissionPrefix" icon="el-icon-delete"
-              size="mini" @click="deleteDeviceAuth(scope.row.id)">
+            <el-button type="primary" v-hasPermissionUpdate="deviceAuthPermissionPrefix" icon="el-icon-edit" size="mini" @click="showEditDialog(scope.row)"></el-button>
+            <el-button type="danger" v-hasPermissionDelete="deviceAuthPermissionPrefix" icon="el-icon-delete" size="mini" @click="deleteDeviceAuth(scope.row.id)">
             </el-button>
           </template>
         </el-table-column>
       </KWTable>
     </el-card>
     <el-dialog :title="title" @close="aditDeviceAuthClosed" :visible.sync="deviceAuthDialogVisble" width="39%">
-      <el-form :model="deviceAuthForm" :inline="true" ref="deviceAuthFormRef" :rules="deviceAuthFormRules"
-        label-width="120px">
+      <el-form :model="deviceAuthForm" :inline="true" ref="deviceAuthFormRef" :rules="deviceAuthFormRules" label-width="120px">
         <el-form-item label="客户编号：">
           <div class="el-form-item-div">{{deviceAuthForm.sequence}}</div>
         </el-form-item>
@@ -127,8 +122,7 @@
           <div class="el-form-item-div">{{deviceAuthForm.isVerify?'是':'否'}}</div>
         </el-form-item>
         <el-divider content-position="left">操作日志</el-divider>
-        <KWTable url="data/log/findDataLogByPaged" v-hasPermissionQueryPage="dataLogPermissionPrefix"
-          style="width: 100%" ref="kwTableDataLogRef">
+        <KWTable url="data/log/findDataLogByPaged" v-hasPermissionQueryPage="dataLogPermissionPrefix" style="width: 100%" ref="kwTableDataLogRef">
           <el-table-column type="index" width="80" label="序号"></el-table-column>
           <el-table-column prop="createUserName" width="120" sortable="custom" label="操作人员">
           </el-table-column>
@@ -145,16 +139,14 @@
         </KWTable>
         <el-divider v-if="deviceAuthForm.isVerify"></el-divider>
         <el-form-item label="授权到期日期" v-if="deviceAuthForm.isVerify" prop="expireDeviceDate">
-          <el-date-picker v-model="expireDeviceDate" @input="onDatePickerChange" type="date" placeholder="授权到期日期"
-            style="max-width: 220px;">
+          <el-date-picker v-model="expireDeviceDate" @input="onDatePickerChange" type="date" placeholder="授权到期日期" style="max-width: 220px;">
           </el-date-picker>&nbsp;&nbsp;&nbsp;&nbsp;
           <el-button @click="expireDeviceDate=deviceAuthForm.expireDeviceDate">重置</el-button>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="deviceAuthDialogVisble = false">取 消</el-button>
-        <el-button type="primary" @click="editDeviceAuthInfo" :disabled="deviceAuthForm.isOnLine?false:true"><b
-            style="color:red">手动认证（请确保设备在线）</b></el-button>
+        <el-button type="primary" @click="editDeviceAuthInfo" :disabled="deviceAuthForm.isOnLine?false:true"><b style="color:red">手动认证（请确保设备在线）</b></el-button>
       </span>
     </el-dialog>
   </div>
@@ -323,7 +315,7 @@ export default class DeviceAuth extends Vue {
     })
   }
 
-  deleteDeviceAuth(id: number): void {
+  deleteDeviceAuth(id: string): void {
     this.$confirm('确定要删除, 是否继续?', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',

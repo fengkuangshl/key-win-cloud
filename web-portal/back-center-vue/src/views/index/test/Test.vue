@@ -111,7 +111,7 @@ export default class User extends Vue {
 
   userDialogVisble = false
   userNameDisabled = true
-  userForm: UserForm = { nickname: '', phone: '', sex: Sex.男, username: '', roleIds: new Array<number>(), type: Type.普通 }
+  userForm: UserForm = { nickname: '', phone: '', sex: Sex.男, username: '', roleIds: new Array<string>(), groupIds: new Array<string>(), type: Type.普通 }
   @Ref('userFormRef')
   readonly userFormRef!: ElForm
 
@@ -181,7 +181,7 @@ export default class User extends Vue {
     // this.userForm.sex = this.userForm.sex === 0 ? '男' : '女'
     const roleDatas = res.data.sysRoles
     console.log(roleDatas)
-    this.userForm.roleIds = new Array<number>()
+    this.userForm.roleIds = new Array<string>()
     if (roleDatas && roleDatas.length > 0) {
       for (const key in roleDatas) {
         if (Object.hasOwnProperty.call(roleDatas, key)) {
@@ -226,7 +226,7 @@ export default class User extends Vue {
   }
 
   addUser(): void {
-    this.userForm = { nickname: '', phone: '', sex: Sex.男, username: '', roleIds: new Array<number>(), type: Type.普通 }
+    this.userForm = { nickname: '', phone: '', sex: Sex.男, username: '', roleIds: new Array<string>(), groupIds: new Array<string>(), type: Type.普通 }
     this.userNameDisabled = false
     this.userDialogVisble = true
     this.getUserRole()
@@ -235,7 +235,7 @@ export default class User extends Vue {
     })
   }
 
-  passwordReset(id: number): void {
+  passwordReset(id: string): void {
     this.$confirm('确定要重置密码, 是否继续?', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',

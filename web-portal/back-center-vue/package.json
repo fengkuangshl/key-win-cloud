@@ -15,9 +15,6 @@
   },
   "dependencies": {
     "axios": "^0.23.0",
-    "bpmn-js": "^7.3.1",
-    "bpmn-js-properties-panel": "^0.37.2",
-    "camunda-bpmn-moddle": "^4.4.0",
     "core-js": "^3.6.5",
     "element-ui": "^2.15.10",
     "node-sass": "^7.0.3",
@@ -28,7 +25,6 @@
     "v-viewer": "^1.6.4",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
-    "vue-mchat": "^1.2.0",
     "vue-property-decorator": "^9.1.2",
     "vue-router": "^3.2.0",
     "vue-simple-uploader": "^0.7.6",

@@ -114,7 +114,6 @@ import { Name, ProcessTaskDetail, FromDataDetail, DynamicFromData, ProcessTaskFo
 import { GetShowFormData, TrunTaskApi, DelegateTaskApi, SaveFormData, CompleteProcessTaskPostApi, GetApprovalHistoryList } from './todo-task-api'
 import { DynamicFormItem, DynamicInputFormData, DynamicOptions, EvnetFn } from '@/components/dynamic-form/interface/dynamic-form'
 import { GetUserAllApi } from '../../system/user/user-api'
-import { MessageBoxData, MessageBoxInputData } from 'node_modules/_element-ui@2.15.10@element-ui/types/message-box'
 import dateFormat from '@/common/utils/date-util/date-format'
 import { GetProcessDefinitionApi } from '../process-definition/process-definition-api'
 @Component({
@@ -320,15 +319,14 @@ export default class TodoTask extends Vue {
   }
 
   doTask(id: string): void {
-    this.$prompt('审批内容', '提示', {
+    this.$confirm('确定要审批, 是否继续?', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
-      inputType: 'textarea'
+      type: 'warning'
     })
-      .then(async (messageBoxInputData: MessageBoxData) => {
-        messageBoxInputData = messageBoxInputData as MessageBoxInputData
+      .then(async () => {
         var completeProcessTaskForm: ProcessTaskForm = {
-          audit: messageBoxInputData.value,
+          audit: '',
           taskId: id
         }
         const { code, msg } = await CompleteProcessTaskPostApi(completeProcessTaskForm)
