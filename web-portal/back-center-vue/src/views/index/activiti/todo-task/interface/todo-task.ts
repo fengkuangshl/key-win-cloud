@@ -29,7 +29,7 @@ export interface FromData {
   controlValueParamType: string
   isShowControl: boolean
   controlValueOptions?: string
-  controlIsReadOnly?: boolean
+  isReadOnlyControl?: boolean
   controlEvent?: string
   controlEventType: string
 }
