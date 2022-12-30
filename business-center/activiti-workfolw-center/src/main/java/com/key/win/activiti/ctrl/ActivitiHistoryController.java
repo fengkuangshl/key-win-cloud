@@ -19,6 +19,7 @@ import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -27,6 +28,8 @@ import java.util.*;
 @RequestMapping("/activitiHistoryCtrl")
 @Api("工作流历史相关的api")
 public class ActivitiHistoryController {
+
+    // private final static String AUTHORITY_PREFIX = "activiti::history-task::HistoryTask::";
 
     @Autowired
     private ActivitiHistoryService activitiHistoryService;
@@ -41,6 +44,7 @@ public class ActivitiHistoryController {
     @PostMapping(value = "/getInstancesByUserName")
     @ApiOperation(value = "获取历史实例分页")
     @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    // @PreAuthorize("hasAuthority('" + AUTHORITY_PREFIX + "QUERY::PAGED')")
     public PageResult<ActivitiHistoryVo> getInstancesByUser(@RequestBody PageRequest<ActivitiHistoryVo> t) {
         return activitiHistoryService.findActivitiHistoryByPaged(t);
 
@@ -83,6 +87,9 @@ public class ActivitiHistoryController {
 
     //流程图高亮
     @GetMapping("/getHighLine")
+    @ApiOperation(value = "流程图高亮")
+    @LogAnnotation(module = "activiti-workfolw-center", recordRequestParam = false)
+    // @PreAuthorize("hasAuthority('" + AUTHORITY_PREFIX + "QUERY::ID')")
     public Result getHighLine(@RequestParam("instanceId") String instanceId) {
         HistoricProcessInstance historicProcessInstance = historyService.createHistoricProcessInstanceQuery()
                 .processInstanceId(instanceId).singleResult();
@@ -119,8 +126,9 @@ public class ActivitiHistoryController {
         }
         //高亮连线ID
         Set<String> highLine = new HashSet<>();
-        keyList.forEach(s -> highLine.add(map.get(s)));
+         keyList.forEach(s -> highLine.add(map.get(s)));
 
+       // Set<String> highLine = getHighLightedData(process,list);
 
         //获取流程实例 历史节点（已完成）
         List<HistoricActivityInstance> listFinished = historyService.createHistoricActivityInstanceQuery()
@@ -191,6 +199,77 @@ public class ActivitiHistoryController {
         returnMap.put("iDo", iDo);
         return Result.succeed(returnMap);
 
+    }
+
+    private Set<String> getHighLightedData(Process process,
+                                           List<HistoricActivityInstance> historicActInstances) {
+
+        // 高亮流程已发生流转的线id集合
+        Set<String> highLightedFlowIds = new HashSet<>();
+        // 全部活动节点
+        List<FlowNode> historicActivityNodes = new ArrayList<>();
+        // 已完成的历史活动节点
+        List<HistoricActivityInstance> finishedActivityInstances = new ArrayList<>();
+
+        for (HistoricActivityInstance historicActivityInstance : historicActInstances) {
+            FlowNode flowNode = (FlowNode) process.getFlowElement(historicActivityInstance.getActivityId(), true);
+            historicActivityNodes.add(flowNode);
+            if (historicActivityInstance.getEndTime() != null) {
+                finishedActivityInstances.add(historicActivityInstance);
+            }
+        }
+
+        FlowNode currentFlowNode = null;
+        FlowNode targetFlowNode = null;
+        // 遍历已完成的活动实例，从每个实例的outgoingFlows中找到已执行的
+        for (HistoricActivityInstance currentActivityInstance : finishedActivityInstances) {
+            // 获得当前活动对应的节点信息及outgoingFlows信息
+            currentFlowNode = (FlowNode) process.getFlowElement(currentActivityInstance.getActivityId(), true);
+            List<SequenceFlow> sequenceFlows = currentFlowNode.getOutgoingFlows();
+
+            /**
+             * 遍历outgoingFlows并找到已已流转的 满足如下条件认为已已流转：
+             * 1.当前节点是并行网关或兼容网关，则通过outgoingFlows能够在历史活动中找到的全部节点均为已流转
+             * 2.当前节点是以上两种类型之外的，通过outgoingFlows查找到的时间最早的流转节点视为有效流转
+             */
+            if ("parallelGateway".equals(currentActivityInstance.getActivityType()) || "inclusiveGateway".equals(currentActivityInstance.getActivityType())) {
+                // 遍历历史活动节点，找到匹配流程目标节点的
+                for (SequenceFlow sequenceFlow : sequenceFlows) {
+                    targetFlowNode = (FlowNode) process.getFlowElement(sequenceFlow.getTargetRef(), true);
+                    if (historicActivityNodes.contains(targetFlowNode)) {
+                        highLightedFlowIds.add(sequenceFlow.getId());
+                    }
+                }
+            } else {
+                List<Map<String, Object>> tempMapList = new ArrayList<>();
+                for (SequenceFlow sequenceFlow : sequenceFlows) {
+                    for (HistoricActivityInstance historicActivityInstance : historicActInstances) {
+                        if (historicActivityInstance.getActivityId().equals(sequenceFlow.getTargetRef())) {
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("highLightedFlowId", sequenceFlow.getId());
+                            map.put("highLightedFlowStartTime", historicActivityInstance.getStartTime().getTime());
+                            tempMapList.add(map);
+                        }
+                    }
+                }
+
+                if (!CollectionUtils.isEmpty(tempMapList)) {
+                    // 遍历匹配的集合，取得开始时间最早的一个
+                    long earliestStamp = 0L;
+                    String highLightedFlowId = null;
+                    for (Map<String, Object> map : tempMapList) {
+                        long highLightedFlowStartTime = Long.parseLong(map.get("highLightedFlowStartTime").toString());
+                        if (earliestStamp == 0 || earliestStamp >= highLightedFlowStartTime) {
+                            highLightedFlowId = map.get("highLightedFlowId").toString();
+                            earliestStamp = highLightedFlowStartTime;
+                        }
+                    }
+                    highLightedFlowIds.add(highLightedFlowId);
+                }
+            }
+        }
+
+        return highLightedFlowIds;
     }
 
 

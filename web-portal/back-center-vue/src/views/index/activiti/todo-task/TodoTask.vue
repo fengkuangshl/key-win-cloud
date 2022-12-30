@@ -69,7 +69,7 @@
         <el-tab-pane name="approvalPage">
           <span slot="label"><i class="el-icon-s-check"></i>审批</span>
           <div style="height:auto;">
-            <KWDynamicForm :formItems='dynamicFormItems' :dynamicFormRules='dynamicRules' ref='dynamicForm' :inputFormData='dynamicInputFormData'></KWDynamicForm>
+            <KWDynamicForm :formItems='dynamicFormItems' ref='dynamicForm' :inputFormData='dynamicInputFormData'></KWDynamicForm>
             <div style="padding:0px 10px 20px 0px;float:right">
               <el-button @click="dialogDynamicFormVisible = false">取消</el-button>
               <el-button v-if="approvalTaskBtn" type="primary" @click="approvalTask()">审批</el-button>
@@ -87,7 +87,7 @@
                   <el-card class="box-card" style="box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%) !important;border: 1px solid #EBEEF5 !important;">
                     <template v-for="(item,index) in value[1]">
                       <div :key="index">
-                        <h4 v-if="index===0" style="padding:5px">{{item.createUserName+' ' + (key ===0 ? '发起':'审批')}}&nbsp;&nbsp;&nbsp;&nbsp;<a style="color:#409EFF;cursor: pointer;" title="查看流程图" @click="showProcessInstance(item)"><i class="el-icon-view"></i></a></h4>
+                        <h4 v-if="index===0" style="padding:5px">{{item.createUserName+' ' + item.controlEventType}}&nbsp;&nbsp;&nbsp;&nbsp;<a style="color:#409EFF;cursor: pointer;" title="查看流程图" @click="showProcessInstance(item)"><i class="el-icon-view"></i></a></h4>
                         <p class="el-form-item-div" v-if="index!==0 || key !==0" style="padding:5px">{{item.controlLabel+'：'+item.controlValue}}</p>
                       </div>
                     </template>
@@ -112,7 +112,7 @@ import PermissionUtil from '@/common/utils/permission/permission-util'
 import PermissionPrefixUtils from '@/common/utils/permission/permission-prefix'
 import { Name, ProcessTaskDetail, FromDataDetail, DynamicFromData, ProcessTaskForm, FromData } from './interface/todo-task'
 import { GetShowFormData, TrunTaskApi, DelegateTaskApi, SaveFormData, CompleteProcessTaskPostApi, GetApprovalHistoryList } from './todo-task-api'
-import { DynamicFormItem, DynamicFormRule, DynamicInputFormData, DynamicOptions, EvnetFn } from '@/components/dynamic-form/interface/dynamic-form'
+import { DynamicFormItem, DynamicInputFormData, DynamicOptions, EvnetFn } from '@/components/dynamic-form/interface/dynamic-form'
 import { GetUserAllApi } from '../../system/user/user-api'
 import { MessageBoxData, MessageBoxInputData } from 'node_modules/_element-ui@2.15.10@element-ui/types/message-box'
 import dateFormat from '@/common/utils/date-util/date-format'
@@ -287,7 +287,7 @@ export default class TodoTask extends Vue {
           originType: item.controlType,
           model: item.controlId,
           isShowControl: item.isShowControl,
-          isReadOnly: item.controlIsReadOnly,
+          isReadOnly: item.isReadOnlyControl,
           isParam: item.controlValueParamType,
           eventType: eventType,
           eventFn: fun,
@@ -375,6 +375,10 @@ export default class TodoTask extends Vue {
           continue
         }
         const formItem = map.get(key) as DynamicFormItem
+        if (formItem.originType === 'user_list') {
+          continue
+        }
+
         const val = formDatas[key]
         let eventFn = ''
         if (formItem.eventFn !== undefined) {
@@ -392,7 +396,7 @@ export default class TodoTask extends Vue {
           controlValueValidate: formItem.rule !== undefined ? JSON.stringify(formItem.rule) : '',
           controlValueParamType: formItem.isParam,
           controlValueOptions: formItem.opts !== undefined ? JSON.stringify(formItem.opts) : '',
-          controlIsReadOnly: formItem.isReadOnly,
+          isReadOnlyControl: formItem.isReadOnly,
           isShowControl: formItem.isShowControl,
           controlEventType: this.controlEventType,
           controlEvent: eventFn
@@ -473,7 +477,7 @@ export default class TodoTask extends Vue {
           controlValueValidate: formItem.rule !== undefined ? JSON.stringify(formItem.rule) : '',
           controlValueParamType: formItem.isParam,
           controlValueOptions: formItem.opts !== undefined ? JSON.stringify(formItem.opts) : '',
-          controlIsReadOnly: formItem.isReadOnly,
+          isReadOnlyControl: formItem.isReadOnly,
           isShowControl: formItem.isShowControl,
           controlEventType: this.controlEventType,
           controlEvent: eventFn

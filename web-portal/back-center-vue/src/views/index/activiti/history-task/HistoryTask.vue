@@ -31,12 +31,12 @@
         </el-table-column>
         <el-table-column label="操作">
           <template v-slot="scope">
-            <el-tooltip effect="dark" content="追回" placement="top" :enterable="false">
+            <!-- <el-tooltip effect="dark" content="追回" placement="top" :enterable="false">
               <el-button type="primary" v-if="scope.row.isRecover === true" icon="el-icon-bottom" @click="getRecover(scope.row)"></el-button>
             </el-tooltip>
             <el-tooltip effect="dark" content="申请作废" placement="top" :enterable="false">
               <el-button type="primary" v-if="scope.row.isAbandon === true" icon="el-icon-s-release" @click="getAbandon(scope.row)"></el-button>
-            </el-tooltip>
+            </el-tooltip> -->
             <el-tooltip effect="dark" content="查看历史" placement="top" :enterable="false">
               <el-button type="warning" icon="el-icon-view" size="mini" @click="showApprovalHistory(scope.row)"></el-button>
             </el-tooltip>
@@ -52,7 +52,7 @@
                 <el-card class="box-card" style="box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%) !important;border: 1px solid #EBEEF5 !important;">
                   <template v-for="(item,index) in value[1]">
                     <div :key="index">
-                      <h4 v-if="index===0" style="padding:5px">{{item.createUserName+' ' + (key ===0 ? '发起':'审批')}}&nbsp;&nbsp;&nbsp;&nbsp;<a style="color:#409EFF;cursor: pointer;" title="查看流程图" @click="showBpmnDialog(item)"><i class="el-icon-view"></i></a></h4>
+                      <h4 v-if="index===0" style="padding:5px">{{item.createUserName+' ' + item.controlEventType}}&nbsp;&nbsp;&nbsp;&nbsp;<a style="color:#409EFF;cursor: pointer;" title="查看流程图" @click="showBpmnDialog(item)"><i class="el-icon-view"></i></a></h4>
                       <p class="el-form-item-div" v-if="index!==0 || key !==0" style="padding:5px">{{item.controlLabel+'：'+item.controlValue}}</p>
                     </div>
                   </template>
