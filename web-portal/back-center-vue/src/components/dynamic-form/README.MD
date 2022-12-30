@@ -117,3 +117,36 @@ FormProperty_23taa76-_!user_list-_!请选择用户-_!f-_!false-_!true
 }
 
 FormProperty_07nklqv-_!radio-_!审批-_!Y-_!s-_!false-_!true-_!同意-_-Y!_!拒绝-_-N!_!驳回-_-GB!_!转办-_-TT!_!委派-_-DT-_!change!_!(val) => {	debugger;	var todoTaskMain = document.querySelector("#todoTaskMain").__vue__;	var vueDiv = document.querySelector("#dynamicForm").parentElement.__vue__;  todoTaskMain.controlEventType = '';	var formItems = vueDiv.formItems;	var map = new Map();	for (var item in formItems) {		var formItem = formItems[item];		map.set(formItem.model, formItem);	}  const radioModel =  map.get('FormProperty_07nklqv');  if(radioModel !== undefined && radioModel !== null){    const options =  radioModel.opts;    for (var item in options) {		var opt = options[item];        if(opt.value === val){            todoTaskMain.controlEventType = opt.label;        }	}  }	if (val === 'TT') {		map.get('FormProperty_23taa76')			.isShowControl = true;		todoTaskMain.trunTaskBtn = true;		todoTaskMain.delegatelTaskBtn = false;		todoTaskMain.approvalTaskBtn = false;	} else if (val === 'DT') {		map.get('FormProperty_23taa76')			.isShowControl = true;		todoTaskMain.trunTaskBtn = false;		todoTaskMain.delegatelTaskBtn = true;		todoTaskMain.approvalTaskBtn = false;	} else {		map.get('FormProperty_23taa76')			.isShowControl = false;		todoTaskMain.trunTaskBtn = false;		todoTaskMain.delegatelTaskBtn = false;		todoTaskMain.approvalTaskBtn = true;	}}
+
+
+
+FormProperty_0ueitp2-_!类型-_!名称-_!默认值-_!是否验证-_!是否参数-_!是否只读-_!是否展示控件-_!控件选项-_!控件事件
+
+FormProperty_0mf7m5k-_!string-_!姓名-_!c_username-_!false-_!f-_!true-_!true
+FormProperty_3t0um8b-_!long-_!请假天数-_!1-_![{ pattern: /^\+?[1-9]\d*$/, message: '请输入大于0的正整数' }]-_!s-_!false-_!true
+FormProperty_3990s6n-_!textarea-_!请假事由-_!无-_!false-_!f-_!false-_!true
+FormProperty_0hjlgmr-_!radio-_!动作-_!无-_!{ 'required': true, 'message': '请选择提交动作', 'trigger': 'change' }-_!s-_!false-_!true-_!发起-_-Y!_!废弃-_-N
+
+
+FormProperty_2tsq5qm-_!string-_!请假人姓名-_!FormProperty_0mf7m5k-_!false-_!f-_!true-_!true
+FormProperty_0hpu2em-_!long-_!请假天数-_!FormProperty_3t0um8b-_!false-_!f-_!true-_!true
+FormProperty_139hnlc-_!textarea-_!请假事由-_!FormProperty_3990s6n-_!false-_!f-_!true-_!true
+FormProperty_07nklqv-_!radio-_!审批-_!无-_!{ 'required': true, 'message': '请选择审批项', 'trigger': 'change' }-_!s-_!false-_!true-_!同意-_-Y!_!拒绝-_-N!_!驳回-_-GB!_!转办-_-TT!_!委派-_-DT-_!change!_!(val) => {	debugger;	var todoTaskMain = document.querySelector('#todoTaskMain').__vue__;	var vueDiv = document.querySelector('#dynamicForm').parentElement.__vue__;  todoTaskMain.controlEventType = '';	var formItems = vueDiv.formItems;	var map = new Map();	for (var item in formItems) {		var formItem = formItems[item];		map.set(formItem.model, formItem);	}  const radioModel =  map.get('FormProperty_07nklqv');  if(radioModel !== undefined && radioModel !== null){    const options =  radioModel.opts;    for (var item in options) {		var opt = options[item];        if(opt.value === val){            todoTaskMain.controlEventType = opt.label;        }	}  }	if (val === 'TT') {		map.get('FormProperty_23taa76')			.isShowControl = true;		todoTaskMain.trunTaskBtn = true;		todoTaskMain.delegateTaskBtn = false;		todoTaskMain.approvalTaskBtn = false;	} else if (val === 'DT') {		map.get('FormProperty_23taa76')			.isShowControl = true;		todoTaskMain.trunTaskBtn = false;		todoTaskMain.delegateTaskBtn = true;		todoTaskMain.approvalTaskBtn = false;	} else {		map.get('FormProperty_23taa76')			.isShowControl = false;		todoTaskMain.trunTaskBtn = false;		todoTaskMain.delegateTaskBtn = false;		todoTaskMain.approvalTaskBtn = true;	}}
+FormProperty_23taa76-_!user_list-_!用户-_!无-_!false-_!f-_!false-_!false
+FormProperty_23taa77-_!textarea-_!备注-_!无-_!false-_!f-_!false-_!true
+
+
+FormProperty_16jgf6n-_!string-_!请假人姓名-_!FormProperty_0mf7m5k-_!false-_!f-_!true-_!true
+FormProperty_3q72hmi-_!long-_!请假天数-_!FormProperty_3t0um8b-_!false-_!f-_!true-_!true
+FormProperty_3fric0p-_!textarea-_!请假事由-_!FormProperty_3990s6n-_!false-_!f-_!true-_!true
+FormProperty_13lrga0-_!radio-_!审批-_!无-_!{ 'required': true, 'message': '请选择审批项', 'trigger': 'change' }-_!s-_!false-_!true-_!同意-_-Y!_!拒绝-_-N!_!驳回-_-GB!_!转办-_-TT!_!委派-_-DT-_!change!_!(val) => {	debugger;	var todoTaskMain = document.querySelector('#todoTaskMain').__vue__;	var vueDiv = document.querySelector('#dynamicForm').parentElement.__vue__;  todoTaskMain.controlEventType = '';	var formItems = vueDiv.formItems;	var map = new Map();	for (var item in formItems) {		var formItem = formItems[item];		map.set(formItem.model, formItem);	}  const radioModel =  map.get('FormProperty_13lrga0');  if(radioModel !== undefined && radioModel !== null){    const options =  radioModel.opts;    for (var item in options) {		var opt = options[item];        if(opt.value === val){            todoTaskMain.controlEventType = opt.label;        }	}  }	if (val === 'TT') {		map.get('FormProperty_227d51g')			.isShowControl = true;		todoTaskMain.trunTaskBtn = true;		todoTaskMain.delegateTaskBtn = false;		todoTaskMain.approvalTaskBtn = false;	} else if (val === 'DT') {		map.get('FormProperty_227d51g')			.isShowControl = true;		todoTaskMain.trunTaskBtn = false;		todoTaskMain.delegateTaskBtn = true;		todoTaskMain.approvalTaskBtn = false;	} else {		map.get('FormProperty_227d51g')			.isShowControl = false;		todoTaskMain.trunTaskBtn = false;		todoTaskMain.delegateTaskBtn = false;		todoTaskMain.approvalTaskBtn = true;	}}
+FormProperty_227d51g-_!user_list-_!用户-_!无-_!false-_!f-_!false-_!false
+FormProperty_3avk2o7-_!textarea-_!备注-_!无-_!false-_!f-_!false-_!true
+
+
+FormProperty_0ugsfk8-_!string-_!请假人姓名-_!FormProperty_0mf7m5k-_!false-_!f-_!true-_!true
+FormProperty_2rpec70-_!long-_!请假天数-_!FormProperty_3t0um8b-_!false-_!f-_!true-_!true
+FormProperty_0sn9pqb-_!textarea-_!请假事由-_!FormProperty_3990s6n-_!false-_!f-_!true-_!true
+FormProperty_2v46lav-_!radio-_!审批-_!无-_!{ 'required': true, 'message': '请选择审批项', 'trigger': 'change' }-_!s-_!false-_!true-_!同意-_-Y!_!拒绝-_-N!_!驳回-_-GB!_!转办-_-TT!_!委派-_-DT-_!change!_!(val) => {	debugger;	var todoTaskMain = document.querySelector('#todoTaskMain').__vue__;	var vueDiv = document.querySelector('#dynamicForm').parentElement.__vue__;  todoTaskMain.controlEventType = '';	var formItems = vueDiv.formItems;	var map = new Map();	for (var item in formItems) {		var formItem = formItems[item];		map.set(formItem.model, formItem);	}  const radioModel =  map.get('FormProperty_2v46lav');  if(radioModel !== undefined && radioModel !== null){    const options =  radioModel.opts;    for (var item in options) {		var opt = options[item];        if(opt.value === val){            todoTaskMain.controlEventType = opt.label;        }	}  }	if (val === 'TT') {		map.get('FormProperty_0g8gb28')			.isShowControl = true;		todoTaskMain.trunTaskBtn = true;		todoTaskMain.delegateTaskBtn = false;		todoTaskMain.approvalTaskBtn = false;	} else if (val === 'DT') {		map.get('FormProperty_0g8gb28')			.isShowControl = true;		todoTaskMain.trunTaskBtn = false;		todoTaskMain.delegateTaskBtn = true;		todoTaskMain.approvalTaskBtn = false;	} else {		map.get('FormProperty_0g8gb28')			.isShowControl = false;		todoTaskMain.trunTaskBtn = false;		todoTaskMain.delegateTaskBtn = false;		todoTaskMain.approvalTaskBtn = true;	}}
+FormProperty_0g8gb28-_!user_list-_!用户-_!无-_!false-_!f-_!false-_!false
+FormProperty_1v408tr-_!textarea-_!备注-_!无-_!false-_!f-_!false-_!true
