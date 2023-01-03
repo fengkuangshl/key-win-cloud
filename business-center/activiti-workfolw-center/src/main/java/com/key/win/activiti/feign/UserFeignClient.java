@@ -6,11 +6,14 @@ import com.key.win.common.feign.FeignExceptionConfig;
 import com.key.win.common.model.system.SysUser;
 import com.key.win.common.web.PageRequest;
 import com.key.win.common.web.PageResult;
+import com.key.win.common.web.Result;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -18,20 +21,15 @@ import java.util.Map;
 public interface UserFeignClient {
 
     /**
-     * feign rpc访问远程/users-anon/login接口
+     * feign rpc访问远程/getUserByGroupId/{groupId}
      *
-     * @param username
+     * @param groupId
      * @return
      */
-    @GetMapping(value = "/user/login", params = "username")
-    LoginAppUser findByUsername(@RequestParam("username") String username);
+    @GetMapping(value = "/user/getUserByGroupId/{groupId}")
+    Result<List<SysUser>> getUserByGroupId(@PathVariable String groupId);
 
 
-    @GetMapping(value = "/user/mobile", params = "mobile")
-    LoginAppUser findByMobile(@RequestParam("mobile") String mobile);
-
-
-    @PostMapping(value = "/user/findSysUserByPaged")
-    PageResult<SysUser> findUsers(PageRequest<SysUser> pageRequest);
-
+    @GetMapping(value = "/user/getUserByGroupCode/{groupCode}")
+    Result<List<SysUser>> getUserByGroupCode(@PathVariable String groupCode);
 }

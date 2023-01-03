@@ -36,4 +36,8 @@ public interface SysUserService extends IService<SysUser> {
     LoginAppUser findByUsername(String username) throws ServiceException;
 
     LoginAppUser findByMobile(String mobile) throws ServiceException;
+
+    List<SysUser> getUserByGroupId(Long groupId);
+
+    List<SysUser> getUserByGroupCode(String groupCode);
 }

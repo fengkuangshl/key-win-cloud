@@ -1,15 +1,13 @@
 package com.key.win.activiti.feign.fallback;
 
 import com.key.win.activiti.feign.UserFeignClient;
-import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.model.system.SysUser;
-import com.key.win.common.web.PageRequest;
-import com.key.win.common.web.PageResult;
+import com.key.win.common.web.Result;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -19,23 +17,16 @@ public class UserFeignClientFallbackFactory implements FallbackFactory<UserFeign
 		return new UserFeignClient() {
 
 			@Override
-			public LoginAppUser findByUsername(String username) {
-				log.error("通过用户名查询用户异常:{}", username, throwable);
-				return new LoginAppUser() ;
+			public Result<List<SysUser>> getUserByGroupId(String groupId) {
+				log.error("通过组Id查询用户异常:{}", groupId, throwable);
+				return Result.failed("查询失败");
 			}
 
 			@Override
-			public LoginAppUser findByMobile(String mobile) {
-				log.error("通过手机号查询用户异常:{}", mobile, throwable);
-				return new LoginAppUser();
+			public Result<List<SysUser>> getUserByGroupCode(String code) {
+				log.error("通过组code查询用户异常:{}", code, throwable);
+				return Result.failed("查询失败");
 			}
-
-			@Override
-			public PageResult<SysUser> findUsers(PageRequest<SysUser> pageRequest) {
-				log.error("查询用户列表异常:",throwable);
-				return null;
-			}
-
 		};
 	}
 }

@@ -415,4 +415,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUser> impleme
 
         return this.saveOrUpdate(appUser);
     }
+
+    @Override
+    public List<SysUser> getUserByGroupId(Long groupId) {
+        List<SysUser> userByGroupId = sysUserGroupDao.findUserByGroupId(groupId);
+        return userByGroupId;
+    }
+
+    @Override
+    public List<SysUser> getUserByGroupCode(String groupCode) {
+        List<SysUser> userByGroupId = sysUserGroupDao.findUserByGroupCode(groupCode);
+        return userByGroupId;
+    }
 }

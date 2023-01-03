@@ -1,31 +1,22 @@
-package com.key.win.websocket.config;
+package com.key.win.activiti.config;
 
-import com.key.win.websocket.manager.WebSocketManager;
-import com.key.win.websocket.manager.impl.RedisWebSocketManager;
-import com.key.win.websocket.redis.DefaultRedisReceiver;
-import com.key.win.websocket.redis.RedisReceiver;
-import com.key.win.websocket.redis.action.ActionConfig;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.key.win.activiti.redis.DefaultRedisActivitiReceiver;
+import com.key.win.activiti.redis.RedisActivitiReceiver;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 
-@ConditionalOnProperty(prefix = "spring.web.socket", name = "cluster", havingValue = "true")
 @Configuration
-@Import(ActionConfig.class)
-public class RedisWebSocketConfig implements ApplicationContextAware {
+public class RedisConfig implements ApplicationContextAware {
+
     private ApplicationContext applicationContext;
 
     @Override
@@ -38,20 +29,14 @@ public class RedisWebSocketConfig implements ApplicationContextAware {
     }
 
 
-    @Bean(WebSocketManager.WEBSOCKET_MANAGER_NAME)
-    @ConditionalOnMissingBean(name = WebSocketManager.WEBSOCKET_MANAGER_NAME)
-    public RedisWebSocketManager webSocketManager(@Autowired RedisTemplate<String, Object> redisTemplate) {
-        return new RedisWebSocketManager(redisTemplate);
-    }
-
-    @Bean(RedisReceiver.REDIS_RECEIVER_NAME)
-    public RedisReceiver redisReceiver() {
-        return new DefaultRedisReceiver(getApplicationContext());
+    @Bean(RedisActivitiReceiver.REDIS_RECEIVER_NAME)
+    public RedisActivitiReceiver redisReceiver() {
+        return new DefaultRedisActivitiReceiver(getApplicationContext());
     }
 
     @Bean
-    public MessageListenerAdapter listenerAdapter(@Qualifier(RedisReceiver.REDIS_RECEIVER_NAME) RedisReceiver redisReceiver) {
-        MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(redisReceiver, RedisReceiver.RECEIVER_METHOD_NAME);
+    public MessageListenerAdapter listenerAdapter(@Qualifier(RedisActivitiReceiver.REDIS_RECEIVER_NAME) RedisActivitiReceiver redisReceiver) {
+        MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(redisReceiver, RedisActivitiReceiver.RECEIVER_METHOD_NAME);
         RedisSerializer redisObjectSerializer = new GenericJackson2JsonRedisSerializer();
         messageListenerAdapter.setSerializer(redisObjectSerializer);
         return messageListenerAdapter;
@@ -63,7 +48,8 @@ public class RedisWebSocketConfig implements ApplicationContextAware {
 
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.addMessageListener(listenerAdapter, new PatternTopic(RedisWebSocketManager.CHANNEL));
+        container.addMessageListener(listenerAdapter, new PatternTopic(RedisActivitiReceiver.CHANNEL));
         return container;
     }
 }
+

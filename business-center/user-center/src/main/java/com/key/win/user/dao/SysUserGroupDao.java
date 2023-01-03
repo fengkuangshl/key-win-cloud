@@ -35,6 +35,16 @@ public interface SysUserGroupDao extends BaseMapper<SysUserGroup> {
     @Select("select g.* from sys_user_group gu inner join sys_user g on g.id = gu.user_id where gu.group_id = #{groupId} and g.enable_flag = 1 and gu.enable_flag = 1")
     List<SysUser> findUserByGroupId(Long groupId);
 
+
+    /**
+     * 根据用户id获取组信息
+     *
+     * @param groupCode
+     * @return
+     */
+    @Select("select u.* from sys_group g inner join sys_user_group gu on g.id = gu.group_id inner join sys_user u on u.id = gu.user_id where g.code = #{groupCode} and u.enable_flag = 1 and gu.enable_flag = 1 and g.enable_flag = 1")
+    List<SysUser> findUserByGroupCode(String groupCode);
+
     /**
      * 根据用户id获取组信息
      *

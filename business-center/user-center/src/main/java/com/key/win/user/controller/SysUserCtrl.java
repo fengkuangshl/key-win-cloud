@@ -80,6 +80,29 @@ public class SysUserCtrl {
     }
 
 
+    @GetMapping("/getUserByGroupId/{groupId}")
+    @ApiOperation(value = "获取所有用户")
+    @LogAnnotation(module = "system", recordRequestParam = false)
+    @PreAuthorize("hasAuthority('" + AUTHORITY_PREFIX + "QUERY::LIST')")
+    public Result getUserByGroupId(@PathVariable String groupId ) {
+       try{
+           long gId = Long.parseLong(groupId);
+           return Result.succeed(sysUserService.getUserByGroupId(gId));
+       }catch (Exception e){
+           logger.error("["+groupId+"]转数字出错:"+e.getMessage());
+           return Result.failed("["+groupId+"]转数字出错:"+e.getMessage());
+       }
+    }
+
+    @GetMapping("/getUserByGroupCode/{groupCode}")
+    @ApiOperation(value = "获取所有用户")
+    @LogAnnotation(module = "system", recordRequestParam = false)
+    @PreAuthorize("hasAuthority('" + AUTHORITY_PREFIX + "QUERY::LIST')")
+    public Result getUserByGroupCode(@PathVariable String groupCode ) {
+        return Result.succeed(sysUserService.getUserByGroupCode(groupCode));
+    }
+
+
     @PostMapping("/register")
     @ApiOperation(value = "用户注册")
     @LogAnnotation(module = "system", recordRequestParam = false)
