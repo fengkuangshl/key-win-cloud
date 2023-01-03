@@ -17,9 +17,9 @@
       </el-row>
       <KWTable url="/api-activiti/processTaskCtrl/getTasks" v-hasPermissionQueryPage="processTaskPermissionPrefix" style="width: 100%" ref="kwTableRef">
         <el-table-column type="index" width="80" label="序号"></el-table-column>
-        <el-table-column prop="instanceName" sortable="custom" label="流程名称"> </el-table-column>
+        <el-table-column prop="instanceName" label="流程名称"> </el-table-column>
         <el-table-column prop="name" label="任务节点名称" sortable="custom"></el-table-column>
-        <el-table-column prop="status" label="状态" sortable="custom" :formatter="
+        <el-table-column prop="status" label="状态" :formatter="
             row => {
               if (row.status && row.status == 'ASSIGNED') {
                     return '执行中';

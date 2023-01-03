@@ -20,7 +20,7 @@
         <el-table-column prop="id" sortable="custom" label="实例ID"> </el-table-column>
         <el-table-column prop="taskDefinitionKey" sortable="custom" label="KEY"> </el-table-column>
         <el-table-column prop="name" label="审批节点名称" sortable="custom"></el-table-column>
-        <el-table-column prop="processInstanceName" label="实例名称" sortable="custom"></el-table-column>
+        <el-table-column prop="processInstanceName" label="实例名称"></el-table-column>
         <!-- <el-table-column prop="processInstanceId" label="实例ID" sortable="custom"></el-table-column> -->
         <el-table-column prop="assignee" label="办理人" sortable="custom"></el-table-column>
         <!-- <el-table-column prop="createTime" label="创建时间" sortable="custom">

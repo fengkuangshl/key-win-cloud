@@ -42,6 +42,7 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
         processInstanceMapping.put("tenantId", ProcessInstanceQueryProperty.TENANT_ID);
         processInstanceMapping.put("name", new ProcessInstanceQueryProperty("RES.NAME_"));
         processInstanceMapping.put("status", new ProcessInstanceQueryProperty("RES.SUSPENSION_STATE_"));
+        processInstanceMapping.put("startTime", new ProcessInstanceQueryProperty("RES.START_TIME_"));
     }
 
 

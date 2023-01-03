@@ -37,6 +37,7 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
         processDefinitionMapping.put("version", ProcessDefinitionQueryProperty.PROCESS_DEFINITION_VERSION);
         processDefinitionMapping.put("category", ProcessDefinitionQueryProperty.PROCESS_DEFINITION_CATEGORY);
         processDefinitionMapping.put("tenantId", ProcessDefinitionQueryProperty.PROCESS_DEFINITION_TENANT_ID);
+        processDefinitionMapping.put("resourceName", new ProcessDefinitionQueryProperty("RES.RESOURCE_NAME_"));
     }
 
     @Override
