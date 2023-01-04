@@ -184,36 +184,63 @@ export default class HistoryTask extends Vue {
   async showApprovalHistory(historyTaskDetail: HistoryTaskDetail): Promise<void> {
     const { code, msg, data } = await GetApprovalHistoryList(historyTaskDetail.processInstanceId)
     if (code === 200) {
-      this.approvalHistoryMap = new Map()
-      data.forEach(item => {
-        const key = dateFormat(item.createDate) // + '由用户[' + item.createUserName + ']' // + '::' + (this.approvalHistoryMap.size === 0 ? '发起' : '审批')
-        let fromDataDetails: Array<FromDataDetail> = this.approvalHistoryMap.get(key) as Array<FromDataDetail>
-        if (fromDataDetails === undefined) {
-          fromDataDetails = []
-          this.approvalHistoryMap.set(key, fromDataDetails)
-          // fromDataDetails = this.approvalHistoryMap.get(key) as Array<FromDataDetail>
-        }
-        if (item.controlValueOptions !== undefined && item.controlValueOptions !== '') {
-          const opts: Array<DynamicOptions> = JSON.parse(item.controlValueOptions as string)
-          for (const key in opts) {
-            if (Object.prototype.hasOwnProperty.call(opts, key)) {
-              const element = opts[key]
-              if (element.value === item.controlValue) {
-                item.controlValue = element.label
-                break
+      if (data && data.length > 0) {
+        this.approvalHistoryMap = new Map()
+        data.forEach(item => {
+          const key = dateFormat(item.createDate) // + '由用户[' + item.createUserName + ']' // + '::' + (this.approvalHistoryMap.size === 0 ? '发起' : '审批')
+          let fromDataDetails: Array<FromDataDetail> = this.approvalHistoryMap.get(key) as Array<FromDataDetail>
+          if (fromDataDetails === undefined) {
+            fromDataDetails = []
+            this.approvalHistoryMap.set(key, fromDataDetails)
+            // fromDataDetails = this.approvalHistoryMap.get(key) as Array<FromDataDetail>
+          }
+          if (item.controlValueOptions !== undefined && item.controlValueOptions !== '') {
+            const opts: Array<DynamicOptions> = JSON.parse(item.controlValueOptions as string)
+            for (const key in opts) {
+              if (Object.prototype.hasOwnProperty.call(opts, key)) {
+                const element = opts[key]
+                if (element.value === item.controlValue) {
+                  item.controlValue = element.label
+                  break
+                }
               }
             }
+            // const kv: Map<string, string> = new Map()
+            // opts.forEach(opt => {
+            //   kv.set(opt.value, opt.label)
+            // })
+            // item.controlValue = kv.get(item.controlValue) as string
           }
-          // const kv: Map<string, string> = new Map()
-          // opts.forEach(opt => {
-          //   kv.set(opt.value, opt.label)
-          // })
-          // item.controlValue = kv.get(item.controlValue) as string
+          fromDataDetails.push(item)
+        })
+        console.log(this.approvalHistoryMap)
+        this.dialogApprovalHistoryVisible = true
+      } else {
+        const fromDataDetail: FromDataDetail = {
+          createDate: 0,
+          updateDate: null,
+          createUserId: '',
+          updateUserId: null,
+          enableFlag: false,
+          createUserName: '',
+          updateUserName: null,
+          version: 0,
+          id: '',
+          procDefId: historyTaskDetail.processDefinitionId,
+          procInstId: historyTaskDetail.processInstanceId,
+          procTaskId: '',
+          controlType: '',
+          formKey: '',
+          controlId: '',
+          controlLabel: '',
+          controlValue: '',
+          controlValueValidate: '',
+          controlValueParamType: '',
+          isShowControl: false,
+          controlEventType: ''
         }
-        fromDataDetails.push(item)
-      })
-      console.log(this.approvalHistoryMap)
-      this.dialogApprovalHistoryVisible = true
+        this.showBpmnDialog(fromDataDetail)
+      }
     } else {
       this.$message.error(msg || '获取审批列表失败!')
     }

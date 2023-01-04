@@ -2,7 +2,6 @@ package com.key.win.activiti.listener;
 
 import com.key.win.activiti.feign.UserFeignClient;
 import com.key.win.activiti.redis.RedisActivitiReceiver;
-import com.key.win.common.auth.details.LoginAppUser;
 import com.key.win.common.model.system.SysUser;
 import com.key.win.common.util.JsonUtils;
 import com.key.win.common.util.SpringUtils;
